@@ -14,8 +14,11 @@
     "test": "node tests",
     "asbuild:proto": "protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --as_out=./assembly/ ./proto/abi.proto",
     "asbuild:debug": "npm run asbuild:proto && asc assembly/index.ts --target debug",
-    "asbuild:release": "npm run asbuild:proto && asc assembly/index.ts --target release",
+    "asbuild:release": "npm run asbuild:proto && asc assembly/index.ts --target release --use abort=assembly/env/myabort",
+    "inspect": "wasmer inspect ./build/release.wasm",
+    "export": "wasmv1_transform ./build/release.wasm add",
     "asbuild": "npm run asbuild:debug && npm run asbuild:release",
+    "all": "npm run asbuild && npm run inspect && npm run export",
     "start": "npx serve ."
   },
   "author": "",
