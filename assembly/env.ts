@@ -35,10 +35,10 @@ export function myabort(
     lineNumber: u32,
     columnNumber: u32,
   ): void {
-    const text_message = `Aborted with message '${message}' (in '${fileName}', line ${lineNumber}, column ${columnNumber})`;
+    const text_message = `Aborted with message '${message ? message : "null"}' (in '${fileName ? fileName : "null"}', line ${lineNumber}, column ${columnNumber})`;
     const req = new AbortRequest(text_message);
-    const req_bytes = Protobuf.encode(req, AbortRequest.encode);
-    abi_abort(encode_length_prefixed(req_bytes));
+    // const req_bytes = Protobuf.encode(req, AbortRequest.encode);
+    // abi_abort(encode_length_prefixed(req_bytes));
   }
 
 // ABI to call another SC
