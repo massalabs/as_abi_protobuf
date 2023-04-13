@@ -5,14 +5,11 @@ import * as env from "./env";
 // FIXME use a transformer >>> beg
 
 // using a global to prevent problem with GC
-let shared_mem: Uint8Array = new Uint8Array(0);
+let shared_mem: StaticArray<u8> = new StaticArray<u8>(0);
 
-export function __alloc(size: i32): usize {
-    shared_mem = new Uint8Array(size);
+export function __alloc(size: i32): i32 {
+    shared_mem = new StaticArray<u8>(size);
 
-    // for (let i = 0; i < 10 && i < size; i++) {
-    //     shared_mem[i] = i;
-    // }
     return changetype<usize>(shared_mem);
 }
 

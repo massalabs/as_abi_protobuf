@@ -80,11 +80,13 @@ export function test(message_in: Uint8Array): Uint8Array| null {
     // wrap the request in a length-prefixed byte array
     const req_bytes_wrapped = encode_length_prefixed(req_bytes);
 
+    const array : StaticArray<u8> = new StaticArray<u8>(req_bytes_wrapped.length);
+
     // get the address of the req_bytes_wrapped to pass to abi
-    const req_bytes_wrapped_addr = changetype<usize>(req_bytes_wrapped);
+    const req_bytes_wrapped_addr = changetype<usize>(array);
 
     // call the abi
-    const resp_bytes = abi_test(req_bytes_wrapped_addr);
+    const resp_bytes = abi_test(changetype<i32>(req_bytes_wrapped_addr));
 
     return null;
     // const resp = Protobuf.decode<TestResponse>(resp_bytes, TestResponse.decode);
