@@ -8,6 +8,7 @@ import { CreateSCRequest } from './abi/CreateSCRequest';
 import { CreateSCResponse } from './abi/CreateSCResponse';
 import { TestRequest } from './abi/TestRequest';
 import { TestResponse } from './abi/TestResponse';
+import { LogRequest } from './abi/LogRequest';
 
 @external("massa", "abi_call")
 export declare function abi_call(arg: Uint8Array): Uint8Array;
@@ -17,6 +18,9 @@ export declare function abi_create_sc(arg: Uint8Array): Uint8Array;
 
 @external("massa", "abi_abort")
 export declare function abi_abort(arg: Uint8Array): Uint8Array;
+
+@external("massa", "abi_log")
+export declare function abi_log(arg: i32): i32;
 
 @external("massa", "abi_test")
 export declare function abi_test(arg: i32): i32;
@@ -72,30 +76,21 @@ export function myalloc(size: i32): Uint8Array {
     return new Uint8Array(size);
 }
 
-export function test(message_in: Uint8Array): Uint8Array| null {
+export function log(message: string): void {
+    const req = new LogRequest(message);
+    const req_bytes = encode_length_prefixed(Protobuf.encode(req, LogRequest.encode));
+    const addr = changetype<i32>(req_bytes.buffer);
+    abi_log(addr);
+}
+
+export function test(message_in: Uint8Array): Uint8Array {
     const req = new TestRequest(message_in);
-    // encode the request
-    const req_bytes = Protobuf.encode(req, TestRequest.encode);
+    const req_bytes = encode_length_prefixed(Protobuf.encode(req, TestRequest.encode));
+    const addr = changetype<i32>(req_bytes.buffer);
+    const resp_addr = abi_test(addr);
+    const resp_buff = changetype<ArrayBuffer>(resp_addr);
+    const resp_bytes = Uint8Array.wrap(resp_buff);
+    const resp = Protobuf.decode<TestResponse>(resp_bytes, TestResponse.decode);
+    return resp.messageOut;
 
-    // wrap the request in a length-prefixed byte array
-    const req_bytes_wrapped = encode_length_prefixed(req_bytes);
-
-    const array : StaticArray<u8> = new StaticArray<u8>(req_bytes_wrapped.length);
-    // copy req_bytes_wrapped into array
-    for (let i = 0; i < req_bytes_wrapped.length; i++) {
-        array[i] = req_bytes_wrapped[i];
-    }
-
-    // get the address of the req_bytes_wrapped to pass to abi
-    const req_bytes_wrapped_addr = changetype<usize>(array);
-
-    // call the abi
-    const resp_bytes = abi_test(changetype<i32>(req_bytes_wrapped_addr));
-
-    return null;
-    // const resp = Protobuf.decode<TestResponse>(resp_bytes, TestResponse.decode);
-    // if (resp.messageOut === null) {
-    //     abort("Failed to create smart contract.");
-    // }
-    // return resp.messageOut;
 }

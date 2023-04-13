@@ -25,26 +25,26 @@ export function __alloc(size: i32): i32 {
 // =>
 
 //  export function myfunc(data: Uint8Array) -> Uint8Array {
-    //     const data_copy = data.copy();
-    //     const result = myfunc_orig(data_copy);
-    //     return encode_length_prefixed(result);
-    //  }
+//     const data_copy = data.copy();
+//     const result = myfunc_orig(data_copy);
+//     return encode_length_prefixed(result);
+//  }
 
 
 // it should be enough to take a new ref, the GC should not act and new alloc prevent modification from the memory
-    // export function myfunc(data: Uint8Array) -> Uint8Array {
-    //     const new_data = shared_mem;
-    //     const result = myfunc_orig(new_data);
-    //     return encode_length_prefixed(result);
-    //  }
+// export function myfunc(data: Uint8Array) -> Uint8Array {
+//     const new_data = shared_mem;
+//     const result = myfunc_orig(new_data);
+//     return encode_length_prefixed(result);
+//  }
 
-    // export function myfunc(data: Uint8Array) -> Uint8Array {
-    //     const new_data = shared_mem;
-    //     const result = myfunc_orig(new_data);
-    //     shared_mem = encode_length_prefixed(result);
-    //     return shared_mem;
-    //  }
-    //  (pour éviter que l'array que la fonction retourne ne soit droppé
+// export function myfunc(data: Uint8Array) -> Uint8Array {
+//     const new_data = shared_mem;
+//     const result = myfunc_orig(new_data);
+//     shared_mem = encode_length_prefixed(result);
+//     return shared_mem;
+//  }
+//  (pour éviter que l'array que la fonction retourne ne soit droppé
 
 // FIXME use a transformer  <<< end
 
@@ -60,13 +60,23 @@ export function call_test(fake: i32): i32 {
     // const coins: u64 = 10;
     // const ret = env.call("address", "add", array, coins);
 
+    env.log("start test");
+
     const array = new Uint8Array(10);
     for (let i = 0; i < array.length; i++) {
         array[i] = i;
     }
 
 
-    const ret = env.test(array);
+    const ret: Uint8Array = env.test(array);
 
-    return 0;
+    const arr: u8[] = [10, 11, 12, 12];
+    const expected_ret = new Uint8Array(arr.length);
+    expected_ret.set(arr);
+
+    if (ret == expected_ret) {
+        return 0;
+    } else {
+        return 1;
+    }
 }

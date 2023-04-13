@@ -44,6 +44,11 @@ message AbortRequest {
   string description = 1;
 }
 
+// log
+message LogRequest {
+  string message = 1;
+}
+
 // test
 message TestRequest {
   bytes message_in = 1;
