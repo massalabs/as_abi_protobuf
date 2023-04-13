@@ -1,18 +1,42 @@
 import * as env from "./env";
 
-
-
 // FIXME use a transformer >>> beg
 
 // using a global to prevent problem with GC
-let shared_mem: StaticArray<u8> = new StaticArray<u8>(0);
+let shared_mem: ArrayBuffer = new ArrayBuffer(0);
 
-export function __alloc(size: i32): i32 {
-    shared_mem = new StaticArray<u8>(size);
+export function __alloc(size: i32): ArrayBuffer {
+    // /!\ Can't trace here
+    // env.log("allocating " + size.toString() + "bytes");
 
-    return changetype<i32>(shared_mem);
+    shared_mem = new ArrayBuffer(size);
+    return shared_mem;
 }
 
+export function echo(arg: ArrayBuffer): ArrayBuffer {
+    assert(changetype<usize>(shared_mem) == changetype<usize>(arg));
+    let warg = Uint8Array.wrap(shared_mem);
+
+    env.log("echo input: " + warg.toString());
+
+    shared_mem = env.encode_length_prefixed(warg).buffer;
+    return shared_mem;
+}
+
+
+export function call_test(arg: ArrayBuffer): ArrayBuffer {
+    assert(changetype<usize>(shared_mem) == changetype<usize>(arg));
+
+    let warg = Uint8Array.wrap(shared_mem);
+    env.log("call_test input: " + warg.toString());
+    let res = env.test(warg);
+    env.log("res len: " + res.length.toString());
+
+    // /!\ do not call any abi here (for exemple log) it will
+    // allocate memory and overwrite the buffer
+    shared_mem = env.encode_length_prefixed(res).buffer;
+    return shared_mem;
+}
 
 // Only one buffer for exchange between guest and host implies that
 // any exported functions that take a buffer as argument must copy it
@@ -47,36 +71,3 @@ export function __alloc(size: i32): i32 {
 //  (pour éviter que l'array que la fonction retourne ne soit droppé
 
 // FIXME use a transformer  <<< end
-
-
-// The entry file of your WebAssembly module.
-
-export function add(a: i32, b: i32): i32 {
-    return a + b;
-}
-
-export function call_test(fake: i32): i32 {
-    // const array = new Uint8Array(1);
-    // const coins: u64 = 10;
-    // const ret = env.call("address", "add", array, coins);
-
-    env.log("start test");
-
-    const array = new Uint8Array(10);
-    for (let i = 0; i < array.length; i++) {
-        array[i] = i;
-    }
-
-
-    const ret: Uint8Array = env.test(array);
-
-    const arr: u8[] = [10, 11, 12, 12];
-    const expected_ret = new Uint8Array(arr.length);
-    expected_ret.set(arr);
-
-    if (ret == expected_ret) {
-        return 0;
-    } else {
-        return 1;
-    }
-}

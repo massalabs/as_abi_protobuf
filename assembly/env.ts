@@ -11,19 +11,19 @@ import { TestResponse } from './abi/TestResponse';
 import { LogRequest } from './abi/LogRequest';
 
 @external("massa", "abi_call")
-export declare function abi_call(arg: Uint8Array): Uint8Array;
+declare function abi_call(arg: ArrayBuffer): ArrayBuffer;
 
 @external("massa", "abi_create_sc")
-export declare function abi_create_sc(arg: Uint8Array): Uint8Array;
+declare function abi_create_sc(arg: ArrayBuffer): ArrayBuffer;
 
 @external("massa", "abi_abort")
-export declare function abi_abort(arg: Uint8Array): Uint8Array;
+declare function abi_abort(arg: ArrayBuffer): ArrayBuffer;
 
 @external("massa", "abi_log")
-export declare function abi_log(arg: i32): i32;
+declare function abi_log(arg: ArrayBuffer): ArrayBuffer;
 
 @external("massa", "abi_test")
-export declare function abi_test(arg: i32): i32;
+declare function abi_test(arg: ArrayBuffer): ArrayBuffer;
 
 /// Creates a Uint8Array from an existing Uint8Array by prepending a little-endian i32 length prefix.
 export function encode_length_prefixed(data: Uint8Array): Uint8Array {
@@ -54,7 +54,7 @@ export function myabort(
 export function call(address: string, func_name: string, arg: Uint8Array, coins: u64): Uint8Array {
     const req = new CallRequest(new Address(address), func_name, arg, new Amount(coins));
     const req_bytes = Protobuf.encode(req, CallRequest.encode);
-    const resp_bytes = abi_call(encode_length_prefixed(req_bytes));
+    const resp_bytes = Uint8Array.wrap(abi_call(encode_length_prefixed(req_bytes)));
     const resp = Protobuf.decode<CallResponse>(resp_bytes, CallResponse.decode);
     return resp.returnData;
 }
@@ -63,7 +63,7 @@ export function call(address: string, func_name: string, arg: Uint8Array, coins:
 export function create_sc(bytecode: Uint8Array): string {
     const req = new CreateSCRequest(bytecode);
     const req_bytes = Protobuf.encode(req, CreateSCRequest.encode);
-    const resp_bytes = abi_create_sc(encode_length_prefixed(req_bytes));
+    const resp_bytes = Uint8Array.wrap(abi_create_sc(encode_length_prefixed(req_bytes)));
     const resp = Protobuf.decode(resp_bytes, CreateSCResponse.decode);
     if (resp.address === null) {
         abort("Failed to create smart contract.");
@@ -79,18 +79,13 @@ export function myalloc(size: i32): Uint8Array {
 export function log(message: string): void {
     const req = new LogRequest(message);
     const req_bytes = encode_length_prefixed(Protobuf.encode(req, LogRequest.encode));
-    const addr = changetype<i32>(req_bytes.buffer);
-    abi_log(addr);
+    abi_log(req_bytes.buffer);
 }
 
 export function test(message_in: Uint8Array): Uint8Array {
     const req = new TestRequest(message_in);
     const req_bytes = encode_length_prefixed(Protobuf.encode(req, TestRequest.encode));
-    const addr = changetype<i32>(req_bytes.buffer);
-    const resp_addr = abi_test(addr);
-    const resp_buff = changetype<ArrayBuffer>(resp_addr);
-    const resp_bytes = Uint8Array.wrap(resp_buff);
+    const resp_bytes = Uint8Array.wrap(abi_test(req_bytes.buffer));
     const resp = Protobuf.decode<TestResponse>(resp_bytes, TestResponse.decode);
     return resp.messageOut;
-
 }
