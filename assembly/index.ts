@@ -10,7 +10,7 @@ let shared_mem: StaticArray<u8> = new StaticArray<u8>(0);
 export function __alloc(size: i32): i32 {
     shared_mem = new StaticArray<u8>(size);
 
-    return changetype<usize>(shared_mem);
+    return changetype<i32>(shared_mem);
 }
 
 
@@ -60,7 +60,7 @@ export function call_test(fake: i32): i32 {
     // const coins: u64 = 10;
     // const ret = env.call("address", "add", array, coins);
 
-    const array = new Uint8Array(20);
+    const array = new Uint8Array(10);
     for (let i = 0; i < array.length; i++) {
         array[i] = i;
     }

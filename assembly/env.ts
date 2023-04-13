@@ -81,6 +81,10 @@ export function test(message_in: Uint8Array): Uint8Array| null {
     const req_bytes_wrapped = encode_length_prefixed(req_bytes);
 
     const array : StaticArray<u8> = new StaticArray<u8>(req_bytes_wrapped.length);
+    // copy req_bytes_wrapped into array
+    for (let i = 0; i < req_bytes_wrapped.length; i++) {
+        array[i] = req_bytes_wrapped[i];
+    }
 
     // get the address of the req_bytes_wrapped to pass to abi
     const req_bytes_wrapped_addr = changetype<usize>(array);
