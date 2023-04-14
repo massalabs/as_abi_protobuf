@@ -23,7 +23,6 @@ export function echo(arg: ArrayBuffer): ArrayBuffer {
     return shared_mem;
 }
 
-
 export function call_test(arg: ArrayBuffer): ArrayBuffer {
     assert(changetype<usize>(shared_mem) == changetype<usize>(arg));
 
@@ -37,6 +36,27 @@ export function call_test(arg: ArrayBuffer): ArrayBuffer {
     shared_mem = env.encode_length_prefixed(res).buffer;
     return shared_mem;
 }
+
+export function initialize(arg: ArrayBuffer): ArrayBuffer {
+    assert(changetype<usize>(shared_mem) == changetype<usize>(arg));
+    env.log("initialize");
+
+
+    let res = new Uint8Array(1);
+    res[0] = 1;
+    shared_mem = env.encode_length_prefixed(res).buffer;
+    return shared_mem;
+}
+
+export function main(_args: ArrayBuffer): ArrayBuffer {
+    assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
+
+    env.log("empty main");
+
+    shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
+    return shared_mem;
+}
+
 
 // Only one buffer for exchange between guest and host implies that
 // any exported functions that take a buffer as argument must copy it

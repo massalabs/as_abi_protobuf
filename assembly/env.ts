@@ -54,7 +54,7 @@ export function myabort(
 export function call(address: string, func_name: string, arg: Uint8Array, coins: u64): Uint8Array {
     const req = new CallRequest(new Address(address), func_name, arg, new Amount(coins));
     const req_bytes = Protobuf.encode(req, CallRequest.encode);
-    const resp_bytes = Uint8Array.wrap(abi_call(encode_length_prefixed(req_bytes)));
+    const resp_bytes = Uint8Array.wrap(abi_call(encode_length_prefixed(req_bytes).buffer));
     const resp = Protobuf.decode<CallResponse>(resp_bytes, CallResponse.decode);
     return resp.returnData;
 }
@@ -62,13 +62,18 @@ export function call(address: string, func_name: string, arg: Uint8Array, coins:
 // ABI to create a new SC
 export function create_sc(bytecode: Uint8Array): string {
     const req = new CreateSCRequest(bytecode);
-    const req_bytes = Protobuf.encode(req, CreateSCRequest.encode);
-    const resp_bytes = Uint8Array.wrap(abi_create_sc(encode_length_prefixed(req_bytes)));
-    const resp = Protobuf.decode(resp_bytes, CreateSCResponse.decode);
+    const req_bytes: Uint8Array = Protobuf.encode(req, CreateSCRequest.encode);
+    const resp_bytes = Uint8Array.wrap(abi_create_sc(encode_length_prefixed(req_bytes).buffer));
+    const resp = Protobuf.decode<CreateSCResponse>(resp_bytes, CreateSCResponse.decode);
     if (resp.address === null) {
-        abort("Failed to create smart contract.");
+        // FIXME add fake args to please asc
+        abort("Failed to create smart contract.", "", 0, 0);
     }
-    return resp.address.address;
+
+    // needed to please asc...
+    const addr: Address = resp.address!;
+    return addr.address;
+
 }
 
 // TODO export
