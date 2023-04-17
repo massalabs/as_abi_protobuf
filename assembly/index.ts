@@ -15,7 +15,7 @@ export function __alloc(size: i32): ArrayBuffer {
 
 export function echo(arg: ArrayBuffer): ArrayBuffer {
     assert(changetype<usize>(shared_mem) == changetype<usize>(arg));
-    let warg = Uint8Array.wrap(shared_mem);
+    let warg = Uint8Array.wrap(arg);
 
     env.log("echo input: " + warg.toString());
 
@@ -23,13 +23,31 @@ export function echo(arg: ArrayBuffer): ArrayBuffer {
     return shared_mem;
 }
 
-export function call_test(arg: ArrayBuffer): ArrayBuffer {
+export function call_loop_echo(arg: ArrayBuffer): ArrayBuffer {
     assert(changetype<usize>(shared_mem) == changetype<usize>(arg));
 
-    let warg = Uint8Array.wrap(shared_mem);
-    env.log("call_test input: " + warg.toString());
-    let res = env.test(warg);
-    env.log("res len: " + res.length.toString());
+    for (let i = 0; i < 3; i++) {
+        const warg = Uint8Array.wrap(arg);
+
+        let msg = new Uint8Array(warg.length + 1);
+        msg[0] = i;
+        for (let j = 0; j < warg.length; j++) {
+            msg[j + 1] = warg[j];
+        }
+
+        env.log("calling host test method with input: " + msg.toString());
+        const test_res = env.echo(msg);  // <<<<<< THIS SEEMS TO LEAK !!!!! increase loop times will fail
+        // env.log("res len: " + test_res.length.toString());
+    }
+
+
+    const arr = [1, 2, 3, 4];
+    const res = new Uint8Array(arr.length);
+    for (let i = 0; i < arr.length; i++) {
+        res[i] = arr[i];
+    }
+
+
 
     // /!\ do not call any abi here (for exemple log) it will
     // allocate memory and overwrite the buffer

@@ -22,8 +22,8 @@ declare function abi_abort(arg: ArrayBuffer): ArrayBuffer;
 @external("massa", "abi_log")
 declare function abi_log(arg: ArrayBuffer): ArrayBuffer;
 
-@external("massa", "abi_test")
-declare function abi_test(arg: ArrayBuffer): ArrayBuffer;
+@external("massa", "abi_echo")
+declare function abi_echo(arg: ArrayBuffer): ArrayBuffer;
 
 /// Creates a Uint8Array from an existing Uint8Array by prepending a little-endian i32 length prefix.
 export function encode_length_prefixed(data: Uint8Array): Uint8Array {
@@ -87,10 +87,10 @@ export function log(message: string): void {
     abi_log(req_bytes.buffer);
 }
 
-export function test(message_in: Uint8Array): Uint8Array {
+export function echo(message_in: Uint8Array): Uint8Array {
     const req = new TestRequest(message_in);
     const req_bytes = encode_length_prefixed(Protobuf.encode(req, TestRequest.encode));
-    const resp_bytes = Uint8Array.wrap(abi_test(req_bytes.buffer));
+    const resp_bytes = Uint8Array.wrap(abi_echo(req_bytes.buffer));
     const resp = Protobuf.decode<TestResponse>(resp_bytes, TestResponse.decode);
     return resp.messageOut;
 }
