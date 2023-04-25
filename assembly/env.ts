@@ -1,5 +1,4 @@
 import { Protobuf } from 'as-proto/assembly';
-import { AbortRequest } from './abi/AbortRequest'; // generated file
 import { CallRequest } from './abi/CallRequest';
 import { Address } from './abi/Address';
 import { Amount } from './abi/Amount';
@@ -11,25 +10,33 @@ import { TestResponse } from './abi/TestResponse';
 import { LogRequest } from './abi/LogRequest';
 import { TransferCoinsRequest } from './abi/TransferCoinsRequest';
 import { GenerateEventRequest } from './abi/GenerateEventRequest';
+import { decimalCount32 } from 'util/number'
 
+// @ts-ignore: decorator
 @external("massa", "abi_call")
 declare function abi_call(arg: ArrayBuffer): ArrayBuffer;
 
+// @ts-ignore: decorator
 @external("massa", "abi_create_sc")
 declare function abi_create_sc(arg: ArrayBuffer): ArrayBuffer;
 
+// @ts-ignore: decorator
 @external("massa", "abi_transfer_coins")
 declare function abi_transfer_coins(arg: ArrayBuffer): ArrayBuffer;
 
+// @ts-ignore: decorator
 @external("massa", "abi_generate_event")
 declare function abi_generate_event(arg: ArrayBuffer): ArrayBuffer;
 
+// @ts-ignore: decorator
 @external("massa", "abi_abort")
-declare function abi_abort(arg: ArrayBuffer): ArrayBuffer;
+declare function abi_abort(arg: i32): i32;
 
+// @ts-ignore: decorator
 @external("massa", "abi_log")
 declare function abi_log(arg: ArrayBuffer): ArrayBuffer;
 
+// @ts-ignore: decorator
 @external("massa", "abi_echo")
 declare function abi_echo(arg: ArrayBuffer): ArrayBuffer;
 
@@ -45,18 +52,80 @@ export function encode_length_prefixed(data: Uint8Array): Uint8Array {
     return result;
 }
 
-// TODO use --use abort=assembly/env/myabort  in asc to override AS's default myabort
+// abort() implementation adapted from https://github.com/AssemblyScript/wasi-shim.git
+// The iovec class is not very usefull in our case but it allows to use nealy the same code
+@unmanaged class iovec {
+    /** The address of the buffer to be filled. */
+    buf: usize;
+    /** The length of the buffer to be filled. */
+    buf_len: usize;
+}
+
 export function myabort(
     message: string | null,
     fileName: string | null,
-    lineNumber: u32,
-    columnNumber: u32,
+    lineNumber: i32,
+    columnNumber: i32,
 ): void {
-    const text_message = `Aborted with message '${message ? message : "null"}' (in '${fileName ? fileName : "null"}', line ${lineNumber}, column ${columnNumber})`;
-    const req = new AbortRequest(text_message);
-    // const req_bytes = Protobuf.encode(req, AbortRequest.encode);
-    // abi_abort(encode_length_prefixed(req_bytes));
+    // 0: iov.buf
+    // 4: iov.buf_len
+    // 8: len
+    // 12: buf...
+    const iovPtr: usize = 0;
+    const lenPtr: usize = iovPtr + offsetof<iovec>(); // only used for returning the length
+    const bufPtr: usize = lenPtr + sizeof<usize>();
+    changetype<iovec>(iovPtr).buf = bufPtr;
+    var ptr = bufPtr;
+
+    store<u64>(ptr, 0x203A74726F6261);
+    ptr += 7; // 'abort: '
+
+    if (message != null) {
+        ptr += String.UTF8.encodeUnsafe(changetype<usize>(message), message.length, ptr);
+    }
+    store<u32>(ptr, 0x206E6920); ptr += 4; // ' in '
+    if (fileName != null) {
+        ptr += String.UTF8.encodeUnsafe(changetype<usize>(fileName), fileName.length, ptr);
+    }
+
+    store<u8>(ptr++, 0x28); // (
+
+    var len = decimalCount32(lineNumber);
+    ptr += len;
+    do {
+        let t = lineNumber / 10;
+        store<u8>(--ptr, 0x30 + lineNumber % 10);
+        lineNumber = t;
+    } while (lineNumber); ptr += len;
+
+    store<u8>(ptr++, 0x3A); // :
+
+    len = decimalCount32(columnNumber);
+    ptr += len;
+    do {
+        let t = columnNumber / 10;
+        store<u8>(--ptr, 0x30 + columnNumber % 10);
+        columnNumber = t;
+    } while (columnNumber); ptr += len;
+
+    store<u16>(ptr, 0x0A29); ptr += 2; // )\n
+
+    changetype<iovec>(iovPtr).buf_len = ptr - bufPtr;
+
+    // iovPtr.buf_len constains the size of the data
+    // encode this size in LenPtr as little endian
+
+    const msgLen = changetype<iovec>(iovPtr).buf_len;
+    store<u8>(lenPtr, msgLen & 0xff)
+    store<u8>(lenPtr + 1, (msgLen >> 8) & 0xff);
+    store<u8>(lenPtr + 2, (msgLen >> 16) & 0xff);
+    store<u8>(lenPtr + 3, (msgLen >> 24) & 0xff);
+
+    abi_abort(changetype<i32>(lenPtr));
+
+    unreachable();
 }
+// end of abort() implementation
 
 // ABI to call another SC
 export function call(address: string, func_name: string, arg: Uint8Array, coins: u64): Uint8Array {

@@ -11,18 +11,26 @@
   "scripts": {
     "test": "node tests",
     "asbuild:proto": "protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --as_out=./assembly/ ./proto/abi.proto",
-    "asbuild:debug": "npm run asbuild:proto && asc assembly/index.ts --target debug --debug --use abort=assembly/env/myabort",
-    "asbuild:release": "npm run asbuild:proto && asc assembly/index.ts --target release --use abort=assembly/env/myabort",
-    "asbuild": "npm run asbuild:debug && npm run asbuild:release",
-    "dbuild:main": "npm run asbuild:proto && asc --transform @massalabs/as-transformer assembly/main.ts --target debug --maximumMemory 4 --stackSize 32768 -o ./build/dmain.wasm --use abort=assembly/env/myabort",
-    "rbuild:main": "npm run asbuild:proto && asc --transform @massalabs/as-transformer assembly/main.ts --target release --maximumMemory 4 --stackSize 32768 -o ./build/rmain.wasm --use abort=assembly/env/myabort",
-    "build": "asc assembly/index.ts --target release --use abort=assembly/env/myabort",
+    "build:binary:debug": "npm run asbuild:proto && asc assembly/index.ts --target debug --debug --use abort=assembly/env/myabort",
+    "build:binary:release": "npm run asbuild:proto && asc assembly/index.ts --target release --use abort=assembly/env/myabort",
+    "build:binaries": "npm run build:binary:debug && npm run build:binary:release",
+
+    "build:debug:main": "npm run asbuild:proto && asc --transform @massalabs/as-transformer assembly/main.ts --target debug --maximumMemory 4 --stackSize 32768 -o ./build/dmain.wasm --use abort=assembly/env/myabort",
+    "build:release:main": "npm run asbuild:proto && asc --transform @massalabs/as-transformer assembly/main.ts --target release --maximumMemory 4 --stackSize 32768 -o ./build/rmain.wasm --use abort=assembly/env/myabort",
+    "build:deployers": "npm run build:debug:main && npm run build:release:main",
+
     "inspect:release": "wasmer inspect ./build/release.wasm",
     "inspect:main": "wasmer inspect ./build/main.wasm",
+
+    "export:debug": "wasmv1_transform ./build/debug.wasm add",
     "export:release": "wasmv1_transform ./build/release.wasm add",
+    "export:binaries": "npm run export:debug && npm run export:release",
+
     "export:dmain": "wasmv1_transform ./build/dmain.wasm add",
     "export:rmain": "wasmv1_transform ./build/rmain.wasm add",
-    "all": "npm run asbuild && npm run export:release && npm run dbuild:main && npm run rbuild:main && npm run export:dmain&& npm run export:rmain && npm run inspect:release",
+    "export:deployers": "npm run export:dmain && npm run export:rmain",
+
+    "all": "npm run build:binaries && npm run export:binaries && npm run build:deployers && npm run export:deployers && npm run inspect:release",
     "start": "npx serve ."
   },
   "author": "",

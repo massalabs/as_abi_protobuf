@@ -38,12 +38,6 @@ message CallResponse {
   bytes return_data = 1;
 }
 
-// Abort
-
-message AbortRequest {
-  string description = 1;
-}
-
 // GenerateEvent
 message GenerateEventRequest {
   string event = 1;
