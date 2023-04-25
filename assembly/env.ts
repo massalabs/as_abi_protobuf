@@ -9,12 +9,20 @@ import { CreateSCResponse } from './abi/CreateSCResponse';
 import { TestRequest } from './abi/TestRequest';
 import { TestResponse } from './abi/TestResponse';
 import { LogRequest } from './abi/LogRequest';
+import { TransferCoinsRequest } from './abi/TransferCoinsRequest';
+import { GenerateEventRequest } from './abi/GenerateEventRequest';
 
 @external("massa", "abi_call")
 declare function abi_call(arg: ArrayBuffer): ArrayBuffer;
 
 @external("massa", "abi_create_sc")
 declare function abi_create_sc(arg: ArrayBuffer): ArrayBuffer;
+
+@external("massa", "abi_transfer_coins")
+declare function abi_transfer_coins(arg: ArrayBuffer): ArrayBuffer;
+
+@external("massa", "abi_generate_event")
+declare function abi_generate_event(arg: ArrayBuffer): ArrayBuffer;
 
 @external("massa", "abi_abort")
 declare function abi_abort(arg: ArrayBuffer): ArrayBuffer;
@@ -74,6 +82,20 @@ export function create_sc(bytecode: Uint8Array): string {
     const addr: Address = resp.address!;
     return addr.address;
 
+}
+
+// ABI to transfer coins to another address
+export function transfer_coins(to_address: string, coins: u64): void {
+    const req = new TransferCoinsRequest(new Address(to_address), new Amount(coins));
+    const req_bytes = Protobuf.encode(req, TransferCoinsRequest.encode);
+    abi_transfer_coins(encode_length_prefixed(req_bytes).buffer);
+}
+
+// ABI to generate an event
+export function generate_event(event: string): void {
+    const req = new GenerateEventRequest(event);
+    const req_bytes = Protobuf.encode(req, GenerateEventRequest.encode);
+    abi_generate_event(encode_length_prefixed(req_bytes).buffer);
 }
 
 // TODO export

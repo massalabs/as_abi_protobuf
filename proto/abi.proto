@@ -44,6 +44,17 @@ message AbortRequest {
   string description = 1;
 }
 
+// GenerateEvent
+message GenerateEventRequest {
+  string event = 1;
+}
+
+// TransferCoins
+message TransferCoinsRequest {
+  Address to_address = 1;
+  Amount raw_amount = 2;
+}
+
 // log
 message LogRequest {
   string message = 1;

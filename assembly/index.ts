@@ -26,7 +26,8 @@ export function echo(arg: ArrayBuffer): ArrayBuffer {
 export function call_loop_echo(arg: ArrayBuffer): ArrayBuffer {
     assert(changetype<usize>(shared_mem) == changetype<usize>(arg));
 
-    for (let i = 0; i < 3; i++) {
+    // This is fine, this loop ensures that we don't have mem leak
+    for (let i = 0; i < 100; i++) {
         const warg = Uint8Array.wrap(arg);
 
         let msg = new Uint8Array(warg.length + 1);
@@ -36,10 +37,9 @@ export function call_loop_echo(arg: ArrayBuffer): ArrayBuffer {
         }
 
         env.log("calling host test method with input: " + msg.toString());
-        const test_res = env.echo(msg);  // <<<<<< THIS SEEMS TO LEAK !!!!! increase loop times will fail
+        const test_res = env.echo(msg);
         // env.log("res len: " + test_res.length.toString());
     }
-
 
     const arr = [1, 2, 3, 4];
     const res = new Uint8Array(arr.length);
@@ -47,6 +47,13 @@ export function call_loop_echo(arg: ArrayBuffer): ArrayBuffer {
         res[i] = arr[i];
     }
 
+
+    // TODO move in its own test
+    // transfer a somewhat big array
+    // let res = new Uint8Array(30000);
+    // res.fill(44);
+
+    env.log("calling host test method with input: " + res.toString());
 
 
     // /!\ do not call any abi here (for exemple log) it will
