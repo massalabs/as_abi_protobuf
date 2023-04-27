@@ -53,28 +53,16 @@ export function encode_length_prefixed(data: Uint8Array): Uint8Array {
 }
 
 // abort() implementation adapted from https://github.com/AssemblyScript/wasi-shim.git
-// The iovec class is not very usefull in our case but it allows to use nealy the same code
-@unmanaged class iovec {
-    /** The address of the buffer to be filled. */
-    buf: usize;
-    /** The length of the buffer to be filled. */
-    buf_len: usize;
-}
-
 export function myabort(
     message: string | null,
     fileName: string | null,
     lineNumber: i32,
     columnNumber: i32,
 ): void {
-    // 0: iov.buf
-    // 4: iov.buf_len
-    // 8: len
-    // 12: buf...
-    const iovPtr: usize = 0;
-    const lenPtr: usize = iovPtr + offsetof<iovec>(); // only used for returning the length
+    // 0: len
+    // 4: buf...
+    const lenPtr: usize = 0
     const bufPtr: usize = lenPtr + sizeof<usize>();
-    changetype<iovec>(iovPtr).buf = bufPtr;
     var ptr = bufPtr;
 
     store<u64>(ptr, 0x203A74726F6261);
@@ -108,14 +96,9 @@ export function myabort(
         columnNumber = t;
     } while (columnNumber); ptr += len;
 
-    store<u16>(ptr, 0x0A29); ptr += 2; // )\n
+    store<u8>(ptr, 0x29); ptr ++; // )
 
-    changetype<iovec>(iovPtr).buf_len = ptr - bufPtr;
-
-    // iovPtr.buf_len constains the size of the data
-    // encode this size in LenPtr as little endian
-
-    const msgLen = changetype<iovec>(iovPtr).buf_len;
+    const msgLen = ptr - bufPtr;
     store<u8>(lenPtr, msgLen & 0xff)
     store<u8>(lenPtr + 1, (msgLen >> 8) & 0xff);
     store<u8>(lenPtr + 2, (msgLen >> 16) & 0xff);
