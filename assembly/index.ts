@@ -7,7 +7,7 @@ let shared_mem: ArrayBuffer = new ArrayBuffer(0);
 
 export function __alloc(size: i32): ArrayBuffer {
     // /!\ Can't trace here
-    // env.log("allocating " + size.toString() + "bytes");
+    // // env.log("allocating " + size.toString() + "bytes");
 
     shared_mem = new ArrayBuffer(size);
     return shared_mem;
@@ -17,7 +17,7 @@ export function echo(arg: ArrayBuffer): ArrayBuffer {
     assert(changetype<usize>(shared_mem) == changetype<usize>(arg));
     let warg = Uint8Array.wrap(arg);
 
-    env.log("echo input: " + warg.toString());
+    // env.log("echo input: " + warg.toString());
 
     shared_mem = env.encode_length_prefixed(warg).buffer;
     return shared_mem;
@@ -36,9 +36,9 @@ export function call_loop_echo(arg: ArrayBuffer): ArrayBuffer {
             msg[j + 1] = warg[j];
         }
 
-        env.log("calling host test method with input: " + msg.toString());
-        const test_res = env.echo(msg);
-        // env.log("res len: " + test_res.length.toString());
+        // env.log("calling host test method with input: " + msg.toString());
+        // const test_res = env.echo(msg);
+        // // env.log("res len: " + test_res.length.toString());
     }
 
     const arr = [1, 2, 3, 4];
@@ -53,7 +53,7 @@ export function call_loop_echo(arg: ArrayBuffer): ArrayBuffer {
     // let res = new Uint8Array(30000);
     // res.fill(44);
 
-    env.log("calling host test method with input: " + res.toString());
+    // env.log("calling host test method with input: " + res.toString());
 
 
     // /!\ do not call any abi here (for exemple log) it will
@@ -64,7 +64,7 @@ export function call_loop_echo(arg: ArrayBuffer): ArrayBuffer {
 
 export function initialize(arg: ArrayBuffer): ArrayBuffer {
     assert(changetype<usize>(shared_mem) == changetype<usize>(arg));
-    env.log("initialize");
+    // env.log("initialize");
 
 
     let res = new Uint8Array(1);
@@ -76,7 +76,7 @@ export function initialize(arg: ArrayBuffer): ArrayBuffer {
 export function main(_args: ArrayBuffer): ArrayBuffer {
     assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
 
-    env.log("empty main");
+    // env.log("empty main");
 
     shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
     return shared_mem;
@@ -85,7 +85,7 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
 export function call_abort(_args: ArrayBuffer): ArrayBuffer {
     assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
 
-    env.log("will call abort()");
+    // env.log("will call abort()");
 
     // will cause a call to abort()
     assert(false, "abort test message");

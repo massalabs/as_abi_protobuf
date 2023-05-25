@@ -7,8 +7,8 @@ import { Writer, Reader } from "as-proto/assembly";
 
 export class Amount {
   static encode(message: Amount, writer: Writer): void {
-    writer.uint32(8);
-    writer.uint64(message.amount);
+    writer.uint32(9);
+    writer.fixed64(message.amount);
   }
 
   static decode(reader: Reader, length: i32): Amount {
@@ -19,7 +19,7 @@ export class Amount {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.amount = reader.uint64();
+          message.amount = reader.fixed64();
           break;
 
         default:
@@ -31,9 +31,9 @@ export class Amount {
     return message;
   }
 
-  amount: u64;
+  amount: i64;
 
-  constructor(amount: u64 = 0) {
+  constructor(amount: i64 = 0) {
     this.amount = amount;
   }
 }
