@@ -1,15 +1,15 @@
 import { Protobuf } from 'as-proto/assembly';
-import { CallRequest } from './abi/CallRequest';
-import { Address } from './abi/Address';
-import { Amount } from './abi/Amount';
-import { CallResponse } from './abi/CallResponse';
-import { CreateSCRequest } from './abi/CreateSCRequest';
-import { CreateSCResponse } from './abi/CreateSCResponse';
-import { TestRequest } from './abi/TestRequest';
-import { TestResponse } from './abi/TestResponse';
-import { LogRequest } from './abi/LogRequest';
-import { TransferCoinsRequest } from './abi/TransferCoinsRequest';
-import { GenerateEventRequest } from './abi/GenerateEventRequest';
+import { CallRequest } from './massa/abi/v1/CallRequest';
+import { Address } from './massa/abi/v1/Address';
+import { Amount } from './massa/abi/v1/Amount';
+import { CallResponse } from './massa/abi/v1/CallResponse';
+import { CreateSCRequest } from './massa/abi/v1/CreateSCRequest';
+import { CreateSCResponse } from './massa/abi/v1/CreateSCResponse';
+import { TestRequest } from './massa/abi/v1/TestRequest';
+import { TestResponse } from './massa/abi/v1/TestResponse';
+import { LogRequest } from './massa/abi/v1/LogRequest';
+import { TransferCoinsRequest } from './massa/abi/v1/TransferCoinsRequest';
+import { GenerateEventRequest } from './massa/abi/v1/GenerateEventRequest';
 import { decimalCount32 } from 'util/number'
 
 // @ts-ignore: decorator

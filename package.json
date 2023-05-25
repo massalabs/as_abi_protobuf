@@ -10,7 +10,8 @@
   },
   "scripts": {
     "test": "node tests",
-    "asbuild:proto": "protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --as_out=./assembly/ ./proto/abi.proto",
+    "install:proto": "rm -rf massa-proto ; git clone https://github.com/massalabs/massa-proto.git -b bilboquet/Improve_ABI_types_in_wasmv1",
+    "asbuild:proto": "npm run install:proto && protoc --plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen --as_out=./assembly ./massa-proto/proto/massa/abi/v1/abi.proto",
     "build:binary:debug": "npm run asbuild:proto && asc assembly/index.ts --target debug --debug --use abort=assembly/env/myabort",
     "build:binary:release": "npm run asbuild:proto && asc assembly/index.ts --target release --use abort=assembly/env/myabort",
     "build:binaries": "npm run build:binary:debug && npm run build:binary:release",
