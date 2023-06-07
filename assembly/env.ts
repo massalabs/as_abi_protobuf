@@ -1,15 +1,16 @@
 import { Protobuf } from 'as-proto/assembly';
-import { CallRequest } from './massa/abi/v1/CallRequest';
-import { Address } from './massa/abi/v1/Address';
-import { Amount } from './massa/abi/v1/Amount';
-import { CallResponse } from './massa/abi/v1/CallResponse';
-import { CreateSCRequest } from './massa/abi/v1/CreateSCRequest';
-import { CreateSCResponse } from './massa/abi/v1/CreateSCResponse';
-import { TestRequest } from './massa/abi/v1/TestRequest';
-import { TestResponse } from './massa/abi/v1/TestResponse';
-import { LogRequest } from './massa/abi/v1/LogRequest';
-import { TransferCoinsRequest } from './massa/abi/v1/TransferCoinsRequest';
-import { GenerateEventRequest } from './massa/abi/v1/GenerateEventRequest';
+
+import { CallRequest } from 'massa-proto-as/assembly';
+import { Address } from 'massa-proto-as/assembly';
+import { Amount } from 'massa-proto-as/assembly'
+import { CallResponse } from 'massa-proto-as/assembly'
+import { CreateSCRequest } from 'massa-proto-as/assembly'
+import { CreateSCResponse } from 'massa-proto-as/assembly'
+// import { TestRequest } from 'massa-proto-as/assembly'
+// import { TestResponse } from 'massa-proto-as/assembly'
+// import { LogRequest } from 'massa-proto-as/assembly'
+import { TransferCoinsRequest } from 'massa-proto-as/assembly'
+import { GenerateEventRequest } from 'massa-proto-as/assembly'
 import { decimalCount32 } from 'util/number'
 
 // @ts-ignore: decorator
@@ -155,16 +156,16 @@ export function myalloc(size: i32): Uint8Array {
     return new Uint8Array(size);
 }
 
-export function log(message: string): void {
-    const req = new LogRequest(message);
-    const req_bytes = encode_length_prefixed(Protobuf.encode(req, LogRequest.encode));
-    abi_log(req_bytes.buffer);
-}
+// export function log(message: string): void {
+//     const req = new LogRequest(message);
+//     const req_bytes = encode_length_prefixed(Protobuf.encode(req, LogRequest.encode));
+//     abi_log(req_bytes.buffer);
+// }
 
-export function echo(message_in: Uint8Array): Uint8Array {
-    const req = new TestRequest(message_in);
-    const req_bytes = encode_length_prefixed(Protobuf.encode(req, TestRequest.encode));
-    const resp_bytes = Uint8Array.wrap(abi_echo(req_bytes.buffer));
-    const resp = Protobuf.decode<TestResponse>(resp_bytes, TestResponse.decode);
-    return resp.messageOut;
-}
+// export function echo(message_in: Uint8Array): Uint8Array {
+//     const req = new TestRequest(message_in);
+//     const req_bytes = encode_length_prefixed(Protobuf.encode(req, TestRequest.encode));
+//     const resp_bytes = Uint8Array.wrap(abi_echo(req_bytes.buffer));
+//     const resp = Protobuf.decode<TestResponse>(resp_bytes, TestResponse.decode);
+//     return resp.messageOut;
+// }
