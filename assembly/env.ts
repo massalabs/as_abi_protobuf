@@ -1,6 +1,6 @@
 import { Protobuf } from 'as-proto/assembly';
 
-import { CallRequest } from 'massa-proto-as/assembly';
+import { CallRequest, encodeGenerateEventRequest } from 'massa-proto-as/assembly';
 import { NativeAddress } from 'massa-proto-as/assembly';
 import { NativeAmount } from 'massa-proto-as/assembly'
 import { CallResponse } from 'massa-proto-as/assembly'
@@ -136,6 +136,6 @@ export function myabort(
 // ABI to generate an event
 export function generate_event(event: string): void {
     const req = new GenerateEventRequest(event);
-    const req_bytes = Protobuf.encode(req, GenerateEventRequest.encode);
+    const req_bytes = encodeGenerateEventRequest(req);
     abi_generate_event(encode_length_prefixed(req_bytes).buffer);
 }
