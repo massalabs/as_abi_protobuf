@@ -36,14 +36,14 @@ function createContract(): string {
 
 
     // env.log("calling create_sc");
-    const sc_address = env.create_sc(wrapped_bytes);
+    // const sc_address = env.create_sc(wrapped_bytes);
     // env.log("SC created @:" + sc_address);
 
     // env.log("Will transfer coins: 100_000_000_000");
-    env.transfer_coins(sc_address, 100);
+    // env.transfer_coins(sc_address, 100);
     // env.log("Coins transfered");
 
-
+    const sc_address = "";
     return sc_address;
 }
 
@@ -55,7 +55,7 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // env.log("-------");
 
     const args = new Uint8Array(0);
-    env.call(sc_address, "initialize", args, 0);
+    // env.call(sc_address, "initialize", args, 0);
     env.generate_event("Created a Protobuffed smart-contract at:" + sc_address);
 
     shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;

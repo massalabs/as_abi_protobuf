@@ -6,7 +6,7 @@
     "@massalabs/as-transformer": "^0.1.2",
     "as-proto": "^1.3.0",
     "assemblyscript": "^0.27.5",
-    "massa-proto-as": "github:massalabs/massa-proto-as#Add_code_generation"
+    "massa-proto-as": "github:massalabs/massa-proto-as#bilboquet/Improve_ABI_types_in_wasmv1_WIP"
   },
   "scripts": {
     "test": "node tests",
