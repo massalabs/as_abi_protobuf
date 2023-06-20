@@ -82,19 +82,6 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     return shared_mem;
 }
 
-export function call_abort(_args: ArrayBuffer): ArrayBuffer {
-    assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
-
-    // env.log("will call abort()");
-
-    // will cause a call to abort()
-    assert(false, "abort test message");
-
-    return new ArrayBuffer(0); // fake return to pleas asc
-}
-
-
-
 // Only one buffer for exchange between guest and host implies that
 // any exported functions that take a buffer as argument must copy it
 // because any call to an abi function will overwrite the buffer.
