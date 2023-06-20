@@ -14,6 +14,12 @@
     "inspect:test_generate_event": "wasmer inspect ./build/test_generate_event.wasm",
     "export:test_generate_event": "wasmv1_transform ./build/test_generate_event.wasm add",
     "all:test_generate_event": "npm run build:test_generate_event:debug && npm run inspect:test_generate_event && npm run export:test_generate_event",
+
+    "build:test_transfer_coins:debug": "asc assembly/test_transfer_coins.ts --target debug -o ./build/test_transfer_coins.wasm --use abort=assembly/env/myabort",
+    "inspect:test_transfer_coins": "wasmer inspect ./build/test_transfer_coins.wasm",
+    "export:test_transfer_coins": "wasmv1_transform ./build/test_transfer_coins.wasm add",
+    "all:test_transfer_coins": "npm run build:test_transfer_coins:debug && npm run inspect:test_transfer_coins && npm run export:test_transfer_coins",
+
     "build:binary:debug": "asc assembly/index.ts --target debug --debug --use abort=assembly/env/myabort",
     "build:binary:release": "asc assembly/index.ts --target release --use abort=assembly/env/myabort",
     "build:binaries": "npm run build:binary:debug && npm run build:binary:release",

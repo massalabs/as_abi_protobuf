@@ -1,6 +1,6 @@
 import { Protobuf } from 'as-proto/assembly';
 
-import { CallRequest, encodeGenerateEventRequest } from 'massa-proto-as/assembly';
+import { CallRequest, encodeGenerateEventRequest, encodeTransferCoinsRequest } from 'massa-proto-as/assembly';
 import { NativeAddress } from 'massa-proto-as/assembly';
 import { NativeAmount } from 'massa-proto-as/assembly'
 import { CallResponse } from 'massa-proto-as/assembly'
@@ -127,11 +127,11 @@ export function myabort(
 // }
 
 // ABI to transfer coins to another address
-// export function transfer_coins(to_address: string, coins: u64): void {
-//     const req = new TransferCoinsRequest(new Address(to_address), new Amount(coins));
-//     const req_bytes = Protobuf.encode(req, TransferCoinsRequest.encode);
-//     abi_transfer_coins(encode_length_prefixed(req_bytes).buffer);
-// }
+export function transfer_coins(to_address: NativeAddress, coins: NativeAmount): void {
+    const req = new TransferCoinsRequest(to_address, coins);
+    const req_bytes = encodeTransferCoinsRequest(req);
+    abi_transfer_coins(encode_length_prefixed(req_bytes).buffer);
+}
 
 // ABI to generate an event
 export function generate_event(event: string): void {
