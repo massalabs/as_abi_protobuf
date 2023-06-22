@@ -4,11 +4,13 @@ import { CallRequest, encodeGenerateEventRequest, encodeTransferCoinsRequest } f
 import { NativeAddress } from 'massa-proto-as/assembly';
 import { NativeAmount } from 'massa-proto-as/assembly'
 import { CallResponse } from 'massa-proto-as/assembly'
-import { CreateSCRequest } from 'massa-proto-as/assembly'
-import { CreateSCResponse } from 'massa-proto-as/assembly'
+//import { CreateSCRequest } from 'massa-proto-as/assembly'
+//import { CreateSCResponse } from 'massa-proto-as/assembly'
 import { TransferCoinsRequest } from 'massa-proto-as/assembly'
 import { GenerateEventRequest } from 'massa-proto-as/assembly'
 import { decimalCount32 } from 'util/number'
+
+import { GetCurrentPeriodRequest, GetCurrentPeriodResult, GetCurrentThreadRequest, GetCurrentThreadResult  } from 'massa-proto-as/assembly';
 
 // @ts-ignore: decorator
 @external("massa", "abi_call")
