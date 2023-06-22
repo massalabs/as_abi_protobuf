@@ -10,7 +10,8 @@ import { TransferCoinsRequest } from 'massa-proto-as/assembly'
 import { GenerateEventRequest } from 'massa-proto-as/assembly'
 import { decimalCount32 } from 'util/number'
 
-import { GetCurrentPeriodRequest, GetCurrentPeriodResult, GetCurrentThreadRequest, GetCurrentThreadResult  } from 'massa-proto-as/assembly';
+import { GetCurrentPeriodRequest, GetCurrentPeriodResult, encodeGetCurrentPeriodRequest, decodeGetCurrentPeriodResult } from 'massa-proto-as/assembly';
+import { GetCurrentThreadRequest, GetCurrentThreadResult, encodeGetCurrentThreadRequest, decodeGetCurrentThreadResult } from 'massa-proto-as/assembly';
 
 // @ts-ignore: decorator
 @external("massa", "abi_call")
@@ -31,6 +32,32 @@ declare function abi_generate_event(arg: ArrayBuffer): ArrayBuffer;
 // @ts-ignore: decorator
 @external("massa", "abi_abort")
 declare function abi_abort(arg: i32): i32;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_current_period")
+declare function abi_get_current_period(): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_current_thread")
+declare function abi_get_current_thread(): ArrayBuffer;
+
+/// 
+export function get_current_period(): i64 {
+    const req = new GetCurrentPeriodRequest();
+    const req_bytes = encodeGetCurrentPeriodRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_get_current_period());
+    const resp = decodeGetCurrentPeriodResult(resp_bytes);
+    return resp.period;
+}
+
+/// 
+export function get_current_thread(): i64 {
+    const req = new GetCurrentThreadRequest();
+    const req_bytes = encodeGetCurrentThreadRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_get_current_thread());
+    const resp = decodeGetCurrentThreadResult(resp_bytes);
+    return resp.thread;
+}
 
 /// Creates a Uint8Array from an existing Uint8Array by prepending a little-endian i32 length prefix.
 export function encode_length_prefixed(data: Uint8Array): Uint8Array {
