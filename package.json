@@ -6,9 +6,11 @@
     "@massalabs/as-transformer": "^0.1.2",
     "as-proto": "^1.3.0",
     "assemblyscript": "^0.27.5",
-    "massa-proto-as": "github:massalabs/massa-proto-as#bilboquet/Improve_ABI_types_in_wasmv1_WIP"
+    "massa-proto-as": "file:../massa-proto-as"
   },
   "scripts": {
+    "build": "asc assembly/env.ts",
+  
     "test": "node tests",
     "build:test_generate_event:debug": "asc assembly/test_generate_event.ts --target debug -o ./build/test_generate_event.wasm --use abort=assembly/env/myabort",
     "inspect:test_generate_event": "wasmer inspect ./build/test_generate_event.wasm",

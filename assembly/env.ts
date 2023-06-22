@@ -4,11 +4,37 @@ import { CallRequest, encodeGenerateEventRequest, encodeTransferCoinsRequest } f
 import { NativeAddress } from 'massa-proto-as/assembly';
 import { NativeAmount } from 'massa-proto-as/assembly'
 import { CallResponse } from 'massa-proto-as/assembly'
-import { CreateSCRequest } from 'massa-proto-as/assembly'
-import { CreateSCResponse } from 'massa-proto-as/assembly'
+// import { CreateSCRequest } from 'massa-proto-as/assembly'
+// import { CreateSCResponse } from 'massa-proto-as/assembly'
 import { TransferCoinsRequest } from 'massa-proto-as/assembly'
 import { GenerateEventRequest } from 'massa-proto-as/assembly'
 import { decimalCount32 } from 'util/number'
+
+import { SetDataRequest, encodeSetDataRequest } from 'massa-proto-as/assembly';
+import { GetDataRequest, encodeGetDataRequest, decodeGetDataResult } from 'massa-proto-as/assembly';
+import { DeleteDataRequest, encodeDeleteDataRequest } from 'massa-proto-as/assembly';
+import { AppendDataRequest, encodeAppendDataRequest } from 'massa-proto-as/assembly';
+import { HasDataRequest, encodeHasDataRequest, decodeHasDataResult } from 'massa-proto-as/assembly';
+
+// @ts-ignore: decorator
+@external("massa", "abi_set_data")
+declare function abi_set_data(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_data")
+declare function abi_get_data(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_delete_data")
+declare function abi_delete_data(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_append_data")
+declare function abi_append_data(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_has_data")
+declare function abi_has_data(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
 @external("massa", "abi_call")
@@ -138,4 +164,38 @@ export function generate_event(event: string): void {
     const req = new GenerateEventRequest(event);
     const req_bytes = encodeGenerateEventRequest(req);
     abi_generate_event(encode_length_prefixed(req_bytes).buffer);
+}
+
+export function set_data(key: Uint8Array, data: Uint8Array): void {
+    const req = new SetDataRequest(key, data);
+    const req_bytes = encodeSetDataRequest(req);
+    abi_set_data(encode_length_prefixed(req_bytes).buffer);
+}
+
+export function get_data(key: Uint8Array): Uint8Array {
+    const req = new GetDataRequest(key);
+    const req_bytes = encodeGetDataRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_get_data(encode_length_prefixed(req_bytes).buffer));
+    const resp = decodeGetDataResult(resp_bytes);
+    return resp.value;
+}
+
+export function delete_data(key: Uint8Array): void {
+    const req = new DeleteDataRequest(key);
+    const req_bytes = encodeDeleteDataRequest(req);
+    abi_delete_data(encode_length_prefixed(req_bytes).buffer);
+}
+
+export function append_data(key: Uint8Array, data: Uint8Array): void {
+    const req = new AppendDataRequest(key, data);
+    const req_bytes = encodeAppendDataRequest(req);
+    abi_append_data(encode_length_prefixed(req_bytes).buffer);
+}
+
+export function has_data(key: Uint8Array): bool {
+    const req = new HasDataRequest(key);
+    const req_bytes = encodeHasDataRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_has_data(encode_length_prefixed(req_bytes).buffer));
+    const resp = decodeHasDataResult(resp_bytes);
+    return resp.hasData;
 }
