@@ -41,7 +41,7 @@ declare function abi_get_current_period(): ArrayBuffer;
 @external("massa", "abi_get_current_thread")
 declare function abi_get_current_thread(): ArrayBuffer;
 
-/// 
+/// gets the period of the current execution slot
 export function get_current_period(): i64 {
     const req = new GetCurrentPeriodRequest();
     const req_bytes = encodeGetCurrentPeriodRequest(req);
@@ -50,7 +50,7 @@ export function get_current_period(): i64 {
     return resp.period;
 }
 
-/// 
+/// gets the thread of the current execution slot
 export function get_current_thread(): i64 {
     const req = new GetCurrentThreadRequest();
     const req_bytes = encodeGetCurrentThreadRequest(req);
