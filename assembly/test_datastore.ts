@@ -17,21 +17,16 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     const key = new Uint8Array(1);
     const data = new Uint8Array(1);
     key[0] = 21;
-    data[0] = 42;
+    data[0] = 99;
 
     env.generate_event("key = " + key.toString() + ", data = " + data.toString());
 
     env.set_data(key, data);
-    let ret_data = env.get_data(key);
-    env.generate_event("ret_data = " + ret_data.toString());
-
+    env.get_data(key);
     env.append_data(key, data);
-    let append_ret_data = env.get_data(key);
-    env.generate_event("append_ret_data = " + append_ret_data.toString());
-
     env.delete_data(key);
-    let data_exists = env.has_data(key);
-    env.generate_event("data_exists = " + data_exists.toString());
+    env.has_data(key);
 
-    return new ArrayBuffer(0); // fake return to please asc
+    shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
+    return shared_mem;
 }
