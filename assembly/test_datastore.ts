@@ -25,9 +25,9 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     env.get_data(key);
     env.append_data(key, data);
     env.delete_data(key);
-    // has data is not working properly
-    // related with its return type being a bool?
-    // env.has_data(key);
+    const has_data = env.has_data(key);
+
+    env.generate_event("has_data = " + has_data.toString());
 
     shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
     return shared_mem;
