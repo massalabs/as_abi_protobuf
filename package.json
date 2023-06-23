@@ -6,32 +6,31 @@
     "@massalabs/as-transformer": "^0.1.2",
     "as-proto": "^1.3.0",
     "assemblyscript": "^0.27.5",
-    "massa-proto-as": "file:../massa-proto-as"
+    "massa-proto-as": "github:massalabs/massa-proto-as#feature/Improve_ABI_types_in_wasmv1"
   },
   "scripts": {
     "build": "asc assembly/env.ts",
-  
     "test": "node tests",
     "build:test_generate_event:debug": "asc assembly/test_generate_event.ts --target debug -o ./build/test_generate_event.wasm --use abort=assembly/env/myabort",
     "inspect:test_generate_event": "wasmer inspect ./build/test_generate_event.wasm",
     "export:test_generate_event": "wasmv1_transform ./build/test_generate_event.wasm add",
     "all:test_generate_event": "npm run build:test_generate_event:debug && npm run inspect:test_generate_event && npm run export:test_generate_event",
-
     "build:test_transfer_coins:debug": "asc assembly/test_transfer_coins.ts --target debug -o ./build/test_transfer_coins.wasm --use abort=assembly/env/myabort",
     "inspect:test_transfer_coins": "wasmer inspect ./build/test_transfer_coins.wasm",
     "export:test_transfer_coins": "wasmv1_transform ./build/test_transfer_coins.wasm add",
     "all:test_transfer_coins": "npm run build:test_transfer_coins:debug && npm run inspect:test_transfer_coins && npm run export:test_transfer_coins",
-
+    "build:test_period_thread:debug": "asc assembly/test_period_thread.ts --target debug -o ./build/test_period_thread.wasm --use abort=assembly/env/myabort",
+    "inspect:test_period_thread": "wasmer inspect ./build/test_period_thread.wasm",
+    "export:test_period_thread": "wasmv1_transform ./build/test_period_thread.wasm add",
+    "all:test_period_thread": "npm run build:test_period_thread:debug && npm run inspect:test_period_thread && npm run export:test_period_thread",
     "build:test_abort:debug": "asc assembly/test_abort.ts --target debug -o ./build/test_abort.wasm --use abort=assembly/env/myabort",
     "inspect:test_abort": "wasmer inspect ./build/test_abort.wasm",
     "export:test_abort": "wasmv1_transform ./build/test_abort.wasm add",
     "all:test_abort": "npm run build:test_abort:debug && npm run inspect:test_abort && npm run export:test_abort",
-
     "build:test_datastore:debug": "asc assembly/test_datastore.ts --target debug -o ./build/test_datastore.wasm --use abort=assembly/env/myabort",
     "inspect:test_datastore": "wasmer inspect ./build/test_datastore.wasm",
     "export:test_datastore": "wasmv1_transform ./build/test_datastore.wasm add",
     "all:test_datastore": "npm run build:test_datastore:debug && npm run inspect:test_datastore && npm run export:test_datastore",
-
     "build:binary:debug": "asc assembly/index.ts --target debug --debug --use abort=assembly/env/myabort",
     "build:binary:release": "asc assembly/index.ts --target release --use abort=assembly/env/myabort",
     "build:binaries": "npm run build:binary:debug && npm run build:binary:release",
