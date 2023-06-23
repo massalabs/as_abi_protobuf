@@ -10,8 +10,8 @@ import { TransferCoinsRequest } from 'massa-proto-as/assembly'
 import { GenerateEventRequest } from 'massa-proto-as/assembly'
 import { decimalCount32 } from 'util/number'
 
-import { GetCurrentPeriodRequest, GetCurrentPeriodResult, encodeGetCurrentPeriodRequest, decodeGetCurrentPeriodResult } from 'massa-proto-as/assembly';
-import { GetCurrentThreadRequest, GetCurrentThreadResult, encodeGetCurrentThreadRequest, decodeGetCurrentThreadResult } from 'massa-proto-as/assembly';
+import { GetCurrentPeriodRequest, encodeGetCurrentPeriodRequest, decodeGetCurrentPeriodResult } from 'massa-proto-as/assembly';
+import { GetCurrentThreadRequest, encodeGetCurrentThreadRequest, decodeGetCurrentThreadResult } from 'massa-proto-as/assembly';
 
 // @ts-ignore: decorator
 @external("massa", "abi_call")
