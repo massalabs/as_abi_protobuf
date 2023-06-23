@@ -19,6 +19,11 @@
     "inspect:test_transfer_coins": "wasmer inspect ./build/test_transfer_coins.wasm",
     "export:test_transfer_coins": "wasmv1_transform ./build/test_transfer_coins.wasm add",
     "all:test_transfer_coins": "npm run build:test_transfer_coins:debug && npm run inspect:test_transfer_coins && npm run export:test_transfer_coins",
+    
+    "build:test_period_thread:debug": "asc assembly/test_period_thread.ts --target debug -o ./build/test_period_thread.wasm --use abort=assembly/env/myabort",
+    "inspect:test_period_thread": "wasmer inspect ./build/test_period_thread.wasm",
+    "export:test_period_thread": "wasmv1_transform ./build/test_period_thread.wasm add",
+    "all:test_period_thread": "npm run build:test_period_thread:debug && npm run inspect:test_period_thread && npm run export:test_period_thread",
 
     "build:test_abort:debug": "asc assembly/test_abort.ts --target debug -o ./build/test_abort.wasm --use abort=assembly/env/myabort",
     "inspect:test_abort": "wasmer inspect ./build/test_abort.wasm",

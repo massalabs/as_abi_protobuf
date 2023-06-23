@@ -35,17 +35,17 @@ declare function abi_abort(arg: i32): i32;
 
 // @ts-ignore: decorator
 @external("massa", "abi_get_current_period")
-declare function abi_get_current_period(): ArrayBuffer;
+declare function abi_get_current_period(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
 @external("massa", "abi_get_current_thread")
-declare function abi_get_current_thread(): ArrayBuffer;
+declare function abi_get_current_thread(arg: ArrayBuffer): ArrayBuffer;
 
 /// gets the period of the current execution slot
 export function get_current_period(): i64 {
     const req = new GetCurrentPeriodRequest();
     const req_bytes = encodeGetCurrentPeriodRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_current_period());
+    const resp_bytes = Uint8Array.wrap(abi_get_current_period(encode_length_prefixed(req_bytes).buffer));
     const resp = decodeGetCurrentPeriodResult(resp_bytes);
     return resp.period;
 }
@@ -54,7 +54,7 @@ export function get_current_period(): i64 {
 export function get_current_thread(): i64 {
     const req = new GetCurrentThreadRequest();
     const req_bytes = encodeGetCurrentThreadRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_current_thread());
+    const resp_bytes = Uint8Array.wrap(abi_get_current_thread(encode_length_prefixed(req_bytes).buffer));
     const resp = decodeGetCurrentThreadResult(resp_bytes);
     return resp.thread;
 }
