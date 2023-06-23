@@ -1,6 +1,6 @@
 import { Protobuf } from 'as-proto/assembly';
 
-import { CallRequest, HashSha256Request, NativeHash, NativeHashRequest, decodeNativeHashResult, encodeGenerateEventRequest, encodeNativeHashRequest, encodeTransferCoinsRequest } from 'massa-proto-as/assembly';
+import { CallRequest, HashSha256Request, Keccak256Request, NativeHash, NativeHashRequest, decodeHashSha256Result, decodeKeccak256Result, decodeNativeHashResult, encodeGenerateEventRequest, encodeHashSha256Request, encodeKeccak256Request, encodeNativeHashRequest, encodeTransferCoinsRequest } from 'massa-proto-as/assembly';
 import { NativeAddress } from 'massa-proto-as/assembly';
 import { NativeAmount } from 'massa-proto-as/assembly'
 import { CallResponse } from 'massa-proto-as/assembly'
@@ -72,10 +72,32 @@ declare function abi_get_current_thread(arg: ArrayBuffer): ArrayBuffer;
 declare function abi_hash_sha256(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
+@external("massa", "abi_hash_keccak256")
+declare function abi_hash_keccak256(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
 @external("massa", "abi_native_hash")
 declare function abi_native_hash(arg: ArrayBuffer): ArrayBuffer;
 
-/// 
+/// performs a keccak256 hash on byte array and returns the hash as byte array
+export function hash_keccak256(data: Uint8Array): Uint8Array {
+    const req = new Keccak256Request(data);
+    const req_bytes = encodeKeccak256Request(req);
+    const resp_bytes = Uint8Array.wrap(abi_hash_keccak256(encode_length_prefixed(req_bytes).buffer));
+    const resp = decodeKeccak256Result(resp_bytes);
+    return resp.hash;
+}
+
+/// performs a sha256 hash on byte array and returns the hash as byte array
+export function hash_sha256(data: Uint8Array): Uint8Array {
+    const req = new HashSha256Request(data);
+    const req_bytes = encodeHashSha256Request(req);
+    const resp_bytes = Uint8Array.wrap(abi_hash_sha256(encode_length_prefixed(req_bytes).buffer));
+    const resp = decodeHashSha256Result(resp_bytes);
+    return resp.hash;
+}
+
+/// performs a hash on byte array and returns the NativeHash
 export function native_hash(data: Uint8Array): NativeHash {
     const req = new NativeHashRequest(data);
     const req_bytes = encodeNativeHashRequest(req);

@@ -22,8 +22,13 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     buf[0] = 0x31; buf[1] = 0x32; buf[2] = 0x33; buf[3] = 0x34;
 
     const native_hash = env.native_hash(buf);
+    env.generate_event("NativeHash: { version" + native_hash.version.toString() + ", content: " + native_hash.content.toString() + "}");
+    
+    const sha256_hash = env.hash_sha256(buf);
+    env.generate_event("Hash Sha256: " + sha256_hash.toString());
 
-    //env.generate_event("Hash: " + native_hash.toString());
+    const keccak256_hash = env.hash_keccak256(buf);
+    env.generate_event("Hash Keccak256: " + keccak256_hash.toString());
 
     shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
     return shared_mem;
