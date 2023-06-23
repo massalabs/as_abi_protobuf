@@ -1,6 +1,6 @@
 import { Protobuf } from 'as-proto/assembly';
 
-import { CallRequest, encodeGenerateEventRequest, encodeTransferCoinsRequest } from 'massa-proto-as/assembly';
+import { CallRequest, HashSha256Request, NativeHash, NativeHashRequest, decodeNativeHashResult, encodeGenerateEventRequest, encodeNativeHashRequest, encodeTransferCoinsRequest } from 'massa-proto-as/assembly';
 import { NativeAddress } from 'massa-proto-as/assembly';
 import { NativeAmount } from 'massa-proto-as/assembly'
 import { CallResponse } from 'massa-proto-as/assembly'
@@ -66,6 +66,23 @@ declare function abi_get_current_period(arg: ArrayBuffer): ArrayBuffer;
 // @ts-ignore: decorator
 @external("massa", "abi_get_current_thread")
 declare function abi_get_current_thread(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_hash_sha256")
+declare function abi_hash_sha256(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_native_hash")
+declare function abi_native_hash(arg: ArrayBuffer): ArrayBuffer;
+
+/// 
+export function native_hash(data: Uint8Array): NativeHash {
+    const req = new NativeHashRequest(data);
+    const req_bytes = encodeNativeHashRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_native_hash(encode_length_prefixed(req_bytes).buffer));
+    const resp = decodeNativeHashResult(resp_bytes);
+    return assert(resp.hash, "NativeHash computation failed");
+}
 
 /// gets the period of the current execution slot
 export function get_current_period(): i64 {
