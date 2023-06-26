@@ -1,6 +1,6 @@
 import { Protobuf } from 'as-proto/assembly';
 
-import { CallRequest, HashSha256Request, Keccak256Request, NativeHash, NativeHashRequest, decodeHashSha256Result, decodeKeccak256Result, decodeNativeHashResult, encodeGenerateEventRequest, encodeHashSha256Request, encodeKeccak256Request, encodeNativeHashRequest, encodeTransferCoinsRequest } from 'massa-proto-as/assembly';
+import { CallRequest, HashSha256Request, Keccak256Request, NativeHash, NativeHashRequest, decodeAbiResponse, decodeHashSha256Result, decodeKeccak256Result, decodeNativeHashResult, encodeGenerateEventRequest, encodeHashSha256Request, encodeKeccak256Request, encodeNativeHashRequest, encodeTransferCoinsRequest } from 'massa-proto-as/assembly';
 import { NativeAddress } from 'massa-proto-as/assembly';
 import { NativeAmount } from 'massa-proto-as/assembly'
 import { CallResponse } from 'massa-proto-as/assembly'
@@ -84,8 +84,13 @@ export function hash_keccak256(data: Uint8Array): Uint8Array {
     const req = new Keccak256Request(data);
     const req_bytes = encodeKeccak256Request(req);
     const resp_bytes = Uint8Array.wrap(abi_hash_keccak256(encode_length_prefixed(req_bytes).buffer));
-    const resp = decodeKeccak256Result(resp_bytes);
-    return resp.hash;
+    const abi_resp = decodeAbiResponse(resp_bytes);
+    assert(abi_resp.error === null);
+    assert(abi_resp.res !== null);
+    assert(abi_resp.res!.keccak256Result !== null);
+    assert(abi_resp.res!.keccak256Result!.hash !== null);
+    return abi_resp.res!.keccak256Result!.hash
+
 }
 
 /// performs a sha256 hash on byte array and returns the hash as byte array
@@ -93,8 +98,12 @@ export function hash_sha256(data: Uint8Array): Uint8Array {
     const req = new HashSha256Request(data);
     const req_bytes = encodeHashSha256Request(req);
     const resp_bytes = Uint8Array.wrap(abi_hash_sha256(encode_length_prefixed(req_bytes).buffer));
-    const resp = decodeHashSha256Result(resp_bytes);
-    return resp.hash;
+    const abi_resp = decodeAbiResponse(resp_bytes);
+    assert(abi_resp.error === null);
+    assert(abi_resp.res !== null);
+    assert(abi_resp.res!.hashSha256Result !== null);
+    assert(abi_resp.res!.hashSha256Result!.hash !== null);
+    return abi_resp.res!.hashSha256Result!.hash
 }
 
 /// performs a hash on byte array and returns the NativeHash
@@ -102,8 +111,12 @@ export function native_hash(data: Uint8Array): NativeHash {
     const req = new NativeHashRequest(data);
     const req_bytes = encodeNativeHashRequest(req);
     const resp_bytes = Uint8Array.wrap(abi_native_hash(encode_length_prefixed(req_bytes).buffer));
-    const resp = decodeNativeHashResult(resp_bytes);
-    return assert(resp.hash, "NativeHash computation failed");
+    const abi_resp = decodeAbiResponse(resp_bytes);
+    assert(abi_resp.error === null);
+    assert(abi_resp.res !== null);
+    assert(abi_resp.res!.nativeHashResult !== null);
+    assert(abi_resp.res!.nativeHashResult!.hash !== null);
+    return assert(abi_resp.res!.nativeHashResult!.hash, "NativeHash computation failed");
 }
 
 /// gets the period of the current execution slot
@@ -111,8 +124,11 @@ export function get_current_period(): i64 {
     const req = new GetCurrentPeriodRequest();
     const req_bytes = encodeGetCurrentPeriodRequest(req);
     const resp_bytes = Uint8Array.wrap(abi_get_current_period(encode_length_prefixed(req_bytes).buffer));
-    const resp = decodeGetCurrentPeriodResult(resp_bytes);
-    return resp.period;
+    const abi_resp = decodeAbiResponse(resp_bytes);
+    assert(abi_resp.error === null);
+    assert(abi_resp.res !== null);
+    assert(abi_resp.res!.getCurrentPeriodResult !== null);
+    return abi_resp.res!.getCurrentPeriodResult!.period
 }
 
 /// gets the thread of the current execution slot
@@ -120,8 +136,11 @@ export function get_current_thread(): i64 {
     const req = new GetCurrentThreadRequest();
     const req_bytes = encodeGetCurrentThreadRequest(req);
     const resp_bytes = Uint8Array.wrap(abi_get_current_thread(encode_length_prefixed(req_bytes).buffer));
-    const resp = decodeGetCurrentThreadResult(resp_bytes);
-    return resp.thread;
+    const abi_resp = decodeAbiResponse(resp_bytes);
+    assert(abi_resp.error === null);
+    assert(abi_resp.res !== null);
+    assert(abi_resp.res!.getCurrentThreadResult !== null);
+    return abi_resp.res!.getCurrentThreadResult!.thread
 }
 
 /// Creates a Uint8Array from an existing Uint8Array by prepending a little-endian i32 length prefix.
