@@ -2,6 +2,7 @@ import { decodeAbiResponse, encodeGenerateEventRequest, encodeTransferCoinsReque
 
 import { NativeAddress } from 'massa-proto-as/assembly';
 import { NativeAmount } from 'massa-proto-as/assembly'
+import { NativeHash } from 'massa-proto-as/assembly'
 // import { CallResponse } from 'massa-proto-as/assembly'
 //import { CreateSCRequest } from 'massa-proto-as/assembly'
 //import { CreateSCResponse } from 'massa-proto-as/assembly'
@@ -18,7 +19,7 @@ import { HasDataRequest, encodeHasDataRequest } from 'massa-proto-as/assembly';
 import { GetCurrentPeriodRequest, encodeGetCurrentPeriodRequest } from 'massa-proto-as/assembly';
 import { GetCurrentThreadRequest, encodeGetCurrentThreadRequest } from 'massa-proto-as/assembly';
 
-import { NativeHash, encodeNativeHashRequest } from 'massa-proto-as/assembly';
+import { NativeHashRequest, encodeNativeHashRequest } from 'massa-proto-as/assembly';
 import { HashSha256Request, encodeHashSha256Request } from 'massa-proto-as/assembly';
 import { Keccak256Request, encodeKeccak256Request } from 'massa-proto-as/assembly';
 
