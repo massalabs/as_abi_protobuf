@@ -1,9 +1,8 @@
-import { Protobuf } from 'as-proto/assembly';
+import { decodeAbiResponse, encodeGenerateEventRequest, encodeTransferCoinsRequest } from 'massa-proto-as/assembly';
 
-import { CallRequest, HashSha256Request, Keccak256Request, NativeHash, NativeHashRequest, decodeAbiResponse, decodeHashSha256Result, decodeKeccak256Result, decodeNativeHashResult, encodeGenerateEventRequest, encodeHashSha256Request, encodeKeccak256Request, encodeNativeHashRequest, encodeTransferCoinsRequest } from 'massa-proto-as/assembly';
 import { NativeAddress } from 'massa-proto-as/assembly';
 import { NativeAmount } from 'massa-proto-as/assembly'
-import { CallResponse } from 'massa-proto-as/assembly'
+// import { CallResponse } from 'massa-proto-as/assembly'
 //import { CreateSCRequest } from 'massa-proto-as/assembly'
 //import { CreateSCResponse } from 'massa-proto-as/assembly'
 import { TransferCoinsRequest } from 'massa-proto-as/assembly'
@@ -11,13 +10,17 @@ import { GenerateEventRequest } from 'massa-proto-as/assembly'
 import { decimalCount32 } from 'util/number'
 
 import { SetDataRequest, encodeSetDataRequest } from 'massa-proto-as/assembly';
-import { GetDataRequest, encodeGetDataRequest, decodeGetDataResult } from 'massa-proto-as/assembly';
+import { GetDataRequest, encodeGetDataRequest } from 'massa-proto-as/assembly';
 import { DeleteDataRequest, encodeDeleteDataRequest } from 'massa-proto-as/assembly';
 import { AppendDataRequest, encodeAppendDataRequest } from 'massa-proto-as/assembly';
-import { HasDataRequest, encodeHasDataRequest, decodeHasDataResult } from 'massa-proto-as/assembly';
+import { HasDataRequest, encodeHasDataRequest } from 'massa-proto-as/assembly';
 
-import { GetCurrentPeriodRequest, encodeGetCurrentPeriodRequest, decodeGetCurrentPeriodResult } from 'massa-proto-as/assembly';
-import { GetCurrentThreadRequest, encodeGetCurrentThreadRequest, decodeGetCurrentThreadResult } from 'massa-proto-as/assembly';
+import { GetCurrentPeriodRequest, encodeGetCurrentPeriodRequest } from 'massa-proto-as/assembly';
+import { GetCurrentThreadRequest, encodeGetCurrentThreadRequest } from 'massa-proto-as/assembly';
+
+import { NativeHash, encodeNativeHashRequest } from 'massa-proto-as/assembly';
+import { HashSha256Request, encodeHashSha256Request } from 'massa-proto-as/assembly';
+import { Keccak256Request, encodeKeccak256Request } from 'massa-proto-as/assembly';
 
 // @ts-ignore: decorator
 @external("massa", "abi_set_data")
@@ -124,23 +127,23 @@ export function get_current_period(): i64 {
     const req = new GetCurrentPeriodRequest();
     const req_bytes = encodeGetCurrentPeriodRequest(req);
     const resp_bytes = Uint8Array.wrap(abi_get_current_period(encode_length_prefixed(req_bytes).buffer));
-    const abi_resp = decodeAbiResponse(resp_bytes);
-    assert(abi_resp.error === null);
-    assert(abi_resp.res !== null);
-    assert(abi_resp.res!.getCurrentPeriodResult !== null);
-    return abi_resp.res!.getCurrentPeriodResult!.period
+    const resp = decodeAbiResponse(resp_bytes);
+    assert(resp.error === null);
+    assert(resp.res !== null);
+    assert(resp.res!.getCurrentPeriodResult !== null);
+    return resp.res!.getCurrentPeriodResult!.period;
 }
 
 /// gets the thread of the current execution slot
-export function get_current_thread(): i64 {
+export function get_current_thread(): i32 {
     const req = new GetCurrentThreadRequest();
     const req_bytes = encodeGetCurrentThreadRequest(req);
     const resp_bytes = Uint8Array.wrap(abi_get_current_thread(encode_length_prefixed(req_bytes).buffer));
-    const abi_resp = decodeAbiResponse(resp_bytes);
-    assert(abi_resp.error === null);
-    assert(abi_resp.res !== null);
-    assert(abi_resp.res!.getCurrentThreadResult !== null);
-    return abi_resp.res!.getCurrentThreadResult!.thread
+    const resp = decodeAbiResponse(resp_bytes);
+    assert(resp.error === null);
+    assert(resp.res !== null);
+    assert(resp.res!.getCurrentThreadResult !== null);
+    return resp.res!.getCurrentThreadResult!.thread;
 }
 
 /// Creates a Uint8Array from an existing Uint8Array by prepending a little-endian i32 length prefix.
@@ -263,8 +266,14 @@ export function get_data(key: Uint8Array): Uint8Array {
     const req = new GetDataRequest(key);
     const req_bytes = encodeGetDataRequest(req);
     const resp_bytes = Uint8Array.wrap(abi_get_data(encode_length_prefixed(req_bytes).buffer));
-    const resp = decodeGetDataResult(resp_bytes);
-    return resp.value;
+
+    const resp = decodeAbiResponse(resp_bytes);
+
+    assert(resp.error === null);
+    assert(resp.res !== null);
+    assert(resp.res!.getDataResult !== null)
+
+    return resp.res!.getDataResult!.value;
 }
 
 export function delete_data(key: Uint8Array): void {
@@ -283,6 +292,12 @@ export function has_data(key: Uint8Array): bool {
     const req = new HasDataRequest(key);
     const req_bytes = encodeHasDataRequest(req);
     const resp_bytes = Uint8Array.wrap(abi_has_data(encode_length_prefixed(req_bytes).buffer));
-    const resp = decodeHasDataResult(resp_bytes);
-    return resp.hasData;
+
+    const resp = decodeAbiResponse(resp_bytes);
+
+    assert(resp.error === null);
+    assert(resp.res !== null);
+    assert(resp.res!.hasDataResult !== null);
+
+    return resp.res!.hasDataResult!.hasData;
 }
