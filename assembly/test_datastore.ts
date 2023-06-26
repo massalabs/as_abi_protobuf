@@ -1,4 +1,6 @@
+import { NativeAddress } from "massa-proto-as/assembly/massa/model/v1/NativeAddress";
 import * as env from "./env";
+import { AddressCategory } from "massa-proto-as/assembly/massa/model/v1/AddressCategory";
 
 // using a global to prevent problem with GC
 let shared_mem: ArrayBuffer = new ArrayBuffer(0);
@@ -21,11 +23,15 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
 
     env.generate_event("key = " + key.toString() + ", data = " + data.toString());
 
-    env.set_data(null, key, data);
-    env.get_data(null, key);
-    env.append_data(null, key, data);
-    env.delete_data(null, key);
-    const has_data = env.has_data(null, key);
+    const sender_buf = new Uint8Array(4);
+    sender_buf[0] = 0x31; sender_buf[1] = 0x32; sender_buf[2] = 0x33; sender_buf[3] = 0x34;
+    const sender_address = new NativeAddress(AddressCategory.ADDRESS_CATEGORY_USER_ADDRESS, 0, sender_buf);
+
+    env.set_data(sender_address, key, data);
+    env.get_data(sender_address, key);
+    env.append_data(sender_address, key, data);
+    env.delete_data(sender_address, key);
+    const has_data = env.has_data(sender_address, key);
 
     env.generate_event("has_data = " + has_data.toString());
 

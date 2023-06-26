@@ -89,7 +89,6 @@ export function hash_keccak256(data: Uint8Array): Uint8Array {
     assert(abi_resp.res!.keccak256Result !== null);
     assert(abi_resp.res!.keccak256Result!.hash !== null);
     return abi_resp.res!.keccak256Result!.hash
-
 }
 
 /// performs a sha256 hash on byte array and returns the hash as byte array
@@ -242,7 +241,7 @@ export function generate_event(event: string): void {
 }
 
 export function set_data(address: NativeAddress | null, key: Uint8Array, data: Uint8Array): void {
-    const req = new SetDataRequest(null, key, data);
+    const req = new SetDataRequest(address, key, data);
     const req_bytes = encodeSetDataRequest(req);
     abi_set_data(encode_length_prefixed(req_bytes).buffer);
 }
