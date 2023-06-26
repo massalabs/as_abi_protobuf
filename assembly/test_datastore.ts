@@ -21,11 +21,11 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
 
     env.generate_event("key = " + key.toString() + ", data = " + data.toString());
 
-    env.set_data(key, data);
-    env.get_data(key);
-    env.append_data(key, data);
-    env.delete_data(key);
-    const has_data = env.has_data(key);
+    env.set_data(null, key, data);
+    env.get_data(null, key);
+    env.append_data(null, key, data);
+    env.delete_data(null, key);
+    const has_data = env.has_data(null, key);
 
     env.generate_event("has_data = " + has_data.toString());
 
