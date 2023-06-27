@@ -16,11 +16,10 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
 
     // Call the abi
-    var p = env.get_current_period();
-    var t = env.get_current_thread();
+    var s = env.get_current_slot();
 
-    env.generate_event("Current period: " + p.toString());
-    env.generate_event("Current thread: " + t.toString());
+    env.generate_event("Current period: " + s.period.toString());
+    env.generate_event("Current thread: " + s.thread.toString());
 
     shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
     return shared_mem;

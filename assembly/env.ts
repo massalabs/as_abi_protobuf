@@ -1,4 +1,4 @@
-import { decodeAbiResponse, encodeGenerateEventRequest, encodeTransferCoinsRequest } from 'massa-proto-as/assembly';
+import { Slot, decodeAbiResponse, encodeGenerateEventRequest, encodeTransferCoinsRequest } from 'massa-proto-as/assembly';
 
 import { NativeAddress } from 'massa-proto-as/assembly';
 import { NativeAmount } from 'massa-proto-as/assembly'
@@ -16,8 +16,7 @@ import { DeleteDataRequest, encodeDeleteDataRequest } from 'massa-proto-as/assem
 import { AppendDataRequest, encodeAppendDataRequest } from 'massa-proto-as/assembly';
 import { HasDataRequest, encodeHasDataRequest } from 'massa-proto-as/assembly';
 
-import { GetCurrentPeriodRequest, encodeGetCurrentPeriodRequest } from 'massa-proto-as/assembly';
-import { GetCurrentThreadRequest, encodeGetCurrentThreadRequest } from 'massa-proto-as/assembly';
+import { GetCurrentSlotRequest, encodeGetCurrentSlotRequest } from 'massa-proto-as/assembly';
 
 import { NativeHashRequest, encodeNativeHashRequest } from 'massa-proto-as/assembly';
 import { HashSha256Request, encodeHashSha256Request } from 'massa-proto-as/assembly';
@@ -64,12 +63,8 @@ declare function abi_generate_event(arg: ArrayBuffer): ArrayBuffer;
 declare function abi_abort(arg: i32): i32;
 
 // @ts-ignore: decorator
-@external("massa", "abi_get_current_period")
-declare function abi_get_current_period(arg: ArrayBuffer): ArrayBuffer;
-
-// @ts-ignore: decorator
-@external("massa", "abi_get_current_thread")
-declare function abi_get_current_thread(arg: ArrayBuffer): ArrayBuffer;
+@external("massa", "abi_get_current_slot")
+declare function abi_get_current_slot(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
 @external("massa", "abi_hash_sha256")
@@ -94,7 +89,6 @@ export function hash_keccak256(data: Uint8Array): Uint8Array {
     assert(abi_resp.res!.keccak256Result !== null);
     assert(abi_resp.res!.keccak256Result!.hash !== null);
     return abi_resp.res!.keccak256Result!.hash
-
 }
 
 /// performs a sha256 hash on byte array and returns the hash as byte array
@@ -123,28 +117,17 @@ export function native_hash(data: Uint8Array): NativeHash {
     return assert(abi_resp.res!.nativeHashResult!.hash, "NativeHash computation failed");
 }
 
-/// gets the period of the current execution slot
-export function get_current_period(): i64 {
-    const req = new GetCurrentPeriodRequest();
-    const req_bytes = encodeGetCurrentPeriodRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_current_period(encode_length_prefixed(req_bytes).buffer));
+/// gets the current execution slot
+export function get_current_slot(): Slot {
+    const req = new GetCurrentSlotRequest();
+    const req_bytes = encodeGetCurrentSlotRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_get_current_slot(encode_length_prefixed(req_bytes).buffer));
     const resp = decodeAbiResponse(resp_bytes);
     assert(resp.error === null);
     assert(resp.res !== null);
-    assert(resp.res!.getCurrentPeriodResult !== null);
-    return resp.res!.getCurrentPeriodResult!.period;
-}
-
-/// gets the thread of the current execution slot
-export function get_current_thread(): i32 {
-    const req = new GetCurrentThreadRequest();
-    const req_bytes = encodeGetCurrentThreadRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_current_thread(encode_length_prefixed(req_bytes).buffer));
-    const resp = decodeAbiResponse(resp_bytes);
-    assert(resp.error === null);
-    assert(resp.res !== null);
-    assert(resp.res!.getCurrentThreadResult !== null);
-    return resp.res!.getCurrentThreadResult!.thread;
+    assert(resp.res!.getCurrentSlotResult !== null);
+    assert(resp.res!.getCurrentSlotResult !== null);
+    return assert(resp.res!.getCurrentSlotResult!.slot, "Could not get current slot");
 }
 
 /// Creates a Uint8Array from an existing Uint8Array by prepending a little-endian i32 length prefix.
@@ -244,8 +227,8 @@ export function myabort(
 // }
 
 // ABI to transfer coins to another address
-export function transfer_coins(to_address: NativeAddress, coins: NativeAmount): void {
-    const req = new TransferCoinsRequest(to_address, coins);
+export function transfer_coins(senderAddress: NativeAddress | null, to_address: NativeAddress, coins: NativeAmount): void {
+    const req = new TransferCoinsRequest(senderAddress, to_address, coins);
     const req_bytes = encodeTransferCoinsRequest(req);
     abi_transfer_coins(encode_length_prefixed(req_bytes).buffer);
 }
@@ -257,14 +240,14 @@ export function generate_event(event: string): void {
     abi_generate_event(encode_length_prefixed(req_bytes).buffer);
 }
 
-export function set_data(key: Uint8Array, data: Uint8Array): void {
-    const req = new SetDataRequest(key, data);
+export function set_data(address: NativeAddress | null, key: Uint8Array, data: Uint8Array): void {
+    const req = new SetDataRequest(address, key, data);
     const req_bytes = encodeSetDataRequest(req);
     abi_set_data(encode_length_prefixed(req_bytes).buffer);
 }
 
-export function get_data(key: Uint8Array): Uint8Array {
-    const req = new GetDataRequest(key);
+export function get_data(address: NativeAddress | null, key: Uint8Array): Uint8Array {
+    const req = new GetDataRequest(address, key);
     const req_bytes = encodeGetDataRequest(req);
     const resp_bytes = Uint8Array.wrap(abi_get_data(encode_length_prefixed(req_bytes).buffer));
 
@@ -277,20 +260,20 @@ export function get_data(key: Uint8Array): Uint8Array {
     return resp.res!.getDataResult!.value;
 }
 
-export function delete_data(key: Uint8Array): void {
-    const req = new DeleteDataRequest(key);
+export function delete_data(address: NativeAddress | null, key: Uint8Array): void {
+    const req = new DeleteDataRequest(address, key);
     const req_bytes = encodeDeleteDataRequest(req);
     abi_delete_data(encode_length_prefixed(req_bytes).buffer);
 }
 
-export function append_data(key: Uint8Array, data: Uint8Array): void {
-    const req = new AppendDataRequest(key, data);
+export function append_data(address: NativeAddress | null, key: Uint8Array, data: Uint8Array): void {
+    const req = new AppendDataRequest(address, key, data);
     const req_bytes = encodeAppendDataRequest(req);
     abi_append_data(encode_length_prefixed(req_bytes).buffer);
 }
 
-export function has_data(key: Uint8Array): bool {
-    const req = new HasDataRequest(key);
+export function has_data(address: NativeAddress | null, key: Uint8Array): bool {
+    const req = new HasDataRequest(address, key);
     const req_bytes = encodeHasDataRequest(req);
     const resp_bytes = Uint8Array.wrap(abi_has_data(encode_length_prefixed(req_bytes).buffer));
 
