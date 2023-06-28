@@ -344,11 +344,11 @@ export function has_data(
   return resp.res!.hasDataResult!.hasData;
 }
 
-export function get_balance(address: StringValue | null): NativeAmount {
-    const req = new GetBalanceRequest(address);
-    const req_bytes = encodeGetBalanceRequest(req);
+export function get_balance(optional_address: string | null): proto.NativeAmount {
+    const req = new proto.GetBalanceRequest(makeStringValue(optional_address));
+    const req_bytes = proto.encodeGetBalanceRequest(req);
     const resp_bytes = Uint8Array.wrap(abi_get_balance(encode_length_prefixed(req_bytes).buffer));
-    const resp = decodeAbiResponse(resp_bytes);
+    const resp = proto.decodeAbiResponse(resp_bytes);
 
     assert(resp.error === null);
     assert(resp.res !== null);
@@ -357,11 +357,11 @@ export function get_balance(address: StringValue | null): NativeAmount {
     return assert(resp.res!.getBalanceResult!.balance, "Could not get balance");
 }
 
-export function get_bytecode(address: StringValue | null): Uint8Array {
-    const req = new GetBytecodeRequest(address);
-    const req_bytes = encodeGetBytecodeRequest(req);
+export function get_bytecode(optional_address: string | null): Uint8Array {
+    const req = new proto.GetBytecodeRequest(makeStringValue(optional_address));
+    const req_bytes = proto.encodeGetBytecodeRequest(req);
     const resp_bytes = Uint8Array.wrap(abi_get_bytecode(encode_length_prefixed(req_bytes).buffer));
-    const resp = decodeAbiResponse(resp_bytes);
+    const resp = proto.decodeAbiResponse(resp_bytes);
 
     assert(resp.error === null);
     assert(resp.res !== null);
@@ -370,18 +370,17 @@ export function get_bytecode(address: StringValue | null): Uint8Array {
     return resp.res!.getBytecodeResult!.bytecode;
 }
 
-export function set_bytecode(bytecode: Uint8Array, address: StringValue | null): void {
-    const req = new SetBytecodeRequest(address);
-    const req_bytes = encodeSetBytecodeRequest(req);
+export function set_bytecode(bytecode: Uint8Array, optional_address: string | null): void {
+    const req = new proto.SetBytecodeRequest(bytecode, makeStringValue(optional_address));
+    const req_bytes = proto.encodeSetBytecodeRequest(req);
     abi_set_bytecode(encode_length_prefixed(req_bytes).buffer);
 }
 
-// Prefix is optional: same as empty array or should be "| null"? I think it's the same
-export function get_keys(prefix: Uint8Array, address: StringValue | null): Uint8Array[] {
-    const req = new GetKeysRequest(address, prefix);
-    const req_bytes = encodeGetKeysRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_bytecode(encode_length_prefixed(req_bytes).buffer));
-    const resp = decodeAbiResponse(resp_bytes);
+export function get_keys(prefix: Uint8Array, optional_address: string | null): Uint8Array[] {
+    const req = new proto.GetKeysRequest(prefix, makeStringValue(optional_address));
+    const req_bytes = proto.encodeGetKeysRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_get_keys(encode_length_prefixed(req_bytes).buffer));
+    const resp = proto.decodeAbiResponse(resp_bytes);
 
     assert(resp.error === null);
     assert(resp.res !== null);
@@ -392,10 +391,10 @@ export function get_keys(prefix: Uint8Array, address: StringValue | null): Uint8
 
 // Prefix is optional: same as empty? I think so
 export function get_op_keys(prefix: Uint8Array): Uint8Array[] {
-    const req = new GetOpKeysRequest(prefix);
-    const req_bytes = encodeGetOpKeysRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_bytecode(encode_length_prefixed(req_bytes).buffer));
-    const resp = decodeAbiResponse(resp_bytes);
+    const req = new proto.GetOpKeysRequest(/*prefix*/);
+    const req_bytes = proto.encodeGetOpKeysRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_get_op_keys(encode_length_prefixed(req_bytes).buffer));
+    const resp = proto.decodeAbiResponse(resp_bytes);
 
     assert(resp.error === null);
     assert(resp.res !== null);
@@ -405,10 +404,10 @@ export function get_op_keys(prefix: Uint8Array): Uint8Array[] {
 }
 
 export function has_op_key(key: Uint8Array): bool {
-    const req = new HasOpKeyRequest(key);
-    const req_bytes = encodeHasOpKeyRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_bytecode(encode_length_prefixed(req_bytes).buffer));
-    const resp = decodeAbiResponse(resp_bytes);
+    const req = new proto.HasOpKeyRequest(key);
+    const req_bytes = proto.encodeHasOpKeyRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_has_op_key(encode_length_prefixed(req_bytes).buffer));
+    const resp = proto.decodeAbiResponse(resp_bytes);
 
     assert(resp.error === null);
     assert(resp.res !== null);
@@ -418,10 +417,10 @@ export function has_op_key(key: Uint8Array): bool {
 }
 
 export function get_op_data(key: Uint8Array): Uint8Array {
-    const req = new GetOpDataRequest(key);
-    const req_bytes = encodeGetOpDataRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_bytecode(encode_length_prefixed(req_bytes).buffer));
-    const resp = decodeAbiResponse(resp_bytes);
+    const req = new proto.GetOpDataRequest(key);
+    const req_bytes = proto.encodeGetOpDataRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_get_op_data(encode_length_prefixed(req_bytes).buffer));
+    const resp = proto.decodeAbiResponse(resp_bytes);
 
     assert(resp.error === null);
     assert(resp.res !== null);
