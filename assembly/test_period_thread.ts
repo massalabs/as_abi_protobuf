@@ -18,8 +18,8 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // Call the abi
     var s = env.get_current_slot();
 
-    env.generate_event("Current period: " + s.period.toString());
-    env.generate_event("Current thread: " + s.thread.toString());
+    env.generate_event(env.stringToUint8Array("Current period: " + s.period.toString()));
+    env.generate_event(env.stringToUint8Array("Current thread: " + s.thread.toString()));
 
     shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
     return shared_mem;

@@ -4,20 +4,20 @@ import * as env from "./env";
 let shared_mem: ArrayBuffer = new ArrayBuffer(0);
 
 export function __alloc(size: i32): ArrayBuffer {
-    // /!\ Can't trace here
-    // // env.log("allocating " + size.toString() + "bytes");
+  // /!\ Can't trace here
+  // // env.log("allocating " + size.toString() + "bytes");
 
-    shared_mem = new ArrayBuffer(size);
-    return shared_mem;
+  shared_mem = new ArrayBuffer(size);
+  return shared_mem;
 }
 
 export function main(_args: ArrayBuffer): ArrayBuffer {
-    assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
+  assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
 
-    env.generate_event("will call abort()");
+  env.generate_event(env.stringToUint8Array("will call abort()"));
 
-    // will cause a call to abort()
-    assert(false, "abort test message");
+  // will cause a call to abort()
+  assert(false, "abort test message");
 
-    return new ArrayBuffer(0); // fake return to pleas asc
+  return new ArrayBuffer(0); // fake return to pleas asc
 }

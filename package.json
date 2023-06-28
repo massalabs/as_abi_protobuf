@@ -6,7 +6,8 @@
     "@massalabs/as-transformer": "^0.1.2",
     "as-proto": "^1.3.0",
     "assemblyscript": "^0.27.5",
-    "massa-proto-as": "github:massalabs/massa-proto-as#feature/Improve_ABI_types_in_wasmv1"
+    "massa-proto-as": "github:massalabs/massa-proto-as#feature/Improve_ABI_types_in_wasmv1",
+    "prettier": "^2.8.8"
   },
   "scripts": {
     "build": "asc assembly/env.ts",
@@ -50,7 +51,8 @@
     "export:rmain": "wasmv1_transform ./build/rmain.wasm add",
     "export:deployers": "npm run export:dmain && npm run export:rmain",
     "all": "npm run build:binaries && npm run export:binaries && npm run build:deployers && npm run export:deployers && npm run inspect:release",
-    "start": "npx serve ."
+    "start": "npx serve .",
+    "all_test": "for t in $(rg \"all:test\" | cut -d':' -f2,3 | tr -d '\"'); do npm run $t; if [ $? -ne 0 ]; then     break;   fi; done"
   },
   "author": "",
   "license": "ISC",

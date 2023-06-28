@@ -1,35 +1,43 @@
-
 import * as env from "./env";
 
 // using a global to prevent problem with GC
 let shared_mem: ArrayBuffer = new ArrayBuffer(0);
 
 export function __alloc(size: i32): ArrayBuffer {
-    // /!\ Can't trace here
-    // // env.log("allocating " + size.toString() + "bytes");
+  // /!\ Can't trace here
+  // // env.log("allocating " + size.toString() + "bytes");
 
-    shared_mem = new ArrayBuffer(size);
-    return shared_mem;
+  shared_mem = new ArrayBuffer(size);
+  return shared_mem;
 }
 
 export function main(_args: ArrayBuffer): ArrayBuffer {
-    assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
+  assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
 
-    // Call the abi
-    const bytes = new Uint8Array(32);
+  // Call the abi
+  const bytes = new Uint8Array(32);
 
-    const buf = new Uint8Array(4);
-    buf[0] = 0x31; buf[1] = 0x32; buf[2] = 0x33; buf[3] = 0x34;
+  const buf = new Uint8Array(4);
+  buf[0] = 0x31;
+  buf[1] = 0x32;
+  buf[2] = 0x33;
+  buf[3] = 0x34;
 
-    const native_hash = env.native_hash(buf);
-    env.generate_event("NativeHash: { version" + native_hash.version.toString() + ", content: " + native_hash.content.toString() + "}");
-    
-    const sha256_hash = env.hash_sha256(buf);
-    env.generate_event("Hash Sha256: " + sha256_hash.toString());
+  const blake3_hash = env.blake3_hash(buf);
+  env.generate_event(
+    env.stringToUint8Array("blake3Hash: " + blake3_hash.toString())
+  );
 
-    const keccak256_hash = env.hash_keccak256(buf);
-    env.generate_event("Hash Keccak256: " + keccak256_hash.toString());
+  const sha256_hash = env.hash_sha256(buf);
+  env.generate_event(
+    env.stringToUint8Array("Hash Sha256: " + sha256_hash.toString())
+  );
 
-    shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
-    return shared_mem;
+  const keccak256_hash = env.hash_keccak256(buf);
+  env.generate_event(
+    env.stringToUint8Array("Hash Keccak256: " + keccak256_hash.toString())
+  );
+
+  shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
+  return shared_mem;
 }

@@ -14,7 +14,7 @@ export function __alloc(size: i32): ArrayBuffer {
 export function main(_args: ArrayBuffer): ArrayBuffer {
     assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
 
-    env.generate_event("I'm a SC written in AS with the wasmv1 ABI");
+    env.generate_event(env.stringToUint8Array("I'm a SC written in AS with the wasmv1 ABI"));
 
     shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
     return shared_mem;
