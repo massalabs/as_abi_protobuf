@@ -391,7 +391,7 @@ export function get_keys(prefix: Uint8Array, optional_address: string | null): U
 
 // Prefix is optional: same as empty? I think so
 export function get_op_keys(prefix: Uint8Array): Uint8Array[] {
-    const req = new proto.GetOpKeysRequest(/*prefix*/);
+    const req = new proto.GetOpKeysRequest(prefix);
     const req_bytes = proto.encodeGetOpKeysRequest(req);
     const resp_bytes = Uint8Array.wrap(abi_get_op_keys(encode_length_prefixed(req_bytes).buffer));
     const resp = proto.decodeAbiResponse(resp_bytes);
