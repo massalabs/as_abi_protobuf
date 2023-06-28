@@ -56,7 +56,7 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
 
     const args = new Uint8Array(0);
     // env.call(sc_address, "initialize", args, 0);
-    env.generate_event("Created a Protobuffed smart-contract at:" + sc_address);
+    env.generate_event(env.stringToUint8Array("Created a Protobuffed smart-contract at:" + sc_address));
 
     shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
     return shared_mem;
