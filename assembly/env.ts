@@ -389,7 +389,6 @@ export function get_keys(prefix: Uint8Array, optional_address: string | null): U
     return resp.res!.getKeysResult!.keys;
 }
 
-// Prefix is optional: same as empty? I think so
 export function get_op_keys(prefix: Uint8Array): Uint8Array[] {
     const req = new proto.GetOpKeysRequest(prefix);
     const req_bytes = proto.encodeGetOpKeysRequest(req);
