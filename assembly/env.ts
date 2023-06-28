@@ -27,6 +27,34 @@ declare function abi_append_data(arg: ArrayBuffer): ArrayBuffer;
 declare function abi_has_data(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
+@external("massa", "abi_get_balance")
+declare function abi_get_balance(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_bytecode")
+declare function abi_get_bytecode(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_set_bytecode")
+declare function abi_set_bytecode(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_keys")
+declare function abi_get_keys(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_op_keys")
+declare function abi_get_op_keys(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_has_op_key")
+declare function abi_has_op_key(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_op_data")
+declare function abi_get_op_data(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
 @external("massa", "abi_call")
 declare function abi_call(arg: ArrayBuffer): ArrayBuffer;
 
@@ -314,6 +342,92 @@ export function has_data(
   assert(resp.res!.hasDataResult !== null);
 
   return resp.res!.hasDataResult!.hasData;
+}
+
+export function get_balance(address: StringValue | null): NativeAmount {
+    const req = new GetBalanceRequest(address);
+    const req_bytes = encodeGetBalanceRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_get_balance(encode_length_prefixed(req_bytes).buffer));
+    const resp = decodeAbiResponse(resp_bytes);
+
+    assert(resp.error === null);
+    assert(resp.res !== null);
+    assert(resp.res!.getBalanceResult !== null);
+    
+    return assert(resp.res!.getBalanceResult!.balance, "Could not get balance");
+}
+
+export function get_bytecode(address: StringValue | null): Uint8Array {
+    const req = new GetBytecodeRequest(address);
+    const req_bytes = encodeGetBytecodeRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_get_bytecode(encode_length_prefixed(req_bytes).buffer));
+    const resp = decodeAbiResponse(resp_bytes);
+
+    assert(resp.error === null);
+    assert(resp.res !== null);
+    assert(resp.res!.getBytecodeResult !== null);
+    
+    return resp.res!.getBytecodeResult!.bytecode;
+}
+
+export function set_bytecode(bytecode: Uint8Array, address: StringValue | null): void {
+    const req = new SetBytecodeRequest(address);
+    const req_bytes = encodeSetBytecodeRequest(req);
+    abi_set_bytecode(encode_length_prefixed(req_bytes).buffer);
+}
+
+// Prefix is optional: same as empty array or should be "| null"? I think it's the same
+export function get_keys(prefix: Uint8Array, address: StringValue | null): Uint8Array[] {
+    const req = new GetKeysRequest(address, prefix);
+    const req_bytes = encodeGetKeysRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_get_bytecode(encode_length_prefixed(req_bytes).buffer));
+    const resp = decodeAbiResponse(resp_bytes);
+
+    assert(resp.error === null);
+    assert(resp.res !== null);
+    assert(resp.res!.getKeysResult !== null);
+    
+    return resp.res!.getKeysResult!.keys;
+}
+
+// Prefix is optional: same as empty? I think so
+export function get_op_keys(prefix: Uint8Array): Uint8Array[] {
+    const req = new GetOpKeysRequest(prefix);
+    const req_bytes = encodeGetOpKeysRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_get_bytecode(encode_length_prefixed(req_bytes).buffer));
+    const resp = decodeAbiResponse(resp_bytes);
+
+    assert(resp.error === null);
+    assert(resp.res !== null);
+    assert(resp.res!.getOpKeysResult !== null);
+    
+    return resp.res!.getOpKeysResult!.keys;
+}
+
+export function has_op_key(key: Uint8Array): bool {
+    const req = new HasOpKeyRequest(key);
+    const req_bytes = encodeHasOpKeyRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_get_bytecode(encode_length_prefixed(req_bytes).buffer));
+    const resp = decodeAbiResponse(resp_bytes);
+
+    assert(resp.error === null);
+    assert(resp.res !== null);
+    assert(resp.res!.hasOpKeyResult !== null);
+    
+    return resp.res!.hasOpKeyResult!.hasKey;
+}
+
+export function get_op_data(key: Uint8Array): Uint8Array {
+    const req = new GetOpDataRequest(key);
+    const req_bytes = encodeGetOpDataRequest(req);
+    const resp_bytes = Uint8Array.wrap(abi_get_bytecode(encode_length_prefixed(req_bytes).buffer));
+    const resp = decodeAbiResponse(resp_bytes);
+
+    assert(resp.error === null);
+    assert(resp.res !== null);
+    assert(resp.res!.getOpDataResult !== null);
+    
+    return resp.res!.getOpDataResult!.value;
 }
 
 /// performs a keccak256 hash on byte array and returns the hash as byte array

@@ -6,7 +6,7 @@
     "@massalabs/as-transformer": "^0.1.2",
     "as-proto": "^1.3.0",
     "assemblyscript": "^0.27.5",
-    "massa-proto-as": "github:massalabs/massa-proto-as#feature/Improve_ABI_types_in_wasmv1",
+    "massa-proto-as": "github:massalabs/massa-proto-as#feature/Improve_ABI_types_in_wasmv1_leo",
     "prettier": "^2.8.8"
   },
   "scripts": {
@@ -36,6 +36,10 @@
     "inspect:test_hash": "wasmer inspect ./build/test_hash.wasm",
     "export:test_hash": "wasmv1_transform ./build/test_hash.wasm add",
     "all:test_hash": "npm run build:test_hash:debug && npm run inspect:test_hash && npm run export:test_hash",
+    "build:test_ledger_op_keys:debug": "asc assembly/test_ledger_op_keys.ts --target debug -o ./build/test_ledger_op_keys.wasm --use abort=assembly/env/myabort",
+    "inspect:test_ledger_op_keys": "wasmer inspect ./build/test_ledger_op_keys.wasm",
+    "export:test_ledger_op_keys": "wasmv1_transform ./build/test_ledger_op_keys.wasm add",
+    "all:test_ledger_op_keys": "npm run build:test_ledger_op_keys:debug && npm run inspect:test_ledger_op_keys && npm run export:test_ledger_op_keys",
     "build:binary:debug": "asc assembly/index.ts --target debug --debug --use abort=assembly/env/myabort",
     "build:binary:release": "asc assembly/index.ts --target release --use abort=assembly/env/myabort",
     "build:binaries": "npm run build:binary:debug && npm run build:binary:release",
