@@ -1,5 +1,7 @@
 import * as proto from "massa-proto-as/assembly";
 import { StringValue } from "massa-proto-as/assembly/google/protobuf/StringValue";
+import { UInt32Value } from "massa-proto-as/assembly/google/protobuf/UInt32Value";
+import { UInt64Value } from "massa-proto-as/assembly/google/protobuf/UInt64Value";
 import { decimalCount32 } from "util/number";
 
 // ***************************************************************************
@@ -89,7 +91,33 @@ declare function abi_hash_keccak256(arg: ArrayBuffer): ArrayBuffer;
 // @ts-ignore: decorator
 @external("massa", "abi_blake3_hash")
 declare function abi_blake3_hash(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_check_native_amount")
+declare function abi_check_native_amount(arg: ArrayBuffer): ArrayBuffer;
+// @ts-ignore: decorator
+@external("massa", "abi_add_native_amounts")
+declare function abi_add_native_amounts(arg: ArrayBuffer): ArrayBuffer;
+// @ts-ignore: decorator
+@external("massa", "abi_sub_native_amounts")
+declare function abi_sub_native_amounts(arg: ArrayBuffer): ArrayBuffer;
+// @ts-ignore: decorator
+@external("massa", "abi_mul_native_amount")
+declare function abi_mul_native_amount(arg: ArrayBuffer): ArrayBuffer;
+// @ts-ignore: decorator
+@external("massa", "abi_div_rem_native_amount")
+declare function abi_div_rem_native_amount(arg: ArrayBuffer): ArrayBuffer;
+// @ts-ignore: decorator
+@external("massa", "abi_div_rem_native_amounts")
+declare function abi_div_rem_native_amounts(arg: ArrayBuffer): ArrayBuffer;
+// @ts-ignore: decorator
+@external("massa", "abi_native_amount_to_string")
+declare function abi_native_amount_to_string(arg: ArrayBuffer): ArrayBuffer;
+// @ts-ignore: decorator
+@external("massa", "abi_native_amount_from_string")
+declare function abi_native_amount_from_string(arg: ArrayBuffer): ArrayBuffer;
 // */
+
 // ***************************************************************************
 // utility functions
 // ***************************************************************************
@@ -253,6 +281,10 @@ export function transfer_coins(
   assert(resp.error === null);
 }
 
+export function generate_str_event(msg: string): void {
+  return generate_event(stringToUint8Array(msg));
+}
+
 // ABI to generate an event
 export function generate_event(event: Uint8Array): void {
   const req = new proto.GenerateEventRequest(event);
@@ -353,7 +385,7 @@ export function get_balance(optional_address: string | null): proto.NativeAmount
     assert(resp.error === null);
     assert(resp.res !== null);
     assert(resp.res!.getBalanceResult !== null);
-    
+
     return assert(resp.res!.getBalanceResult!.balance, "Could not get balance");
 }
 
@@ -366,7 +398,7 @@ export function get_bytecode(optional_address: string | null): Uint8Array {
     assert(resp.error === null);
     assert(resp.res !== null);
     assert(resp.res!.getBytecodeResult !== null);
-    
+
     return resp.res!.getBytecodeResult!.bytecode;
 }
 
@@ -385,7 +417,7 @@ export function get_keys(prefix: Uint8Array, optional_address: string | null): U
     assert(resp.error === null);
     assert(resp.res !== null);
     assert(resp.res!.getKeysResult !== null);
-    
+
     return resp.res!.getKeysResult!.keys;
 }
 
@@ -398,7 +430,7 @@ export function get_op_keys(prefix: Uint8Array): Uint8Array[] {
     assert(resp.error === null);
     assert(resp.res !== null);
     assert(resp.res!.getOpKeysResult !== null);
-    
+
     return resp.res!.getOpKeysResult!.keys;
 }
 
@@ -411,7 +443,7 @@ export function has_op_key(key: Uint8Array): bool {
     assert(resp.error === null);
     assert(resp.res !== null);
     assert(resp.res!.hasOpKeyResult !== null);
-    
+
     return resp.res!.hasOpKeyResult!.hasKey;
 }
 
@@ -424,7 +456,7 @@ export function get_op_data(key: Uint8Array): Uint8Array {
     assert(resp.error === null);
     assert(resp.res !== null);
     assert(resp.res!.getOpDataResult !== null);
-    
+
     return resp.res!.getOpDataResult!.value;
 }
 
@@ -492,4 +524,174 @@ export function get_current_slot(): proto.Slot {
     resp.res!.getCurrentSlotResult!.slot,
     "Could not get current slot"
   );
+}
+
+export function make_native_amount(
+  mantissa: i64,
+  scale: i32
+): proto.NativeAmount {
+  return new proto.NativeAmount(
+    new UInt64Value(mantissa),
+    new UInt32Value(scale)
+  );
+}
+
+export function check_native_amount(to_check: proto.NativeAmount): bool {
+  const req = new proto.CheckNativeAmountRequest(to_check);
+  const req_bytes = proto.encodeCheckNativeAmountRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_check_native_amount(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "check_native_amount" + resp.error!.message);
+  assert(resp.res !== null, "check_native_amount res null");
+  assert(resp.res!.checkNativeAmountResult !== null, "checkNativeAmountResult null");
+  return resp.res!.checkNativeAmountResult!.isValid;
+}
+
+export function add_native_amounts(
+  amount1: proto.NativeAmount,
+  amount2: proto.NativeAmount
+): proto.NativeAmount {
+  const req = new proto.AddNativeAmountsRequest(amount1, amount2);
+  const req_bytes = proto.encodeAddNativeAmountsRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_add_native_amounts(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "add_native_amounts" + resp.error!.message);
+  assert(resp.res !== null, "add_native_amounts res null");
+  assert(resp.res!.addNativeAmountsResult !== null, "addNativeAmountsResult null");
+  assert(resp.res!.addNativeAmountsResult!.sum !== null, "sum null");
+  return resp.res!.addNativeAmountsResult!.sum!;
+}
+
+export function sub_native_amounts(
+  left: proto.NativeAmount,
+  right: proto.NativeAmount
+): proto.NativeAmount {
+  const req = new proto.SubNativeAmountsRequest(left, right);
+  const req_bytes = proto.encodeSubNativeAmountsRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_sub_native_amounts(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "sub_native_amounts" + resp.error!.message);
+  assert(resp.res !== null, "sub_native_amounts res null");
+  assert(resp.res!.subNativeAmountsResult !== null, "subNativeAmountsResult null");
+  assert(resp.res!.subNativeAmountsResult!.difference !== null, "difference null");
+  return resp.res!.subNativeAmountsResult!.difference!;
+}
+
+export function mul_native_amount(
+  amount: proto.NativeAmount,
+  coefficient: i64 = 0
+): proto.NativeAmount {
+  const req = new proto.MulNativeAmountRequest(
+    amount,
+    new UInt64Value(coefficient)
+  );
+  const req_bytes = proto.encodeMulNativeAmountRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_mul_native_amount(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "mul_native_amount" + resp.error!.message);
+  assert(resp.res !== null, "mul_native_amount res null");
+  assert(resp.res!.mulNativeAmountResult !== null, "mulNativeAmountResult null");
+  assert(resp.res!.mulNativeAmountResult!.product !== null, "product null");
+  return resp.res!.mulNativeAmountResult!.product!;
+}
+
+// return quotient and remainder
+// int64 quotient;
+// NativeAmount remainder;
+export class DivRemNativeAmount {
+  public quotient: i64;
+  public remainder: proto.NativeAmount;
+
+  constructor(quotient: i64, remainder: proto.NativeAmount) {
+    this.quotient = quotient;
+    this.remainder = remainder;
+  }
+}
+
+export function div_rem_native_amounts(
+  dividend: proto.NativeAmount,
+  divisor: proto.NativeAmount
+): DivRemNativeAmount {
+  const req = new proto.DivRemNativeAmountsRequest(dividend, divisor);
+  const req_bytes = proto.encodeDivRemNativeAmountsRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_div_rem_native_amounts(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "div_rem_native_amounts" + resp.error!.message);
+  assert(resp.res !== null, "div_rem_native_amounts res null");
+  assert(resp.res!.divRemNativeAmountsResult !== null, "divRemNativeAmountsResult null");
+  assert(resp.res!.divRemNativeAmountsResult!.mandatoryQuotient !== null, "mandatoryQuotient null");
+  assert(resp.res!.divRemNativeAmountsResult!.remainder !== null, "remainder null");
+  return new DivRemNativeAmount(
+    resp.res!.divRemNativeAmountsResult!.mandatoryQuotient!.value,
+    resp.res!.divRemNativeAmountsResult!.remainder!
+  );
+}
+
+// return quotient and remainder
+// NativeAmount quotient;
+// NativeAmount remainder;
+// as an Array of NativeAmount
+export function div_rem_native_amount(
+  dividend: proto.NativeAmount,
+  divisor: i64
+): Array<proto.NativeAmount> {
+  const req = new proto.ScalarDivRemNativeAmountRequest(
+    dividend,
+    new UInt64Value(divisor)
+  );
+  const req_bytes = proto.encodeScalarDivRemNativeAmountRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_div_rem_native_amount(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "div_rem_native_amount" + resp.error!.message);
+  assert(resp.res !== null, "div_rem_native_amount res null");
+  assert(resp.res!.scalarDivRemNativeAmountResult !== null, "scalarDivRemNativeAmountResult null");
+  assert(resp.res!.scalarDivRemNativeAmountResult!.quotient !== null, "quotient null");
+  assert(resp.res!.scalarDivRemNativeAmountResult!.remainder !== null, "remainder null");
+  return [
+    resp.res!.scalarDivRemNativeAmountResult!.quotient!,
+    resp.res!.scalarDivRemNativeAmountResult!.remainder!,
+  ];
+}
+
+export function native_amount_to_string(
+  to_convert: proto.NativeAmount
+): string {
+  const req = new proto.NativeAmountToStringRequest(to_convert);
+  const req_bytes = proto.encodeNativeAmountToStringRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_native_amount_to_string(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "native_amount_to_string error: " + resp.error!.message);
+  assert(resp.res !== null, "native_amount_to_string res null");
+  assert(resp.res!.nativeAmountToStringResult !== null, "nativeAmountToStringResult null");
+  return resp.res!.nativeAmountToStringResult!.convertedAmount;
+}
+
+export function native_amount_from_string(
+  to_convert: string
+): proto.NativeAmount {
+  const req = new proto.NativeAmountFromStringRequest(to_convert);
+  const req_bytes = proto.encodeNativeAmountFromStringRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_native_amount_from_string(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "native_amount_from_string error: " + resp.error!.message);
+  assert(resp.res !== null, "native_amount_from_string res null");
+  assert(resp.res!.nativeAmountFromStringResult !== null, "nativeAmountFromStringResult null");
+  assert(resp.res!.nativeAmountFromStringResult!.convertedAmount !== null, "convertedAmount null");
+  return resp.res!.nativeAmountFromStringResult!.convertedAmount!;
 }
