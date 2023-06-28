@@ -13,10 +13,16 @@
   "scripts": {
     "build": "asc assembly/env.ts",
     "test": "node tests",
+    "build:test_native_amount_arithmetic:debug": "asc assembly/test_native_amount_arithmetic.ts --target debug -o ./build/test_native_amount_arithmetic.wasm --use abort=assembly/env/myabort",
+    "inspect:test_native_amount_arithmetic": "wasmer inspect ./build/test_native_amount_arithmetic.wasm",
+    "export:test_native_amount_arithmetic": "wasmv1_transform ./build/test_native_amount_arithmetic.wasm add",
+    "all:test_native_amount_arithmetic": "npm run build:test_native_amount_arithmetic:debug && npm run inspect:test_native_amount_arithmetic && npm run export:test_native_amount_arithmetic",
+
     "build:test_generate_event:debug": "asc assembly/test_generate_event.ts --target debug -o ./build/test_generate_event.wasm --use abort=assembly/env/myabort",
     "inspect:test_generate_event": "wasmer inspect ./build/test_generate_event.wasm",
     "export:test_generate_event": "wasmv1_transform ./build/test_generate_event.wasm add",
     "all:test_generate_event": "npm run build:test_generate_event:debug && npm run inspect:test_generate_event && npm run export:test_generate_event",
+
     "build:test_transfer_coins:debug": "asc assembly/test_transfer_coins.ts --target debug -o ./build/test_transfer_coins.wasm --use abort=assembly/env/myabort",
     "inspect:test_transfer_coins": "wasmer inspect ./build/test_transfer_coins.wasm",
     "export:test_transfer_coins": "wasmv1_transform ./build/test_transfer_coins.wasm add",
