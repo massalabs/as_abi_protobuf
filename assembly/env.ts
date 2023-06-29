@@ -249,16 +249,12 @@ export function create_sc(bytecode: Uint8Array): string {
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
 
-  assert(resp.error === null);
+  assert(resp.error === null, "Failed to create smart contract: " + resp.error!.message);
+  assert(resp.res !== null, "response is null");
+  assert(resp.res!.createScResult !== null, "createScResult is null");
+  assert(resp.res!.createScResult!.scAddress !== null, "scAddress is null");
 
-  // const resp = Protobuf.decode<CreateScResponse>(resp_bytes, CreateSCResponse.decode);
-  if (resp.address === null) {
-    // FIXME add fake args to please asc
-    abort("Failed to create smart contract.", "", 0, 0);
-  }
-
-  const addr: string = resp.address!;
-  return addr.address;
+  return resp.res!.createScResult!.scAddress ;
 }
 
 // ABI to transfer coins to another address
