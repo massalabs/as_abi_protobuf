@@ -93,6 +93,50 @@ declare function abi_hash_keccak256(arg: ArrayBuffer): ArrayBuffer;
 declare function abi_blake3_hash(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
+@external("massa", "abi_verify_evm_signature")
+declare function abi_verify_evm_signature(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_remaining_gas")
+declare function abi_get_remaining_gas(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_owned_addresses")
+declare function abi_get_owned_addresses(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_call_stack")
+declare function abi_get_call_stack(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_address_from_public_key")
+declare function abi_address_from_public_key(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_unsafe_random")
+declare function abi_unsafe_random(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_call_coins")
+declare function abi_get_call_coins(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_native_time")
+declare function abi_get_native_time(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_send_async_message")
+declare function abi_send_async_message(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_local_execution")
+declare function abi_local_execution(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_caller_has_write_access")
+declare function abi_caller_has_write_access(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
 @external("massa", "abi_check_native_amount")
 declare function abi_check_native_amount(arg: ArrayBuffer): ArrayBuffer;
 // @ts-ignore: decorator
@@ -241,24 +285,141 @@ export function call(
 }
 
 // ABI to create a new SC
-export function create_sc(bytecode: Uint8Array): string {
-  const req = new proto.CreateScRequest(bytecode);
-  const req_bytes = proto.encodeCreateScRequest(req);
+// export function create_sc(bytecode: Uint8Array): string {
+//   const req = new proto.CreateScRequest(bytecode);
+//   const req_bytes = proto.encodeCreateScRequest(req);
+//   const resp_bytes = Uint8Array.wrap(
+//     abi_create_sc(encode_length_prefixed(req_bytes).buffer)
+//   );
+//   const resp = proto.decodeAbiResponse(resp_bytes);
+
+//   assert(resp.error === null);
+
+//   // const resp = Protobuf.decode<CreateScResponse>(resp_bytes, CreateSCResponse.decode);
+//   if (resp.address === null) {
+//     // FIXME add fake args to please asc
+//     abort("Failed to create smart contract.", "", 0, 0);
+//   }
+
+//   const addr: string = resp.address!;
+//   return addr.address;
+// }
+
+export function verify_evm_signature(): boolean {
+  const req = new proto.VerifyEvmSigRequest();
+  const req_bytes = proto.encodeVerifyEvmSigRequest(req);
   const resp_bytes = Uint8Array.wrap(
-    abi_create_sc(encode_length_prefixed(req_bytes).buffer)
+    abi_verify_evm_signature(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
-
   assert(resp.error === null);
+  assert(resp.res!.verifyEvmSigResult !== null);
+  return resp.res!.verifyEvmSigResult!.isVerified;
+}
 
-  // const resp = Protobuf.decode<CreateScResponse>(resp_bytes, CreateSCResponse.decode);
-  if (resp.address === null) {
-    // FIXME add fake args to please asc
-    abort("Failed to create smart contract.", "", 0, 0);
-  }
+export function get_remaining_gas(): UInt64Value {
+  const req = new proto.GetRemainingGasRequest();
+  const req_bytes = proto.encodeGetRemainingGasRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_remaining_gas(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res!.getRemainingGasResult !== null);
+  return assert(resp.res!.getRemainingGasResult!.mandatoryRemainingGas, "Could not get remaining gas");
+}
 
-  const addr: string = resp.address!;
-  return addr.address;
+export function get_owned_addresses(): string[] {
+  const req = new proto.GetOwnedAddressesRequest();
+  const req_bytes = proto.encodeGetOwnedAddressesRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_owned_addresses(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res!.getOwnedAddressesResult !== null);
+  return resp.res!.getOwnedAddressesResult!.addresses;
+}
+
+export function get_call_stack(): string[] {
+  const req = new proto.GetCallStackRequest();
+  const req_bytes = proto.encodeGetCallStackRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_call_stack(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res!.getCallStackResult !== null);
+  return resp.res!.getCallStackResult!.calls;
+}
+
+export function address_from_public_key(public_key: string): string {
+  const req = new proto.AddressFromPubKeyRequest(public_key);
+  const req_bytes = proto.encodeAddressFromPubKeyRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_address_from_public_key(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res!.addressFromPubKeyResult !== null);
+  return resp.res!.addressFromPubKeyResult!.address;
+}
+
+// todo: unsafe_random
+export function unsafe_random(): u64 {
+  const req = new proto.UnsafeRandomRequest();
+  const req_bytes = proto.encodeUnsafeRandomRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_unsafe_random(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res!.unsafeRandomResult !== null);
+  return resp.res!.unsafeRandomResult!;
+}
+
+export function get_call_coins(): proto.NativeAmount {
+  const req = new proto.GetCallCoinsRequest();
+  const req_bytes = proto.encodeGetCallCoinsRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_call_coins(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res!.getCallCoinsResult !== null);
+  return assert(resp.res!.getCallCoinsResult!.coins, "Could not get call coins");
+}
+
+export function get_native_time(): proto.NativeTime | null {
+  const req = new proto.GetNativeTimeRequest();
+  const req_bytes = proto.encodeGetNativeTimeRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_native_time(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res!.getNativeTimeResult !== null);
+  return resp.res!.getNativeTimeResult!.time;
+}
+
+// todo: send_async_message
+
+export function local_execution(): void {
+  const req = new proto.LocalExecutionRequest();
+  const req_bytes = proto.encodeLocalExecutionRequest(req);
+  abi_local_execution(encode_length_prefixed(req_bytes).buffer);
+}
+
+export function caller_has_write_access(): boolean {
+  const req = new proto.CallerHasWriteAccessRequest();
+  const req_bytes = proto.encodeCallerHasWriteAccessRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_caller_has_write_access(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res!.callerHasWriteAccessResult !== null);
+  return resp.res!.callerHasWriteAccessResult!.hasWriteAccess;
 }
 
 // ABI to transfer coins to another address
@@ -377,87 +538,87 @@ export function has_data(
 }
 
 export function get_balance(optional_address: string | null): proto.NativeAmount {
-    const req = new proto.GetBalanceRequest(makeStringValue(optional_address));
-    const req_bytes = proto.encodeGetBalanceRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_balance(encode_length_prefixed(req_bytes).buffer));
-    const resp = proto.decodeAbiResponse(resp_bytes);
+  const req = new proto.GetBalanceRequest(makeStringValue(optional_address));
+  const req_bytes = proto.encodeGetBalanceRequest(req);
+  const resp_bytes = Uint8Array.wrap(abi_get_balance(encode_length_prefixed(req_bytes).buffer));
+  const resp = proto.decodeAbiResponse(resp_bytes);
 
-    assert(resp.error === null);
-    assert(resp.res !== null);
-    assert(resp.res!.getBalanceResult !== null);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getBalanceResult !== null);
 
-    return assert(resp.res!.getBalanceResult!.balance, "Could not get balance");
+  return assert(resp.res!.getBalanceResult!.balance, "Could not get balance");
 }
 
 export function get_bytecode(optional_address: string | null): Uint8Array {
-    const req = new proto.GetBytecodeRequest(makeStringValue(optional_address));
-    const req_bytes = proto.encodeGetBytecodeRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_bytecode(encode_length_prefixed(req_bytes).buffer));
-    const resp = proto.decodeAbiResponse(resp_bytes);
+  const req = new proto.GetBytecodeRequest(makeStringValue(optional_address));
+  const req_bytes = proto.encodeGetBytecodeRequest(req);
+  const resp_bytes = Uint8Array.wrap(abi_get_bytecode(encode_length_prefixed(req_bytes).buffer));
+  const resp = proto.decodeAbiResponse(resp_bytes);
 
-    assert(resp.error === null);
-    assert(resp.res !== null);
-    assert(resp.res!.getBytecodeResult !== null);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getBytecodeResult !== null);
 
-    return resp.res!.getBytecodeResult!.bytecode;
+  return resp.res!.getBytecodeResult!.bytecode;
 }
 
 export function set_bytecode(bytecode: Uint8Array, optional_address: string | null): void {
-    const req = new proto.SetBytecodeRequest(bytecode, makeStringValue(optional_address));
-    const req_bytes = proto.encodeSetBytecodeRequest(req);
-    abi_set_bytecode(encode_length_prefixed(req_bytes).buffer);
+  const req = new proto.SetBytecodeRequest(bytecode, makeStringValue(optional_address));
+  const req_bytes = proto.encodeSetBytecodeRequest(req);
+  abi_set_bytecode(encode_length_prefixed(req_bytes).buffer);
 }
 
 export function get_keys(prefix: Uint8Array, optional_address: string | null): Uint8Array[] {
-    const req = new proto.GetKeysRequest(prefix, makeStringValue(optional_address));
-    const req_bytes = proto.encodeGetKeysRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_keys(encode_length_prefixed(req_bytes).buffer));
-    const resp = proto.decodeAbiResponse(resp_bytes);
+  const req = new proto.GetKeysRequest(prefix, makeStringValue(optional_address));
+  const req_bytes = proto.encodeGetKeysRequest(req);
+  const resp_bytes = Uint8Array.wrap(abi_get_keys(encode_length_prefixed(req_bytes).buffer));
+  const resp = proto.decodeAbiResponse(resp_bytes);
 
-    assert(resp.error === null);
-    assert(resp.res !== null);
-    assert(resp.res!.getKeysResult !== null);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getKeysResult !== null);
 
-    return resp.res!.getKeysResult!.keys;
+  return resp.res!.getKeysResult!.keys;
 }
 
 export function get_op_keys(prefix: Uint8Array): Uint8Array[] {
-    const req = new proto.GetOpKeysRequest(prefix);
-    const req_bytes = proto.encodeGetOpKeysRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_op_keys(encode_length_prefixed(req_bytes).buffer));
-    const resp = proto.decodeAbiResponse(resp_bytes);
+  const req = new proto.GetOpKeysRequest(prefix);
+  const req_bytes = proto.encodeGetOpKeysRequest(req);
+  const resp_bytes = Uint8Array.wrap(abi_get_op_keys(encode_length_prefixed(req_bytes).buffer));
+  const resp = proto.decodeAbiResponse(resp_bytes);
 
-    assert(resp.error === null);
-    assert(resp.res !== null);
-    assert(resp.res!.getOpKeysResult !== null);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getOpKeysResult !== null);
 
-    return resp.res!.getOpKeysResult!.keys;
+  return resp.res!.getOpKeysResult!.keys;
 }
 
 export function has_op_key(key: Uint8Array): bool {
-    const req = new proto.HasOpKeyRequest(key);
-    const req_bytes = proto.encodeHasOpKeyRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_has_op_key(encode_length_prefixed(req_bytes).buffer));
-    const resp = proto.decodeAbiResponse(resp_bytes);
+  const req = new proto.HasOpKeyRequest(key);
+  const req_bytes = proto.encodeHasOpKeyRequest(req);
+  const resp_bytes = Uint8Array.wrap(abi_has_op_key(encode_length_prefixed(req_bytes).buffer));
+  const resp = proto.decodeAbiResponse(resp_bytes);
 
-    assert(resp.error === null);
-    assert(resp.res !== null);
-    assert(resp.res!.hasOpKeyResult !== null);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.hasOpKeyResult !== null);
 
-    return resp.res!.hasOpKeyResult!.hasKey;
+  return resp.res!.hasOpKeyResult!.hasKey;
 }
 
 export function get_op_data(key: Uint8Array): Uint8Array {
-    const req = new proto.GetOpDataRequest(key);
-    const req_bytes = proto.encodeGetOpDataRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_op_data(encode_length_prefixed(req_bytes).buffer));
-    const resp = proto.decodeAbiResponse(resp_bytes);
+  const req = new proto.GetOpDataRequest(key);
+  const req_bytes = proto.encodeGetOpDataRequest(req);
+  const resp_bytes = Uint8Array.wrap(abi_get_op_data(encode_length_prefixed(req_bytes).buffer));
+  const resp = proto.decodeAbiResponse(resp_bytes);
 
-    assert(resp.error === null);
-    assert(resp.res !== null);
-    assert(resp.res!.getOpDataResult !== null);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getOpDataResult !== null);
 
-    return resp.res!.getOpDataResult!.value;
+  return resp.res!.getOpDataResult!.value;
 }
 
 /// performs a keccak256 hash on byte array and returns the hash as byte array
