@@ -252,9 +252,9 @@ export function create_sc(bytecode: Uint8Array): string {
   assert(resp.error === null, "Failed to create smart contract: " + resp.error!.message);
   assert(resp.res !== null, "response is null");
   assert(resp.res!.createScResult !== null, "createScResult is null");
-  assert(resp.res!.createScResult!.scAddress !== null, "scAddress is null");
+  assert(resp.res!.createScResult!.scAddress !== "", "scAddress is empty");
 
-  return resp.res!.createScResult!.scAddress ;
+  return resp.res!.createScResult!.scAddress;
 }
 
 // ABI to transfer coins to another address
