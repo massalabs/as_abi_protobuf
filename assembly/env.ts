@@ -249,7 +249,10 @@ export function create_sc(bytecode: Uint8Array): string {
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
 
-  assert(resp.error === null, "Failed to create smart contract: " + resp.error!.message);
+  assert(
+    resp.error === null,
+    "Failed to create smart contract: " + resp.error!.message
+  );
   assert(resp.res !== null, "response is null");
   assert(resp.res!.createScResult !== null, "createScResult is null");
   assert(resp.res!.createScResult!.scAddress !== "", "scAddress is empty");
@@ -372,88 +375,114 @@ export function has_data(
   return resp.res!.hasDataResult!.hasData;
 }
 
-export function get_balance(optional_address: string | null): proto.NativeAmount {
-    const req = new proto.GetBalanceRequest(makeStringValue(optional_address));
-    const req_bytes = proto.encodeGetBalanceRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_balance(encode_length_prefixed(req_bytes).buffer));
-    const resp = proto.decodeAbiResponse(resp_bytes);
+export function get_balance(
+  optional_address: string | null
+): proto.NativeAmount {
+  const req = new proto.GetBalanceRequest(makeStringValue(optional_address));
+  const req_bytes = proto.encodeGetBalanceRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_balance(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
 
-    assert(resp.error === null);
-    assert(resp.res !== null);
-    assert(resp.res!.getBalanceResult !== null);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getBalanceResult !== null);
 
-    return assert(resp.res!.getBalanceResult!.balance, "Could not get balance");
+  return assert(resp.res!.getBalanceResult!.balance, "Could not get balance");
 }
 
 export function get_bytecode(optional_address: string | null): Uint8Array {
-    const req = new proto.GetBytecodeRequest(makeStringValue(optional_address));
-    const req_bytes = proto.encodeGetBytecodeRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_bytecode(encode_length_prefixed(req_bytes).buffer));
-    const resp = proto.decodeAbiResponse(resp_bytes);
+  const req = new proto.GetBytecodeRequest(makeStringValue(optional_address));
+  const req_bytes = proto.encodeGetBytecodeRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_bytecode(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
 
-    assert(resp.error === null);
-    assert(resp.res !== null);
-    assert(resp.res!.getBytecodeResult !== null);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getBytecodeResult !== null);
 
-    return resp.res!.getBytecodeResult!.bytecode;
+  return resp.res!.getBytecodeResult!.bytecode;
 }
 
-export function set_bytecode(bytecode: Uint8Array, optional_address: string | null): void {
-    const req = new proto.SetBytecodeRequest(bytecode, makeStringValue(optional_address));
-    const req_bytes = proto.encodeSetBytecodeRequest(req);
-    abi_set_bytecode(encode_length_prefixed(req_bytes).buffer);
+export function set_bytecode(
+  bytecode: Uint8Array,
+  optional_address: string | null
+): void {
+  const req = new proto.SetBytecodeRequest(
+    bytecode,
+    makeStringValue(optional_address)
+  );
+  const req_bytes = proto.encodeSetBytecodeRequest(req);
+  abi_set_bytecode(encode_length_prefixed(req_bytes).buffer);
 }
 
-export function get_keys(prefix: Uint8Array, optional_address: string | null): Uint8Array[] {
-    const req = new proto.GetKeysRequest(prefix, makeStringValue(optional_address));
-    const req_bytes = proto.encodeGetKeysRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_keys(encode_length_prefixed(req_bytes).buffer));
-    const resp = proto.decodeAbiResponse(resp_bytes);
+export function get_keys(
+  prefix: Uint8Array,
+  optional_address: string | null
+): Uint8Array[] {
+  const req = new proto.GetKeysRequest(
+    prefix,
+    makeStringValue(optional_address)
+  );
+  const req_bytes = proto.encodeGetKeysRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_keys(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
 
-    assert(resp.error === null);
-    assert(resp.res !== null);
-    assert(resp.res!.getKeysResult !== null);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getKeysResult !== null);
 
-    return resp.res!.getKeysResult!.keys;
+  return resp.res!.getKeysResult!.keys;
 }
 
 export function get_op_keys(prefix: Uint8Array): Uint8Array[] {
-    const req = new proto.GetOpKeysRequest(prefix);
-    const req_bytes = proto.encodeGetOpKeysRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_op_keys(encode_length_prefixed(req_bytes).buffer));
-    const resp = proto.decodeAbiResponse(resp_bytes);
+  const req = new proto.GetOpKeysRequest(prefix);
+  const req_bytes = proto.encodeGetOpKeysRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_op_keys(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
 
-    assert(resp.error === null);
-    assert(resp.res !== null);
-    assert(resp.res!.getOpKeysResult !== null);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getOpKeysResult !== null);
 
-    return resp.res!.getOpKeysResult!.keys;
+  return resp.res!.getOpKeysResult!.keys;
 }
 
 export function has_op_key(key: Uint8Array): bool {
-    const req = new proto.HasOpKeyRequest(key);
-    const req_bytes = proto.encodeHasOpKeyRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_has_op_key(encode_length_prefixed(req_bytes).buffer));
-    const resp = proto.decodeAbiResponse(resp_bytes);
+  const req = new proto.HasOpKeyRequest(key);
+  const req_bytes = proto.encodeHasOpKeyRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_has_op_key(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
 
-    assert(resp.error === null);
-    assert(resp.res !== null);
-    assert(resp.res!.hasOpKeyResult !== null);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.hasOpKeyResult !== null);
 
-    return resp.res!.hasOpKeyResult!.hasKey;
+  return resp.res!.hasOpKeyResult!.hasKey;
 }
 
 export function get_op_data(key: Uint8Array): Uint8Array {
-    const req = new proto.GetOpDataRequest(key);
-    const req_bytes = proto.encodeGetOpDataRequest(req);
-    const resp_bytes = Uint8Array.wrap(abi_get_op_data(encode_length_prefixed(req_bytes).buffer));
-    const resp = proto.decodeAbiResponse(resp_bytes);
+  const req = new proto.GetOpDataRequest(key);
+  const req_bytes = proto.encodeGetOpDataRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_op_data(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
 
-    assert(resp.error === null);
-    assert(resp.res !== null);
-    assert(resp.res!.getOpDataResult !== null);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getOpDataResult !== null);
 
-    return resp.res!.getOpDataResult!.value;
+  return resp.res!.getOpDataResult!.value;
 }
 
 /// performs a keccak256 hash on byte array and returns the hash as byte array
@@ -541,7 +570,10 @@ export function check_native_amount(to_check: proto.NativeAmount): bool {
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null, "check_native_amount" + resp.error!.message);
   assert(resp.res !== null, "check_native_amount res null");
-  assert(resp.res!.checkNativeAmountResult !== null, "checkNativeAmountResult null");
+  assert(
+    resp.res!.checkNativeAmountResult !== null,
+    "checkNativeAmountResult null"
+  );
   return resp.res!.checkNativeAmountResult!.isValid;
 }
 
@@ -557,7 +589,10 @@ export function add_native_amounts(
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null, "add_native_amounts" + resp.error!.message);
   assert(resp.res !== null, "add_native_amounts res null");
-  assert(resp.res!.addNativeAmountsResult !== null, "addNativeAmountsResult null");
+  assert(
+    resp.res!.addNativeAmountsResult !== null,
+    "addNativeAmountsResult null"
+  );
   assert(resp.res!.addNativeAmountsResult!.sum !== null, "sum null");
   return resp.res!.addNativeAmountsResult!.sum!;
 }
@@ -574,8 +609,14 @@ export function sub_native_amounts(
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null, "sub_native_amounts" + resp.error!.message);
   assert(resp.res !== null, "sub_native_amounts res null");
-  assert(resp.res!.subNativeAmountsResult !== null, "subNativeAmountsResult null");
-  assert(resp.res!.subNativeAmountsResult!.difference !== null, "difference null");
+  assert(
+    resp.res!.subNativeAmountsResult !== null,
+    "subNativeAmountsResult null"
+  );
+  assert(
+    resp.res!.subNativeAmountsResult!.difference !== null,
+    "difference null"
+  );
   return resp.res!.subNativeAmountsResult!.difference!;
 }
 
@@ -594,7 +635,10 @@ export function mul_native_amount(
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null, "mul_native_amount" + resp.error!.message);
   assert(resp.res !== null, "mul_native_amount res null");
-  assert(resp.res!.mulNativeAmountResult !== null, "mulNativeAmountResult null");
+  assert(
+    resp.res!.mulNativeAmountResult !== null,
+    "mulNativeAmountResult null"
+  );
   assert(resp.res!.mulNativeAmountResult!.product !== null, "product null");
   return resp.res!.mulNativeAmountResult!.product!;
 }
@@ -624,9 +668,18 @@ export function div_rem_native_amounts(
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null, "div_rem_native_amounts" + resp.error!.message);
   assert(resp.res !== null, "div_rem_native_amounts res null");
-  assert(resp.res!.divRemNativeAmountsResult !== null, "divRemNativeAmountsResult null");
-  assert(resp.res!.divRemNativeAmountsResult!.mandatoryQuotient !== null, "mandatoryQuotient null");
-  assert(resp.res!.divRemNativeAmountsResult!.remainder !== null, "remainder null");
+  assert(
+    resp.res!.divRemNativeAmountsResult !== null,
+    "divRemNativeAmountsResult null"
+  );
+  assert(
+    resp.res!.divRemNativeAmountsResult!.mandatoryQuotient !== null,
+    "mandatoryQuotient null"
+  );
+  assert(
+    resp.res!.divRemNativeAmountsResult!.remainder !== null,
+    "remainder null"
+  );
   return new DivRemNativeAmount(
     resp.res!.divRemNativeAmountsResult!.mandatoryQuotient!.value,
     resp.res!.divRemNativeAmountsResult!.remainder!
@@ -652,9 +705,18 @@ export function div_rem_native_amount(
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null, "div_rem_native_amount" + resp.error!.message);
   assert(resp.res !== null, "div_rem_native_amount res null");
-  assert(resp.res!.scalarDivRemNativeAmountResult !== null, "scalarDivRemNativeAmountResult null");
-  assert(resp.res!.scalarDivRemNativeAmountResult!.quotient !== null, "quotient null");
-  assert(resp.res!.scalarDivRemNativeAmountResult!.remainder !== null, "remainder null");
+  assert(
+    resp.res!.scalarDivRemNativeAmountResult !== null,
+    "scalarDivRemNativeAmountResult null"
+  );
+  assert(
+    resp.res!.scalarDivRemNativeAmountResult!.quotient !== null,
+    "quotient null"
+  );
+  assert(
+    resp.res!.scalarDivRemNativeAmountResult!.remainder !== null,
+    "remainder null"
+  );
   return [
     resp.res!.scalarDivRemNativeAmountResult!.quotient!,
     resp.res!.scalarDivRemNativeAmountResult!.remainder!,
@@ -670,9 +732,15 @@ export function native_amount_to_string(
     abi_native_amount_to_string(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
-  assert(resp.error === null, "native_amount_to_string error: " + resp.error!.message);
+  assert(
+    resp.error === null,
+    "native_amount_to_string error: " + resp.error!.message
+  );
   assert(resp.res !== null, "native_amount_to_string res null");
-  assert(resp.res!.nativeAmountToStringResult !== null, "nativeAmountToStringResult null");
+  assert(
+    resp.res!.nativeAmountToStringResult !== null,
+    "nativeAmountToStringResult null"
+  );
   return resp.res!.nativeAmountToStringResult!.convertedAmount;
 }
 
@@ -685,9 +753,18 @@ export function native_amount_from_string(
     abi_native_amount_from_string(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
-  assert(resp.error === null, "native_amount_from_string error: " + resp.error!.message);
+  assert(
+    resp.error === null,
+    "native_amount_from_string error: " + resp.error!.message
+  );
   assert(resp.res !== null, "native_amount_from_string res null");
-  assert(resp.res!.nativeAmountFromStringResult !== null, "nativeAmountFromStringResult null");
-  assert(resp.res!.nativeAmountFromStringResult!.convertedAmount !== null, "convertedAmount null");
+  assert(
+    resp.res!.nativeAmountFromStringResult !== null,
+    "nativeAmountFromStringResult null"
+  );
+  assert(
+    resp.res!.nativeAmountFromStringResult!.convertedAmount !== null,
+    "convertedAmount null"
+  );
   return resp.res!.nativeAmountFromStringResult!.convertedAmount!;
 }
