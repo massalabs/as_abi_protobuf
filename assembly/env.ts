@@ -93,6 +93,50 @@ declare function abi_hash_keccak256(arg: ArrayBuffer): ArrayBuffer;
 declare function abi_blake3_hash(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
+@external("massa", "abi_verify_evm_signature")
+declare function abi_verify_evm_signature(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_remaining_gas")
+declare function abi_get_remaining_gas(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_owned_addresses")
+declare function abi_get_owned_addresses(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_call_stack")
+declare function abi_get_call_stack(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_address_from_public_key")
+declare function abi_address_from_public_key(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_unsafe_random")
+declare function abi_unsafe_random(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_call_coins")
+declare function abi_get_call_coins(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_native_time")
+declare function abi_get_native_time(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_send_async_message")
+declare function abi_send_async_message(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_local_execution")
+declare function abi_local_execution(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_caller_has_write_access")
+declare function abi_caller_has_write_access(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
 @external("massa", "abi_check_native_amount")
 declare function abi_check_native_amount(arg: ArrayBuffer): ArrayBuffer;
 // @ts-ignore: decorator
@@ -258,6 +302,135 @@ export function create_sc(bytecode: Uint8Array): string {
   assert(resp.res!.createScResult!.scAddress !== "", "scAddress is empty");
 
   return resp.res!.createScResult!.scAddress;
+}
+
+export function verify_evm_signature(): boolean {
+  const req = new proto.VerifyEvmSigRequest();
+  const req_bytes = proto.encodeVerifyEvmSigRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_verify_evm_signature(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.verifyEvmSigResult !== null);
+  return resp.res!.verifyEvmSigResult!.isVerified;
+}
+
+export function get_remaining_gas(): UInt64Value {
+  const req = new proto.GetRemainingGasRequest();
+  const req_bytes = proto.encodeGetRemainingGasRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_remaining_gas(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getRemainingGasResult !== null);
+  return assert(resp.res!.getRemainingGasResult!.mandatoryRemainingGas, "Could not get remaining gas");
+}
+
+export function get_owned_addresses(): string[] {
+  const req = new proto.GetOwnedAddressesRequest();
+  const req_bytes = proto.encodeGetOwnedAddressesRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_owned_addresses(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getOwnedAddressesResult !== null);
+  return resp.res!.getOwnedAddressesResult!.addresses;
+}
+
+export function get_call_stack(): string[] {
+  const req = new proto.GetCallStackRequest();
+  const req_bytes = proto.encodeGetCallStackRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_call_stack(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getCallStackResult !== null);
+  return resp.res!.getCallStackResult!.calls;
+}
+
+export function address_from_public_key(public_key: string): string {
+  const req = new proto.AddressFromPubKeyRequest(public_key);
+  const req_bytes = proto.encodeAddressFromPubKeyRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_address_from_public_key(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.addressFromPubKeyResult !== null);
+  return resp.res!.addressFromPubKeyResult!.address;
+}
+
+export function unsafe_random(): Uint8Array {
+  const req = new proto.UnsafeRandomRequest();
+  const req_bytes = proto.encodeUnsafeRandomRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_unsafe_random(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.unsafeRandomResult !== null);
+  return resp.res!.unsafeRandomResult!.randomBytes;
+}
+
+export function get_call_coins(): proto.NativeAmount {
+  const req = new proto.GetCallCoinsRequest();
+  const req_bytes = proto.encodeGetCallCoinsRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_call_coins(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getCallCoinsResult !== null);
+  return assert(resp.res!.getCallCoinsResult!.coins, "Could not get call coins");
+}
+
+export function get_native_time(): proto.NativeTime {
+  const req = new proto.GetNativeTimeRequest();
+  const req_bytes = proto.encodeGetNativeTimeRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_native_time(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getNativeTimeResult !== null);
+  return assert(resp.res!.getNativeTimeResult!.time, "Could not get native time");
+}
+
+export function send_async_message(): void {
+  const req = new proto.SendAsyncMessageRequest();
+  const req_bytes = proto.encodeSendAsyncMessageRequest(req);
+  abi_send_async_message(encode_length_prefixed(req_bytes).buffer);
+}
+
+export function local_execution(): void {
+  const req = new proto.LocalExecutionRequest();
+  const req_bytes = proto.encodeLocalExecutionRequest(req);
+  abi_local_execution(encode_length_prefixed(req_bytes).buffer);
+}
+
+export function caller_has_write_access(): bool {
+  const req = new proto.CallerHasWriteAccessRequest();
+  const req_bytes = proto.encodeCallerHasWriteAccessRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_caller_has_write_access(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.callerHasWriteAccessResult !== null);
+  return resp.res!.callerHasWriteAccessResult!.hasWriteAccess;
 }
 
 // ABI to transfer coins to another address
