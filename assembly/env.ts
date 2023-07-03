@@ -365,8 +365,7 @@ export function address_from_public_key(public_key: string): string {
   return resp.res!.addressFromPubKeyResult!.address;
 }
 
-// todo: unsafe_random
-export function unsafe_random(): u64 {
+export function unsafe_random(): Uint8Array {
   const req = new proto.UnsafeRandomRequest();
   const req_bytes = proto.encodeUnsafeRandomRequest(req);
   const resp_bytes = Uint8Array.wrap(
@@ -375,7 +374,7 @@ export function unsafe_random(): u64 {
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null);
   assert(resp.res!.unsafeRandomResult !== null);
-  return resp.res!.unsafeRandomResult!;
+  return resp.res!.unsafeRandomResult!.randomBytes;
 }
 
 export function get_call_coins(): proto.NativeAmount {
@@ -402,7 +401,11 @@ export function get_native_time(): proto.NativeTime | null {
   return resp.res!.getNativeTimeResult!.time;
 }
 
-// todo: send_async_message
+export function send_async_message(): void {
+  const req = new proto.SendAsyncMessageRequest();
+  const req_bytes = proto.encodeSendAsyncMessageRequest(req);
+  abi_send_async_message(encode_length_prefixed(req_bytes).buffer);
+}
 
 export function local_execution(): void {
   const req = new proto.LocalExecutionRequest();
@@ -410,7 +413,7 @@ export function local_execution(): void {
   abi_local_execution(encode_length_prefixed(req_bytes).buffer);
 }
 
-export function caller_has_write_access(): boolean {
+export function caller_has_write_access(): bool {
   const req = new proto.CallerHasWriteAccessRequest();
   const req_bytes = proto.encodeCallerHasWriteAccessRequest(req);
   const resp_bytes = Uint8Array.wrap(
