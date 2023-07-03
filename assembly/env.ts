@@ -255,7 +255,7 @@ export function myabort(
 }
 // end of abort() implementation
 
-export function stringToUint8Array(str: string): Uint8Array {
+function stringToUint8Array(str: string): Uint8Array {
   return Uint8Array.wrap(String.UTF8.encode(str));
 }
 
@@ -311,8 +311,8 @@ export function create_sc(bytecode: Uint8Array): string {
   return resp.res!.createScResult!.scAddress;
 }
 
-export function verify_evm_signature(): boolean {
-  const req = new proto.VerifyEvmSigRequest();
+export function verify_evm_signature(sig: Uint8Array, message: Uint8Array, pub_key: Uint8Array): bool {
+  const req = new proto.VerifyEvmSigRequest(sig, message, pub_key);
   const req_bytes = proto.encodeVerifyEvmSigRequest(req);
   const resp_bytes = Uint8Array.wrap(
     abi_verify_evm_signature(encode_length_prefixed(req_bytes).buffer)
@@ -376,8 +376,8 @@ export function address_from_public_key(public_key: string): string {
   return resp.res!.addressFromPubKeyResult!.address;
 }
 
-export function unsafe_random(): Uint8Array {
-  const req = new proto.UnsafeRandomRequest();
+export function unsafe_random(num_bytes: UInt32Value): Uint8Array {
+  const req = new proto.UnsafeRandomRequest(num_bytes);
   const req_bytes = proto.encodeUnsafeRandomRequest(req);
   const resp_bytes = Uint8Array.wrap(
     abi_unsafe_random(encode_length_prefixed(req_bytes).buffer)
@@ -415,16 +415,23 @@ export function get_native_time(): proto.NativeTime {
   return assert(resp.res!.getNativeTimeResult!.time, "Could not get native time");
 }
 
-export function send_async_message(): void {
-  const req = new proto.SendAsyncMessageRequest();
+export function send_async_message(target_address: string, target_handler: string, validity_start: proto.Slot, validity_end: proto.Slot, execution_gas: u64, raw_fee: u64, raw_coins: u64, data: Uint8Array, filter: proto.SendAsyncMessageFilter): void {
+  const req = new proto.SendAsyncMessageRequest(target_address, target_handler, validity_start, validity_end, execution_gas, raw_fee, raw_coins, data, filter);
   const req_bytes = proto.encodeSendAsyncMessageRequest(req);
   abi_send_async_message(encode_length_prefixed(req_bytes).buffer);
 }
 
-export function local_execution(): void {
-  const req = new proto.LocalExecutionRequest();
+export function local_execution(bytecode: Uint8Array, target_function: string, arg: Uint8Array): Uint8Array {
+  const req = new proto.LocalExecutionRequest(bytecode, target_function, arg);
   const req_bytes = proto.encodeLocalExecutionRequest(req);
-  abi_local_execution(encode_length_prefixed(req_bytes).buffer);
+  const resp_bytes = Uint8Array.wrap(
+    abi_local_execution(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.localExecutionResponse !== null);
+  return resp.res!.localExecutionResponse!.data;
 }
 
 export function caller_has_write_access(): bool {
@@ -460,13 +467,10 @@ export function transfer_coins(
   assert(resp.error === null);
 }
 
-export function generate_str_event(msg: string): void {
-  return generate_event(stringToUint8Array(msg));
-}
-
 // ABI to generate an event
-export function generate_event(event: Uint8Array): void {
-  const req = new proto.GenerateEventRequest(event);
+  export function generate_event(event: string): void {
+  const message = stringToUint8Array(event);
+  const req = new proto.GenerateEventRequest(message);
   const req_bytes = proto.encodeGenerateEventRequest(req);
   const resp_bytes = Uint8Array.wrap(
     abi_generate_event(encode_length_prefixed(req_bytes).buffer)
@@ -474,7 +478,7 @@ export function generate_event(event: Uint8Array): void {
 
   const resp = proto.decodeAbiResponse(resp_bytes);
 
-  assert(resp.error === null);
+  assert(resp.error === null, "Error generating event" + resp.error!.message);
 }
 
 export function set_data(

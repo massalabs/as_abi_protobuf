@@ -1,26 +1,25 @@
-
 import * as env from "./env";
 
 // using a global to prevent problem with GC
 let shared_mem: ArrayBuffer = new ArrayBuffer(0);
 
 export function __alloc(size: i32): ArrayBuffer {
-    // /!\ Can't trace here
-    // // env.log("allocating " + size.toString() + "bytes");
+  // /!\ Can't trace here
+  // // env.log("allocating " + size.toString() + "bytes");
 
-    shared_mem = new ArrayBuffer(size);
-    return shared_mem;
+  shared_mem = new ArrayBuffer(size);
+  return shared_mem;
 }
 
 export function main(_args: ArrayBuffer): ArrayBuffer {
-    assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
+  assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
 
-    // Call the abi
-    var s = env.get_current_slot();
+  // Call the abi
+  var s = env.get_current_slot();
 
-    env.generate_event(env.stringToUint8Array("Current period: " + s.period.toString()));
-    env.generate_event(env.stringToUint8Array("Current thread: " + s.thread.toString()));
+  env.generate_event("Current period: " + s.period.toString());
+  env.generate_event("Current thread: " + s.thread.toString());
 
-    shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
-    return shared_mem;
+  shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
+  return shared_mem;
 }

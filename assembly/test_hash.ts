@@ -24,19 +24,13 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   buf[3] = 0x34;
 
   const blake3_hash = env.blake3_hash(buf);
-  env.generate_event(
-    env.stringToUint8Array("blake3Hash: " + blake3_hash.toString())
-  );
+  env.generate_event("blake3Hash: " + blake3_hash.toString());
 
   const sha256_hash = env.hash_sha256(buf);
-  env.generate_event(
-    env.stringToUint8Array("Hash Sha256: " + sha256_hash.toString())
-  );
+  env.generate_event("Hash Sha256: " + sha256_hash.toString());
 
   const keccak256_hash = env.hash_keccak256(buf);
-  env.generate_event(
-    env.stringToUint8Array("Hash Keccak256: " + keccak256_hash.toString())
-  );
+  env.generate_event("Hash Keccak256: " + keccak256_hash.toString());
 
   shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
   return shared_mem;
