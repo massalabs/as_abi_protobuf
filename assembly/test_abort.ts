@@ -14,7 +14,7 @@ export function __alloc(size: i32): ArrayBuffer {
 export function main(_args: ArrayBuffer): ArrayBuffer {
   assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
 
-  env.generate_event(env.stringToUint8Array("will call abort()"));
+  env.generate_event("will call abort()");
 
   // will cause a call to abort()
   assert(false, "abort test message");

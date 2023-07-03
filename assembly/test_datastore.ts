@@ -19,11 +19,7 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   key[0] = 21;
   data[0] = 99;
 
-  env.generate_event(
-    env.stringToUint8Array(
-      "key = " + key.toString() + ", data = " + data.toString()
-    )
-  );
+  env.generate_event("key = " + key.toString() + ", data = " + data.toString());
 
   const optional_address = "abcd";
 
@@ -33,9 +29,7 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   env.delete_data(key, optional_address);
   const has_data = env.has_data(key, optional_address);
 
-  env.generate_event(
-    env.stringToUint8Array("has_data = " + has_data.toString())
-  );
+  env.generate_event("has_data = " + has_data.toString());
 
   env.set_data(key, data, null);
   env.get_data(key, null);
@@ -43,9 +37,7 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   env.delete_data(key, null);
   const has_data_null = env.has_data(key, null);
 
-  env.generate_event(
-    env.stringToUint8Array("has_data = " + has_data_null.toString())
-  );
+  env.generate_event("has_data = " + has_data_null.toString());
 
   shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
   return shared_mem;

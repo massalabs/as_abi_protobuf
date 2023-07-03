@@ -26,7 +26,7 @@ export function initialize(arg: ArrayBuffer): ArrayBuffer {
 export function main(_args: ArrayBuffer): ArrayBuffer {
   assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
 
-  env.generate_str_event("hello world");
+  env.generate_event("hello world");
 
   shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
   return shared_mem;

@@ -248,7 +248,7 @@ export function myabort(
 }
 // end of abort() implementation
 
-export function stringToUint8Array(str: string): Uint8Array {
+function stringToUint8Array(str: string): Uint8Array {
   return Uint8Array.wrap(String.UTF8.encode(str));
 }
 
@@ -453,13 +453,10 @@ export function transfer_coins(
   assert(resp.error === null);
 }
 
-export function generate_str_event(msg: string): void {
-  return generate_event(stringToUint8Array(msg));
-}
-
 // ABI to generate an event
-export function generate_event(event: Uint8Array): void {
-  const req = new proto.GenerateEventRequest(event);
+  export function generate_event(event: string): void {
+  const message = stringToUint8Array(event);
+  const req = new proto.GenerateEventRequest(message);
   const req_bytes = proto.encodeGenerateEventRequest(req);
   const resp_bytes = Uint8Array.wrap(
     abi_generate_event(encode_length_prefixed(req_bytes).buffer)
@@ -467,7 +464,7 @@ export function generate_event(event: Uint8Array): void {
 
   const resp = proto.decodeAbiResponse(resp_bytes);
 
-  assert(resp.error === null);
+  assert(resp.error === null, "Error generating event" + resp.error!.message);
 }
 
 export function set_data(
