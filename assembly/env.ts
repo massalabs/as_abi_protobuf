@@ -312,6 +312,7 @@ export function verify_evm_signature(): boolean {
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null);
+  assert(resp.res !== null);
   assert(resp.res!.verifyEvmSigResult !== null);
   return resp.res!.verifyEvmSigResult!.isVerified;
 }
@@ -324,6 +325,7 @@ export function get_remaining_gas(): UInt64Value {
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null);
+  assert(resp.res !== null);
   assert(resp.res!.getRemainingGasResult !== null);
   return assert(resp.res!.getRemainingGasResult!.mandatoryRemainingGas, "Could not get remaining gas");
 }
@@ -336,6 +338,7 @@ export function get_owned_addresses(): string[] {
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null);
+  assert(resp.res !== null);
   assert(resp.res!.getOwnedAddressesResult !== null);
   return resp.res!.getOwnedAddressesResult!.addresses;
 }
@@ -348,6 +351,7 @@ export function get_call_stack(): string[] {
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null);
+  assert(resp.res !== null);
   assert(resp.res!.getCallStackResult !== null);
   return resp.res!.getCallStackResult!.calls;
 }
@@ -360,6 +364,7 @@ export function address_from_public_key(public_key: string): string {
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null);
+  assert(resp.res !== null);
   assert(resp.res!.addressFromPubKeyResult !== null);
   return resp.res!.addressFromPubKeyResult!.address;
 }
@@ -372,6 +377,7 @@ export function unsafe_random(): Uint8Array {
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null);
+  assert(resp.res !== null);
   assert(resp.res!.unsafeRandomResult !== null);
   return resp.res!.unsafeRandomResult!.randomBytes;
 }
@@ -384,11 +390,12 @@ export function get_call_coins(): proto.NativeAmount {
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null);
+  assert(resp.res !== null);
   assert(resp.res!.getCallCoinsResult !== null);
   return assert(resp.res!.getCallCoinsResult!.coins, "Could not get call coins");
 }
 
-export function get_native_time(): proto.NativeTime | null {
+export function get_native_time(): proto.NativeTime {
   const req = new proto.GetNativeTimeRequest();
   const req_bytes = proto.encodeGetNativeTimeRequest(req);
   const resp_bytes = Uint8Array.wrap(
@@ -396,8 +403,9 @@ export function get_native_time(): proto.NativeTime | null {
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null);
+  assert(resp.res !== null);
   assert(resp.res!.getNativeTimeResult !== null);
-  return resp.res!.getNativeTimeResult!.time;
+  return assert(resp.res!.getNativeTimeResult!.time, "Could not get native time");
 }
 
 export function send_async_message(): void {
@@ -420,6 +428,7 @@ export function caller_has_write_access(): bool {
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null);
+  assert(resp.res !== null);
   assert(resp.res!.callerHasWriteAccessResult !== null);
   return resp.res!.callerHasWriteAccessResult!.hasWriteAccess;
 }
