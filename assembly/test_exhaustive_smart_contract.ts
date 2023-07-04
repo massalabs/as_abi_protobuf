@@ -62,20 +62,20 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // Test .get_remaining_gas()
     env.generate_event("Calling get_remaining_gas()");
     const ret_remaining_gas = assert(env.get_remaining_gas(), "  > Error: get_remaining_gas() returned null");
-    const ret_remaining_gas_value = assert(ret_remaining_gas.value, "  > Error: get_remaining_gas().value returned null");
+    const ret_remaining_gas_value = assert(ret_remaining_gas, "  > Error: get_remaining_gas().value returned null");
     env.generate_event("  > Ok: get_remaining_gas() returns: " + ret_remaining_gas_value.toString());
     env.generate_event(" ");
 
     // Test .get_call_coins()
     env.generate_event("Calling get_call_coins()");
     const ret_get_call_coins = env.get_call_coins();
-    const ret_get_call_coins_mantissa = assert(ret_get_call_coins.mandatoryMantissa, "  > Error: get_call_coins(null).mandatoryScale returned null");
-    const ret_get_call_coins_scale = assert(ret_get_call_coins.mandatoryScale, "  > Error: get_call_coins(null).mandatoryScale returned null");
+    const ret_get_call_coins_mantissa = assert(ret_get_call_coins.mantissa, "  > Error: get_call_coins(null).scale returned null");
+    const ret_get_call_coins_scale = assert(ret_get_call_coins.scale, "  > Error: get_call_coins(null).scale returned null");
     env.generate_event(
-        "  > Ok: get_call_coins() returns: mandatoryMantissa: " +
-        ret_get_call_coins_mantissa.value.toString() +
-        ", mandatoryScale: " +
-        ret_get_call_coins_scale.value.toString()
+        "  > Ok: get_call_coins() returns: mantissa: " +
+        ret_get_call_coins_mantissa.toString() +
+        ", scale: " +
+        ret_get_call_coins_scale.toString()
     );
     env.generate_event(" ");
 
@@ -129,7 +129,7 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
 
     // Test .unsafe_random()
     env.generate_event("Calling unsafe_random()");
-    const ret_unsafe_random = env.unsafe_random(new UInt32Value(42));
+    const ret_unsafe_random = env.unsafe_random(42);
     env.generate_event("  > Ok: unsafe_random() returns: " + ret_unsafe_random.toString());
     env.generate_event(" ");
 
@@ -143,29 +143,29 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     env.generate_event(" ");
 
     // ##############################
-    // TESTS DATASTORE 
+    // TESTS DATASTORE
     // ##############################
 
     // Test .get_balance()
     env.generate_event("Calling get_balance(null)");
     const ret_get_balance_null = env.get_balance(null);
-    const ret_get_balance_null_mantissa = assert(ret_get_balance_null.mandatoryMantissa, "  > Error: get_balance(null).mandatoryScale returned null");
-    const ret_get_balance_null_scale = assert(ret_get_balance_null.mandatoryScale, "  > Error: get_balance(null).mandatoryScale returned null");
+    const ret_get_balance_null_mantissa = assert(ret_get_balance_null.mantissa, "  > Error: get_balance(null).scale returned null");
+    const ret_get_balance_null_scale = assert(ret_get_balance_null.scale, "  > Error: get_balance(null).scale returned null");
     env.generate_event(
-        "  > Ok: get_balance(null) returns: mandatoryMantissa: " +
-        ret_get_balance_null_mantissa.value.toString() +
-        ", mandatoryScale: " +
-        ret_get_balance_null_scale.value.toString()
+        "  > Ok: get_balance(null) returns: mantissa: " +
+        ret_get_balance_null_mantissa.toString() +
+        ", scale: " +
+        ret_get_balance_null_scale.toString()
     );
     env.generate_event("Calling get_balance(optional_address)");
     const ret_get_balance_optional_address = env.get_balance(optional_address);
-    const ret_get_balance_optional_address_mantissa = assert(ret_get_balance_optional_address.mandatoryMantissa, "  > Error: get_balance(optional_address).mandatoryScale returned null");
-    const ret_get_balance_optional_address_scale = assert(ret_get_balance_optional_address.mandatoryScale, "  > Error: get_balance(optional_address).mandatoryScale returned null");
+    const ret_get_balance_optional_address_mantissa = assert(ret_get_balance_optional_address.mantissa, "  > Error: get_balance(optional_address).scale returned null");
+    const ret_get_balance_optional_address_scale = assert(ret_get_balance_optional_address.scale, "  > Error: get_balance(optional_address).scale returned null");
     env.generate_event(
-        "  > Ok: get_balance(optional_address) returns: mandatoryMantissa: " +
-        ret_get_balance_optional_address_mantissa.value.toString() +
-        ", mandatoryScale: " +
-        ret_get_balance_optional_address_scale.value.toString()
+        "  > Ok: get_balance(optional_address) returns: mantissa: " +
+        ret_get_balance_optional_address_mantissa.toString() +
+        ", scale: " +
+        ret_get_balance_optional_address_scale.toString()
     );
     env.generate_event(" ");
 
@@ -300,7 +300,7 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     env.generate_event(" ");
 
     // ##############################
-    // TESTS SLOT / TIME GETTERS 
+    // TESTS SLOT / TIME GETTERS
     // ##############################
 
     // Test .get_current_slot()
@@ -331,39 +331,39 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // Test .add_native_amounts()
     env.generate_event("Calling add_native_amounts(amount1, amount2)");
     const ret_add_native_amounts = env.add_native_amounts(amount1, amount2);
-    const ret_add_native_amounts_mantissa = assert(ret_add_native_amounts.mandatoryMantissa, "  > Error: check_native_amount(amount1, amount2).mandatoryScale returned null");
-    const ret_add_native_amounts_scale = assert(ret_add_native_amounts.mandatoryScale, "  > Error: check_native_amount(amount1, amount2).mandatoryScale returned null");
+    const ret_add_native_amounts_mantissa = assert(ret_add_native_amounts.mantissa, "  > Error: check_native_amount(amount1, amount2).scale returned null");
+    const ret_add_native_amounts_scale = assert(ret_add_native_amounts.scale, "  > Error: check_native_amount(amount1, amount2).scale returned null");
     env.generate_event(
-        "  > Ok: add_native_amounts(amount1, amount2) returns: mandatoryMantissa: " +
-        ret_add_native_amounts_mantissa.value.toString() +
-        ", mandatoryScale: " +
-        ret_add_native_amounts_scale.value.toString()
+        "  > Ok: add_native_amounts(amount1, amount2) returns: mantissa: " +
+        ret_add_native_amounts_mantissa.toString() +
+        ", scale: " +
+        ret_add_native_amounts_scale.toString()
     );
     env.generate_event(" ");
 
     // Test .sub_native_amounts()
     env.generate_event("Calling sub_native_amounts(amount1, amount2)");
     const ret_sub_native_amounts = env.sub_native_amounts(amount1, amount2);
-    const ret_sub_native_amounts_mantissa = assert(ret_sub_native_amounts.mandatoryMantissa, "  > Error: sub_native_amounts(amount1, amount2).mandatoryScale returned null");
-    const ret_sub_native_amounts_scale = assert(ret_sub_native_amounts.mandatoryScale, "  > Error: sub_native_amounts(amount1, amount2).mandatoryScale returned null");
+    const ret_sub_native_amounts_mantissa = assert(ret_sub_native_amounts.mantissa, "  > Error: sub_native_amounts(amount1, amount2).scale returned null");
+    const ret_sub_native_amounts_scale = assert(ret_sub_native_amounts.scale, "  > Error: sub_native_amounts(amount1, amount2).scale returned null");
     env.generate_event(
-        "  > Ok: sub_native_amounts(amount1, amount2) returns: mandatoryMantissa: " +
-        ret_sub_native_amounts_mantissa.value.toString() +
-        ", mandatoryScale: " +
-        ret_sub_native_amounts_scale.value.toString()
+        "  > Ok: sub_native_amounts(amount1, amount2) returns: mantissa: " +
+        ret_sub_native_amounts_mantissa.toString() +
+        ", scale: " +
+        ret_sub_native_amounts_scale.toString()
     );
     env.generate_event(" ");
 
     // Test .mul_native_amount()
     env.generate_event("Calling mul_native_amount(amount1, coefficient)");
     const ret_mul_native_amount = env.mul_native_amount(amount1, coefficient);
-    const ret_mul_native_amount_mantissa = assert(ret_mul_native_amount.mandatoryMantissa, "  > Error: mul_native_amount(amount1, coefficient).mandatoryScale returned null");
-    const ret_mul_native_amount_scale = assert(ret_mul_native_amount.mandatoryScale, "  > Error: mul_native_amount(amount1, coefficient).mandatoryScale returned null");
+    const ret_mul_native_amount_mantissa = assert(ret_mul_native_amount.mantissa, "  > Error: mul_native_amount(amount1, coefficient).scale returned null");
+    const ret_mul_native_amount_scale = assert(ret_mul_native_amount.scale, "  > Error: mul_native_amount(amount1, coefficient).scale returned null");
     env.generate_event(
-        "  > Ok: mul_native_amount(amount1, coefficient) returns: mandatoryMantissa: " +
-        ret_mul_native_amount_mantissa.value.toString() +
-        ", mandatoryScale: " +
-        ret_mul_native_amount_scale.value.toString()
+        "  > Ok: mul_native_amount(amount1, coefficient) returns: mantissa: " +
+        ret_mul_native_amount_mantissa.toString() +
+        ", scale: " +
+        ret_mul_native_amount_scale.toString()
     );
     env.generate_event(" ");
 
@@ -372,20 +372,20 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     const ret_div_rem_native_amount = env.div_rem_native_amount(amount1, divisor);
     assert(ret_div_rem_native_amount.length == 2, "  > Error: div_rem_native_amount(amount1, divisor) should return a 2 element array");
     const ret_div_rem_native_amount_quotient = ret_div_rem_native_amount.at(0);
-    const ret_div_rem_native_amount_quotient_mantissa = assert(ret_div_rem_native_amount_quotient.mandatoryMantissa, "  > Error: div_rem_native_amount(amount1, divisor).quotient.mandatoryMantissa returned null");
-    const ret_div_rem_native_amount_quotient_scale = assert(ret_div_rem_native_amount_quotient.mandatoryScale, "  > Error: div_rem_native_amount(amount1, divisor).quotient.mandatoryScale returned null");
+    const ret_div_rem_native_amount_quotient_mantissa = assert(ret_div_rem_native_amount_quotient.mantissa, "  > Error: div_rem_native_amount(amount1, divisor).quotient.mantissa returned null");
+    const ret_div_rem_native_amount_quotient_scale = assert(ret_div_rem_native_amount_quotient.scale, "  > Error: div_rem_native_amount(amount1, divisor).quotient.scale returned null");
     const ret_div_rem_native_amount_remainder = ret_div_rem_native_amount.at(1);
-    const ret_div_rem_native_amount_remainder_mantissa = assert(ret_div_rem_native_amount_remainder.mandatoryMantissa, "  > Error: div_rem_native_amount(amount1, divisor).remainder.mandatoryMantissa returned null");
-    const ret_div_rem_native_amount_remainder_scale = assert(ret_div_rem_native_amount_remainder.mandatoryScale, "  > Error: div_rem_native_amount(amount1, divisor).remainder.mandatoryScale returned null");
+    const ret_div_rem_native_amount_remainder_mantissa = assert(ret_div_rem_native_amount_remainder.mantissa, "  > Error: div_rem_native_amount(amount1, divisor).remainder.mantissa returned null");
+    const ret_div_rem_native_amount_remainder_scale = assert(ret_div_rem_native_amount_remainder.scale, "  > Error: div_rem_native_amount(amount1, divisor).remainder.scale returned null");
     env.generate_event(
-        "  > Ok: div_rem_native_amount(amount1, divisor) returns: quotient.mandatoryMantissa: " +
-        ret_div_rem_native_amount_quotient_mantissa.value.toString() +
-        ", quotient.mandatoryScale: " +
-        ret_div_rem_native_amount_quotient_scale.value.toString() +
-        ", remainder.mandatoryMantissa: " +
-        ret_div_rem_native_amount_remainder_mantissa.value.toString() +
-        ", remainder.mandatoryScale: " +
-        ret_div_rem_native_amount_remainder_scale.value.toString()
+        "  > Ok: div_rem_native_amount(amount1, divisor) returns: quotient.mantissa: " +
+        ret_div_rem_native_amount_quotient_mantissa.toString() +
+        ", quotient.scale: " +
+        ret_div_rem_native_amount_quotient_scale.toString() +
+        ", remainder.mantissa: " +
+        ret_div_rem_native_amount_remainder_mantissa.toString() +
+        ", remainder.scale: " +
+        ret_div_rem_native_amount_remainder_scale.toString()
     );
     env.generate_event(" ");
 
@@ -393,15 +393,15 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     env.generate_event("Calling div_rem_native_amounts(amount1, amount2)");
     const ret_div_rem_native_amounts = env.div_rem_native_amounts(amount1, amount2);
     const ret_div_rem_native_amounts_remainder = ret_div_rem_native_amounts.remainder;
-    const ret_div_rem_native_amounts_remainder_mantissa = assert(ret_div_rem_native_amounts_remainder.mandatoryMantissa, "  > Error: div_rem_native_amounts(amount1, amount2).remainder.mandatoryMantissa returned null");
-    const ret_div_rem_native_amounts_remainder_scale = assert(ret_div_rem_native_amounts_remainder.mandatoryScale, "  > Error: div_rem_native_amounts(amount1, amount2).remainder.mandatoryScale returned null");
+    const ret_div_rem_native_amounts_remainder_mantissa = assert(ret_div_rem_native_amounts_remainder.mantissa, "  > Error: div_rem_native_amounts(amount1, amount2).remainder.mantissa returned null");
+    const ret_div_rem_native_amounts_remainder_scale = assert(ret_div_rem_native_amounts_remainder.scale, "  > Error: div_rem_native_amounts(amount1, amount2).remainder.scale returned null");
     env.generate_event(
         "  > Ok: div_rem_native_amounts(amount1, amount2) returns: quotient: " +
         ret_div_rem_native_amounts.quotient.toString() +
-        ", remainder.mandatoryMantissa: " +
-        ret_div_rem_native_amounts_remainder_mantissa.value.toString() +
-        ", remainder.mandatoryScale: " +
-        ret_div_rem_native_amounts_remainder_scale.value.toString()
+        ", remainder.mantissa: " +
+        ret_div_rem_native_amounts_remainder_mantissa.toString() +
+        ", remainder.scale: " +
+        ret_div_rem_native_amounts_remainder_scale.toString()
     );
     env.generate_event(" ");
 
@@ -414,13 +414,13 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // Test .native_amount_from_string()
     env.generate_event("Calling native_amount_from_string(str_amount)");
     const ret_native_amount_from_string = env.native_amount_from_string(str_amount);
-    const ret_native_amount_from_string_mantissa = assert(ret_native_amount_from_string.mandatoryMantissa, "  > Error: native_amount_from_string(str_amount).mandatoryMantissa returned null");
-    const ret_native_amount_from_string_scale = assert(ret_native_amount_from_string.mandatoryScale, "  > Error: native_amount_from_string(str_amount).mandatoryScale returned null");
+    const ret_native_amount_from_string_mantissa = assert(ret_native_amount_from_string.mantissa, "  > Error: native_amount_from_string(str_amount).mantissa returned null");
+    const ret_native_amount_from_string_scale = assert(ret_native_amount_from_string.scale, "  > Error: native_amount_from_string(str_amount).scale returned null");
     env.generate_event(
-        "  > Ok: native_amount_from_string(str_amount) returns: mandatoryMantissa: " +
-        ret_native_amount_from_string_mantissa.value.toString() +
-        ", mandatoryScale: " +
-        ret_native_amount_from_string_scale.value.toString()
+        "  > Ok: native_amount_from_string(str_amount) returns: mantissa: " +
+        ret_native_amount_from_string_mantissa.toString() +
+        ", scale: " +
+        ret_native_amount_from_string_scale.toString()
     );
     env.generate_event(" ");
 
