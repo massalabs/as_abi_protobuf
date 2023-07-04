@@ -139,24 +139,31 @@ declare function abi_caller_has_write_access(arg: ArrayBuffer): ArrayBuffer;
 // @ts-ignore: decorator
 @external("massa", "abi_check_native_amount")
 declare function abi_check_native_amount(arg: ArrayBuffer): ArrayBuffer;
+
 // @ts-ignore: decorator
 @external("massa", "abi_add_native_amounts")
 declare function abi_add_native_amounts(arg: ArrayBuffer): ArrayBuffer;
+
 // @ts-ignore: decorator
 @external("massa", "abi_sub_native_amounts")
 declare function abi_sub_native_amounts(arg: ArrayBuffer): ArrayBuffer;
+
 // @ts-ignore: decorator
 @external("massa", "abi_mul_native_amount")
 declare function abi_mul_native_amount(arg: ArrayBuffer): ArrayBuffer;
+
 // @ts-ignore: decorator
 @external("massa", "abi_div_rem_native_amount")
 declare function abi_div_rem_native_amount(arg: ArrayBuffer): ArrayBuffer;
+
 // @ts-ignore: decorator
 @external("massa", "abi_div_rem_native_amounts")
 declare function abi_div_rem_native_amounts(arg: ArrayBuffer): ArrayBuffer;
+
 // @ts-ignore: decorator
 @external("massa", "abi_native_amount_to_string")
 declare function abi_native_amount_to_string(arg: ArrayBuffer): ArrayBuffer;
+
 // @ts-ignore: decorator
 @external("massa", "abi_native_amount_from_string")
 declare function abi_native_amount_from_string(arg: ArrayBuffer): ArrayBuffer;
@@ -720,7 +727,6 @@ export function get_current_slot(): proto.Slot {
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null);
   assert(resp.res !== null);
-  assert(resp.res!.getCurrentSlotResult !== null);
   assert(resp.res!.getCurrentSlotResult !== null);
   return assert(
     resp.res!.getCurrentSlotResult!.slot,
