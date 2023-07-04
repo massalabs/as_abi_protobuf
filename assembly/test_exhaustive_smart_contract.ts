@@ -18,10 +18,9 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
 
     // Define all the argument values:
-    const optional_address = "optional_abcd";
-    const to_address = "to_abcd";
-    const sc_address = "sc_abcd";
-    const public_key = "pub_key";
+    const optional_address = "AU128vqy6e77qWoSiY4ammHpTuGwh5gkSiwMRkkBkDJDWWiWsu8ow";
+    const to_address = "AU12ZXAfMgcLCRFDWR3fpJ7RoMYnEsmbFSgLvB5UGDJGYfYUtinem";
+    const public_key = "P12DbeG1P23wTYmBwabfGJquGRwWFWgQumFL6Gi1ChAfyE7pNYdG";
     const bytecode = new Uint8Array(1);
     bytecode[0] = 11;
     const arg = new Uint8Array(1);
@@ -37,7 +36,6 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     const str_amount = "1";
     const coefficient = 2;
     const divisor = 2;
-    const empty_array = new Uint8Array(0);
 
     env.generate_event("Starting tests of wasmv1 ABIs");
     env.generate_event(" ");
@@ -149,7 +147,7 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // Test .get_balance()
     env.generate_event("Calling get_balance(null)");
     const ret_get_balance_null = env.get_balance(null);
-    const ret_get_balance_null_mantissa = assert(ret_get_balance_null.mandatoryMantissa, "  > Error: get_balance(null).mandatoryScale returned null");
+    const ret_get_balance_null_mantissa = assert(ret_get_balance_null.mandatoryMantissa, "  > Error: get_balance(null).mandatoryMantissa returned null");
     const ret_get_balance_null_scale = assert(ret_get_balance_null.mandatoryScale, "  > Error: get_balance(null).mandatoryScale returned null");
     env.generate_event(
         "  > Ok: get_balance(null) returns: mandatoryMantissa: " +
@@ -159,7 +157,7 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     );
     env.generate_event("Calling get_balance(optional_address)");
     const ret_get_balance_optional_address = env.get_balance(optional_address);
-    const ret_get_balance_optional_address_mantissa = assert(ret_get_balance_optional_address.mandatoryMantissa, "  > Error: get_balance(optional_address).mandatoryScale returned null");
+    const ret_get_balance_optional_address_mantissa = assert(ret_get_balance_optional_address.mandatoryMantissa, "  > Error: get_balance(optional_address).mandatoryMantissa returned null");
     const ret_get_balance_optional_address_scale = assert(ret_get_balance_optional_address.mandatoryScale, "  > Error: get_balance(optional_address).mandatoryScale returned null");
     env.generate_event(
         "  > Ok: get_balance(optional_address) returns: mandatoryMantissa: " +
@@ -196,15 +194,6 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     env.generate_event("  > Ok: get_keys(prefix, optional_address) returns: " + ret_get_keys_optional_address.toString());
     env.generate_event(" ");
 
-    // Test .get_data()
-    env.generate_event("Calling get_data(key, null)");
-    const ret_get_data_null = env.get_data(key, null);
-    env.generate_event("  > Ok: get_data(key, null) returns: " + ret_get_data_null.toString());
-    env.generate_event("Calling get_data(key, optional_address)");
-    const ret_get_data_optional_address = env.get_data(key, optional_address);
-    env.generate_event("  > Ok: get_data(key, optional_address) returns: " + ret_get_data_optional_address.toString());
-    env.generate_event(" ");
-
     // Test .set_data()
     env.generate_event("Calling set_data(key, data, null)");
     env.set_data(key, data, null);
@@ -212,6 +201,15 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     env.generate_event("Calling set_data(key, data, optional_address)");
     env.set_data(key, data, optional_address);
     env.generate_event("  > Ok: set_data(key, data, optional_address) called");
+    env.generate_event(" ");
+
+    // Test .get_data()
+    env.generate_event("Calling get_data(key, null)");
+    const ret_get_data_null = env.get_data(key, null);
+    env.generate_event("  > Ok: get_data(key, null) returns: " + ret_get_data_null.toString());
+    env.generate_event("Calling get_data(key, optional_address)");
+    const ret_get_data_optional_address = env.get_data(key, optional_address);
+    env.generate_event("  > Ok: get_data(key, optional_address) returns: " + ret_get_data_optional_address.toString());
     env.generate_event(" ");
 
     // Test .delete_data()
@@ -251,17 +249,21 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     env.generate_event("  > Ok: get_op_keys(prefix) returns: " + ret_get_op_keys.toString());
     env.generate_event(" ");
 
-    // Test .get_op_data()
-    env.generate_event("Calling get_op_data(key)");
-    const ret_get_op_data = env.get_op_data(key);
-    env.generate_event("  > Ok: get_op_data(key) returns: " + ret_get_op_data.toString());
-    env.generate_event(" ");
-
     // Test .has_op_key()
     env.generate_event("Calling has_op_key(key)");
     const ret_has_op_key = env.has_op_key(key);
     env.generate_event("  > Ok: has_op_key(key) returns: " + ret_has_op_key.toString());
     env.generate_event(" ");
+
+    // Test .get_op_data()
+    if (env.has_op_key(key)) {
+        env.generate_event("Calling get_op_data(key)");
+        const ret_get_op_data = env.get_op_data(key);
+        env.generate_event("  > Ok: get_op_data(key) returns: " + ret_get_op_data.toString());
+        env.generate_event(" ");
+    } else {
+        env.generate_event("Can't test .get_op_data(key), because .has_op_key(key) returns false!");   
+    }
 
     // ##############################
     // TESTS HASHES / SIGNATURES
@@ -331,7 +333,7 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // Test .add_native_amounts()
     env.generate_event("Calling add_native_amounts(amount1, amount2)");
     const ret_add_native_amounts = env.add_native_amounts(amount1, amount2);
-    const ret_add_native_amounts_mantissa = assert(ret_add_native_amounts.mandatoryMantissa, "  > Error: check_native_amount(amount1, amount2).mandatoryScale returned null");
+    const ret_add_native_amounts_mantissa = assert(ret_add_native_amounts.mandatoryMantissa, "  > Error: check_native_amount(amount1, amount2).mandatoryMantissa returned null");
     const ret_add_native_amounts_scale = assert(ret_add_native_amounts.mandatoryScale, "  > Error: check_native_amount(amount1, amount2).mandatoryScale returned null");
     env.generate_event(
         "  > Ok: add_native_amounts(amount1, amount2) returns: mandatoryMantissa: " +
@@ -344,7 +346,7 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // Test .sub_native_amounts()
     env.generate_event("Calling sub_native_amounts(amount1, amount2)");
     const ret_sub_native_amounts = env.sub_native_amounts(amount1, amount2);
-    const ret_sub_native_amounts_mantissa = assert(ret_sub_native_amounts.mandatoryMantissa, "  > Error: sub_native_amounts(amount1, amount2).mandatoryScale returned null");
+    const ret_sub_native_amounts_mantissa = assert(ret_sub_native_amounts.mandatoryMantissa, "  > Error: sub_native_amounts(amount1, amount2).mandatoryMantissa returned null");
     const ret_sub_native_amounts_scale = assert(ret_sub_native_amounts.mandatoryScale, "  > Error: sub_native_amounts(amount1, amount2).mandatoryScale returned null");
     env.generate_event(
         "  > Ok: sub_native_amounts(amount1, amount2) returns: mandatoryMantissa: " +
@@ -357,7 +359,7 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // Test .mul_native_amount()
     env.generate_event("Calling mul_native_amount(amount1, coefficient)");
     const ret_mul_native_amount = env.mul_native_amount(amount1, coefficient);
-    const ret_mul_native_amount_mantissa = assert(ret_mul_native_amount.mandatoryMantissa, "  > Error: mul_native_amount(amount1, coefficient).mandatoryScale returned null");
+    const ret_mul_native_amount_mantissa = assert(ret_mul_native_amount.mandatoryMantissa, "  > Error: mul_native_amount(amount1, coefficient).mandatoryMantissa returned null");
     const ret_mul_native_amount_scale = assert(ret_mul_native_amount.mandatoryScale, "  > Error: mul_native_amount(amount1, coefficient).mandatoryScale returned null");
     env.generate_event(
         "  > Ok: mul_native_amount(amount1, coefficient) returns: mandatoryMantissa: " +
