@@ -311,7 +311,11 @@ export function create_sc(bytecode: Uint8Array): string {
   return resp.res!.createScResult!.scAddress;
 }
 
-export function verify_evm_signature(sig: Uint8Array, message: Uint8Array, pub_key: Uint8Array): bool {
+export function verify_evm_signature(
+  sig: Uint8Array,
+  message: Uint8Array,
+  pub_key: Uint8Array
+): bool {
   const req = new proto.VerifyEvmSigRequest(sig, message, pub_key);
   const req_bytes = proto.encodeVerifyEvmSigRequest(req);
   const resp_bytes = Uint8Array.wrap(
@@ -324,7 +328,7 @@ export function verify_evm_signature(sig: Uint8Array, message: Uint8Array, pub_k
   return resp.res!.verifyEvmSigResult!.isVerified;
 }
 
-export function get_remaining_gas(): UInt64Value {
+export function get_remaining_gas(): u64 {
   const req = new proto.GetRemainingGasRequest();
   const req_bytes = proto.encodeGetRemainingGasRequest(req);
   const resp_bytes = Uint8Array.wrap(
@@ -334,7 +338,7 @@ export function get_remaining_gas(): UInt64Value {
   assert(resp.error === null);
   assert(resp.res !== null);
   assert(resp.res!.getRemainingGasResult !== null);
-  return assert(resp.res!.getRemainingGasResult!.mandatoryRemainingGas, "Could not get remaining gas");
+  return resp.res!.getRemainingGasResult!.remainingGas;
 }
 
 export function get_owned_addresses(): string[] {
@@ -376,7 +380,7 @@ export function address_from_public_key(public_key: string): string {
   return resp.res!.addressFromPubKeyResult!.address;
 }
 
-export function unsafe_random(num_bytes: UInt32Value): Uint8Array {
+export function unsafe_random(num_bytes: u32): Uint8Array {
   const req = new proto.UnsafeRandomRequest(num_bytes);
   const req_bytes = proto.encodeUnsafeRandomRequest(req);
   const resp_bytes = Uint8Array.wrap(
@@ -399,7 +403,10 @@ export function get_call_coins(): proto.NativeAmount {
   assert(resp.error === null);
   assert(resp.res !== null);
   assert(resp.res!.getCallCoinsResult !== null);
-  return assert(resp.res!.getCallCoinsResult!.coins, "Could not get call coins");
+  return assert(
+    resp.res!.getCallCoinsResult!.coins,
+    "Could not get call coins"
+  );
 }
 
 export function get_native_time(): proto.NativeTime {
@@ -412,16 +419,43 @@ export function get_native_time(): proto.NativeTime {
   assert(resp.error === null);
   assert(resp.res !== null);
   assert(resp.res!.getNativeTimeResult !== null);
-  return assert(resp.res!.getNativeTimeResult!.time, "Could not get native time");
+  return assert(
+    resp.res!.getNativeTimeResult!.time,
+    "Could not get native time"
+  );
 }
 
-export function send_async_message(target_address: string, target_handler: string, validity_start: proto.Slot, validity_end: proto.Slot, execution_gas: u64, raw_fee: u64, raw_coins: u64, data: Uint8Array, filter: proto.SendAsyncMessageFilter): void {
-  const req = new proto.SendAsyncMessageRequest(target_address, target_handler, validity_start, validity_end, execution_gas, raw_fee, raw_coins, data, filter);
+export function send_async_message(
+  target_address: string,
+  target_handler: string,
+  validity_start: proto.Slot,
+  validity_end: proto.Slot,
+  execution_gas: u64,
+  raw_fee: u64,
+  raw_coins: u64,
+  data: Uint8Array,
+  filter: proto.SendAsyncMessageFilter
+): void {
+  const req = new proto.SendAsyncMessageRequest(
+    target_address,
+    target_handler,
+    validity_start,
+    validity_end,
+    execution_gas,
+    raw_fee,
+    raw_coins,
+    data,
+    filter
+  );
   const req_bytes = proto.encodeSendAsyncMessageRequest(req);
   abi_send_async_message(encode_length_prefixed(req_bytes).buffer);
 }
 
-export function local_execution(bytecode: Uint8Array, target_function: string, arg: Uint8Array): Uint8Array {
+export function local_execution(
+  bytecode: Uint8Array,
+  target_function: string,
+  arg: Uint8Array
+): Uint8Array {
   const req = new proto.LocalExecutionRequest(bytecode, target_function, arg);
   const req_bytes = proto.encodeLocalExecutionRequest(req);
   const resp_bytes = Uint8Array.wrap(
@@ -468,7 +502,7 @@ export function transfer_coins(
 }
 
 // ABI to generate an event
-  export function generate_event(event: string): void {
+export function generate_event(event: string): void {
   const message = stringToUint8Array(event);
   const req = new proto.GenerateEventRequest(message);
   const req_bytes = proto.encodeGenerateEventRequest(req);
@@ -738,10 +772,7 @@ export function make_native_amount(
   mantissa: i64,
   scale: i32
 ): proto.NativeAmount {
-  return new proto.NativeAmount(
-    new UInt64Value(mantissa),
-    new UInt32Value(scale)
-  );
+  return new proto.NativeAmount(mantissa, scale);
 }
 
 export function check_native_amount(to_check: proto.NativeAmount): bool {
@@ -807,10 +838,7 @@ export function mul_native_amount(
   amount: proto.NativeAmount,
   coefficient: i64 = 0
 ): proto.NativeAmount {
-  const req = new proto.MulNativeAmountRequest(
-    amount,
-    new UInt64Value(coefficient)
-  );
+  const req = new proto.MulNativeAmountRequest(amount, coefficient);
   const req_bytes = proto.encodeMulNativeAmountRequest(req);
   const resp_bytes = Uint8Array.wrap(
     abi_mul_native_amount(encode_length_prefixed(req_bytes).buffer)
@@ -856,15 +884,11 @@ export function div_rem_native_amounts(
     "divRemNativeAmountsResult null"
   );
   assert(
-    resp.res!.divRemNativeAmountsResult!.mandatoryQuotient !== null,
-    "mandatoryQuotient null"
-  );
-  assert(
     resp.res!.divRemNativeAmountsResult!.remainder !== null,
     "remainder null"
   );
   return new DivRemNativeAmount(
-    resp.res!.divRemNativeAmountsResult!.mandatoryQuotient!.value,
+    resp.res!.divRemNativeAmountsResult!.quotient,
     resp.res!.divRemNativeAmountsResult!.remainder!
   );
 }
@@ -877,10 +901,7 @@ export function div_rem_native_amount(
   dividend: proto.NativeAmount,
   divisor: i64
 ): Array<proto.NativeAmount> {
-  const req = new proto.ScalarDivRemNativeAmountRequest(
-    dividend,
-    new UInt64Value(divisor)
-  );
+  const req = new proto.ScalarDivRemNativeAmountRequest(dividend, divisor);
   const req_bytes = proto.encodeScalarDivRemNativeAmountRequest(req);
   const resp_bytes = Uint8Array.wrap(
     abi_div_rem_native_amount(encode_length_prefixed(req_bytes).buffer)
