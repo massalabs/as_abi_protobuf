@@ -13,6 +13,11 @@
   "scripts": {
     "build": "asc assembly/env.ts",
     "test": "node tests",
+    "build:test_bs58_to_from:debug": "asc assembly/test_bs58_to_from.ts --target debug -o ./build/test_bs58_to_from.wasm --use abort=assembly/env/myabort",
+    "inspect:test_bs58_to_from": "wasmer inspect ./build/test_bs58_to_from.wasm",
+    "export:test_bs58_to_from": "wasmv1_transform ./build/test_bs58_to_from.wasm add",
+    "all:test_bs58_to_from": "npm run build:test_bs58_to_from:debug && npm run inspect:test_bs58_to_from && npm run export:test_bs58_to_from",
+
     "build:test_native_amount_arithmetic:debug": "asc assembly/test_native_amount_arithmetic.ts --target debug -o ./build/test_native_amount_arithmetic.wasm --use abort=assembly/env/myabort",
     "inspect:test_native_amount_arithmetic": "wasmer inspect ./build/test_native_amount_arithmetic.wasm",
     "export:test_native_amount_arithmetic": "wasmv1_transform ./build/test_native_amount_arithmetic.wasm add",

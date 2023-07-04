@@ -425,6 +425,28 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     env.generate_event(" ");
 
     // ##############################
+    // TESTS TO FROM BS58
+    // ##############################
+
+    const buf = new Uint8Array(4);
+    buf[0] = 0x31;
+    buf[1] = 0x32;
+    buf[2] = 0x33;
+    buf[3] = 0x34;
+
+    const blake3_hash = env.blake3_hash(buf);
+
+    const bs58_hash = env.bytes_to_base58_check(blake3_hash);
+    const hash_form_bs58 = env.base58_check_to_bytes(bs58_hash);
+
+    env.generate_event("blake3_hash: " + blake3_hash.toString());
+    env.generate_event("bs58_hash: " + bs58_hash);
+    env.generate_event("hash_form_bs58: " + hash_form_bs58.toString());
+
+    assert(blake3_hash == hash_form_bs58, "encode to bs58 -> decode from bs 58 changed data");
+
+
+    // ##############################
     // END TESTS
     // ##############################
 

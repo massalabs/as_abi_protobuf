@@ -1,7 +1,5 @@
 import * as proto from "massa-proto-as/assembly";
 import { StringValue } from "massa-proto-as/assembly/google/protobuf/StringValue";
-import { UInt32Value } from "massa-proto-as/assembly/google/protobuf/UInt32Value";
-import { UInt64Value } from "massa-proto-as/assembly/google/protobuf/UInt64Value";
 import { decimalCount32 } from "util/number";
 
 // ***************************************************************************
@@ -167,6 +165,14 @@ declare function abi_native_amount_to_string(arg: ArrayBuffer): ArrayBuffer;
 // @ts-ignore: decorator
 @external("massa", "abi_native_amount_from_string")
 declare function abi_native_amount_from_string(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_base58_check_to_bytes")
+declare function abi_base58_check_to_bytes(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_bytes_to_base58_check")
+declare function abi_bytes_to_base58_check(arg: ArrayBuffer): ArrayBuffer;
 // */
 
 // ***************************************************************************
@@ -971,4 +977,40 @@ export function native_amount_from_string(
     "convertedAmount null"
   );
   return resp.res!.nativeAmountFromStringResult!.convertedAmount!;
+}
+
+export function base58_check_to_bytes(to_decode: string): Uint8Array {
+  const req = new proto.Base58CheckToBytesRequest(to_decode);
+  const req_bytes = proto.encodeBase58CheckToBytesRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_base58_check_to_bytes(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(
+    resp.error === null,
+    "base58_check_to_bytes error: " + resp.error!.message
+  );
+  assert(
+    resp.res!.base58CheckToBytesResult !== null,
+    "base58CheckToBytesResult null"
+  );
+  return resp.res!.base58CheckToBytesResult!.bytes;
+}
+
+export function bytes_to_base58_check(to_encode: Uint8Array): string {
+  const req = new proto.BytesToBase58CheckRequest(to_encode);
+  const req_bytes = proto.encodeBytesToBase58CheckRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_bytes_to_base58_check(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(
+    resp.error === null,
+    "bytes_to_base58_check error: " + resp.error!.message
+  );
+  assert(
+    resp.res!.bytesToBase58CheckResult !== null,
+    "bytesToBase58CheckResult null"
+  );
+  return resp.res!.bytesToBase58CheckResult!.base58Check;
 }

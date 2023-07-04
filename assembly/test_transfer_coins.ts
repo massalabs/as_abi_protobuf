@@ -1,4 +1,3 @@
-import { NativeAmount } from "massa-proto-as/assembly";
 import * as env from "./env";
 
 // using a global to prevent problem with GC
