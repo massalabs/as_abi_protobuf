@@ -221,6 +221,26 @@ declare function abi_checked_scalar_div_native_time(arg: ArrayBuffer): ArrayBuff
 // @ts-ignore: decorator
 @external("massa", "abi_checked_div_native_time")
 declare function abi_checked_div_native_time(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_compare_address")
+declare function abi_compare_address(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_compare_native_amount")
+declare function abi_compare_native_amount(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_compare_native_time")
+declare function abi_compare_native_time(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_compare_pub_key")
+declare function abi_compare_pub_key(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_compare_sig")
+declare function abi_compare_sig(arg: ArrayBuffer): ArrayBuffer;
 // */
 
 // ***************************************************************************
@@ -1038,6 +1058,8 @@ export function base58_check_to_bytes(to_decode: string): Uint8Array {
     resp.error === null,
     "base58_check_to_bytes error: " + resp.error!.message
   );
+  assert(resp.res !== null, "base58_check_to_bytes res null");
+
   assert(
     resp.res!.base58CheckToBytesResult !== null,
     "base58CheckToBytesResult null"
@@ -1056,6 +1078,8 @@ export function bytes_to_base58_check(to_encode: Uint8Array): string {
     resp.error === null,
     "bytes_to_base58_check error: " + resp.error!.message
   );
+  assert(resp.res !== null, "bytes_to_base58_check res null");
+
   assert(
     resp.res!.bytesToBase58CheckResult !== null,
     "bytesToBase58CheckResult null"
@@ -1072,10 +1096,7 @@ export function check_address(to_check: string): bool {
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null, "check_address" + resp.error!.message);
   assert(resp.res !== null, "check_address res null");
-  assert(
-    resp.res!.checkAddressResult !== null,
-    "checkAddressResult null"
-  );
+  assert(resp.res!.checkAddressResult !== null, "checkAddressResult null");
   return resp.res!.checkAddressResult!.isValid;
 }
 
@@ -1088,10 +1109,7 @@ export function check_pubkey(to_check: string): bool {
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null, "check_pubkey" + resp.error!.message);
   assert(resp.res !== null, "check_pubkey res null");
-  assert(
-    resp.res!.checkPubKeyResult !== null,
-    "checkPubKeyResult null"
-  );
+  assert(resp.res!.checkPubKeyResult !== null, "checkPubKeyResult null");
   return resp.res!.checkPubKeyResult!.isValid;
 }
 
@@ -1104,10 +1122,7 @@ export function check_signature(to_check: string): bool {
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null, "check_signature" + resp.error!.message);
   assert(resp.res !== null, "check_signature res null");
-  assert(
-    resp.res!.checkSigResult !== null,
-    "checkSigResult null"
-  );
+  assert(resp.res!.checkSigResult !== null, "checkSigResult null");
   return resp.res!.checkSigResult!.isValid;
 }
 
@@ -1175,7 +1190,10 @@ export function get_signature_version(address: string): u64 {
   return resp.res!.getSignatureVersionResult!.version;
 }
 
-export function checked_add_native_time(time1: proto.NativeTime, time2: proto.NativeTime): proto.NativeTime {
+export function checked_add_native_time(
+  time1: proto.NativeTime,
+  time2: proto.NativeTime
+): proto.NativeTime {
   const req = new proto.CheckedAddNativeTimeRequest(time1, time2);
   const req_bytes = proto.encodeCheckedAddNativeTimeRequest(req);
   const resp_bytes = Uint8Array.wrap(
@@ -1194,7 +1212,10 @@ export function checked_add_native_time(time1: proto.NativeTime, time2: proto.Na
   );
 }
 
-export function checked_sub_native_time(left: proto.NativeTime, right: proto.NativeTime): proto.NativeTime {
+export function checked_sub_native_time(
+  left: proto.NativeTime,
+  right: proto.NativeTime
+): proto.NativeTime {
   const req = new proto.CheckedSubNativeTimeRequest(left, right);
   const req_bytes = proto.encodeCheckedSubNativeTimeRequest(req);
   const resp_bytes = Uint8Array.wrap(
@@ -1213,7 +1234,10 @@ export function checked_sub_native_time(left: proto.NativeTime, right: proto.Nat
   );
 }
 
-export function checked_mul_native_time(time: proto.NativeTime, coefficient: u64): proto.NativeTime {
+export function checked_mul_native_time(
+  time: proto.NativeTime,
+  coefficient: u64
+): proto.NativeTime {
   const req = new proto.CheckedMulNativeTimeRequest(time, coefficient);
   const req_bytes = proto.encodeCheckedMulNativeTimeRequest(req);
   const resp_bytes = Uint8Array.wrap(
@@ -1236,14 +1260,20 @@ export function checked_mul_native_time(time: proto.NativeTime, coefficient: u64
 // NativeTime quotient;
 // NativeTime remainder;
 // as an Array of NativeTime
-export function checked_scalar_div_native_time(dividend: proto.NativeTime, divisor: u64): proto.NativeTime[] {
+export function checked_scalar_div_native_time(
+  dividend: proto.NativeTime,
+  divisor: u64
+): proto.NativeTime[] {
   const req = new proto.CheckedScalarDivRemNativeTimeRequest(dividend, divisor);
   const req_bytes = proto.encodeCheckedScalarDivRemNativeTimeRequest(req);
   const resp_bytes = Uint8Array.wrap(
     abi_checked_scalar_div_native_time(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
-  assert(resp.error === null, "checked_scalar_div_native_time" + resp.error!.message);
+  assert(
+    resp.error === null,
+    "checked_scalar_div_native_time" + resp.error!.message
+  );
   assert(resp.res !== null, "checked_scalar_div_native_time res null");
   assert(
     resp.res!.checkedScalarDivRemNativeTimeResult !== null,
@@ -1276,7 +1306,10 @@ export class DivRemNativeTime {
   }
 }
 
-export function checked_div_native_time(dividend: proto.NativeTime, divisor: proto.NativeTime): DivRemNativeTime {
+export function checked_div_native_time(
+  dividend: proto.NativeTime,
+  divisor: proto.NativeTime
+): DivRemNativeTime {
   const req = new proto.CheckedDivRemNativeTimeRequest(dividend, divisor);
   const req_bytes = proto.encodeCheckedDivRemNativeTimeRequest(req);
   const resp_bytes = Uint8Array.wrap(
@@ -1297,4 +1330,102 @@ export function checked_div_native_time(dividend: proto.NativeTime, divisor: pro
     resp.res!.checkedDivRemNativeTimeResult!.quotient,
     resp.res!.checkedDivRemNativeTimeResult!.remainder!
   );
+}
+
+export function compare_address(
+  left: string,
+  right: string
+): proto.ComparisonResult {
+  const req = new proto.CompareAddressRequest(left, right);
+  const req_bytes = proto.encodeCompareAddressRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_compare_address(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(
+    resp.error === null,
+    "abi_compare_address error: " + resp.error!.message
+  );
+  assert(resp.res !== null, "abi_compare_address res null");
+  assert(resp.res!.compareAddressResult !== null, "compareAddressResult null");
+  return resp.res!.compareAddressResult!.result;
+}
+
+export function compare_native_amount(
+  left: proto.NativeAmount,
+  right: proto.NativeAmount
+): proto.ComparisonResult {
+  const req = new proto.CompareNativeAmountRequest(left, right);
+  const req_bytes = proto.encodeCompareNativeAmountRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_compare_native_amount(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(
+    resp.error === null,
+    "abi_compare_native_amount error: " + resp.error!.message
+  );
+  assert(resp.res !== null, "abi_compare_native_amount res null");
+  assert(
+    resp.res!.compareNativeAmountResult !== null,
+    "compareNativeAmountResult null"
+  );
+  return resp.res!.compareNativeAmountResult!.result;
+}
+
+export function compare_native_time(
+  left: proto.NativeTime,
+  right: proto.NativeTime
+): proto.ComparisonResult {
+  const req = new proto.CompareNativeTimeRequest(left, right);
+  const req_bytes = proto.encodeCompareNativeTimeRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_compare_native_time(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(
+    resp.error === null,
+    "abi_compare_native_time error: " + resp.error!.message
+  );
+  assert(resp.res !== null, "abi_compare_native_time res null");
+  assert(
+    resp.res!.compareNativeTimeResult !== null,
+    "compareNativeTimeResult null"
+  );
+  return resp.res!.compareNativeTimeResult!.result;
+}
+
+export function compare_pub_key(
+  left: string,
+  right: string
+): proto.ComparisonResult {
+  const req = new proto.ComparePubKeyRequest(left, right);
+  const req_bytes = proto.encodeComparePubKeyRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_compare_pub_key(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(
+    resp.error === null,
+    "abi_compare_pub_key error: " + resp.error!.message
+  );
+  assert(resp.res !== null, "abi_compare_pub_key res null");
+  assert(resp.res!.comparePubKeyResult !== null, "comparePubKeyResult null");
+  return resp.res!.comparePubKeyResult!.result;
+}
+
+export function compare_sig(
+  left: string,
+  right: string
+): proto.ComparisonResult {
+  const req = new proto.CompareSigRequest(left, right);
+  const req_bytes = proto.encodeCompareSigRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_compare_sig(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "abi_compare_sig error: " + resp.error!.message);
+  assert(resp.res !== null, "abi_compare_sig res null");
+  assert(resp.res!.compareSigResult !== null, "compareSigResult null");
+  return resp.res!.compareSigResult!.result;
 }

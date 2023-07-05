@@ -13,6 +13,11 @@
   "scripts": {
     "build": "asc assembly/env.ts",
     "test": "node tests",
+    "build:test_compare:debug": "asc assembly/test_compare.ts --target debug -o ./build/test_compare.wasm --use abort=assembly/env/myabort",
+    "inspect:test_compare": "wasmer inspect ./build/test_compare.wasm",
+    "export:test_compare": "wasmv1_transform ./build/test_compare.wasm add",
+    "all:test_compare": "npm run build:test_compare:debug && npm run inspect:test_compare && npm run export:test_compare",
+
     "build:test_bs58_to_from:debug": "asc assembly/test_bs58_to_from.ts --target debug -o ./build/test_bs58_to_from.wasm --use abort=assembly/env/myabort",
     "inspect:test_bs58_to_from": "wasmer inspect ./build/test_bs58_to_from.wasm",
     "export:test_bs58_to_from": "wasmv1_transform ./build/test_bs58_to_from.wasm add",
