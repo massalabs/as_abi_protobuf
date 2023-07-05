@@ -1061,7 +1061,7 @@ export function bytes_to_base58_check(to_encode: Uint8Array): string {
     "bytesToBase58CheckResult null"
   );
   return resp.res!.bytesToBase58CheckResult!.base58Check;
-
+}
 
 export function check_address(to_check: string): bool {
   const req = new proto.CheckAddressRequest(to_check);
