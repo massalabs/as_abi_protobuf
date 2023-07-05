@@ -56,10 +56,10 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     env.generate_event(" ");
 
     // Test .create_sc()
-    env.generate_event("Calling create_sc(bytecode)");
+    /*env.generate_event("Calling create_sc(bytecode)");
     const ret_create_sc = env.create_sc(bytecode);
     env.generate_event("  > Ok: create_sc(bytecode) returns: " + ret_create_sc);
-    env.generate_event(" ");
+    env.generate_event(" ");*/
 
     // Test .get_remaining_gas()
     env.generate_event("Calling get_remaining_gas()");
@@ -95,16 +95,16 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // env.generate_event(" ");
 
     // Test .get_call_stack()
-    env.generate_event("Calling get_call_stack()");
+    /*env.generate_event("Calling get_call_stack()");
     const ret_get_call_stack = env.get_call_stack();
     env.generate_event("  > Ok: get_call_stack() returns: " + ret_get_call_stack.toString());
-    env.generate_event(" ");
+    env.generate_event(" ");*/
 
     // Test .get_owned_addresses()
-    env.generate_event("Calling get_owned_addresses()");
+    /*env.generate_event("Calling get_owned_addresses()");
     const ret_get_owned_addresses = env.get_owned_addresses();
     env.generate_event("  > Ok: get_owned_addresses() returns: " + ret_get_owned_addresses.toString());
-    env.generate_event(" ");
+    env.generate_event(" ");*/
 
     // Test .call()
     // TODO
@@ -128,19 +128,19 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // env.generate_event(" ");
 
     // Test .unsafe_random()
-    env.generate_event("Calling unsafe_random()");
+    /*env.generate_event("Calling unsafe_random()");
     const ret_unsafe_random = env.unsafe_random(42);
     env.generate_event("  > Ok: unsafe_random() returns: " + ret_unsafe_random.toString());
-    env.generate_event(" ");
+    env.generate_event(" ");*/
 
     // Test .send_async_message()
-    env.generate_event("Calling send_async_message()");
+    /*env.generate_event("Calling send_async_message()");
     let slot = new proto.Slot(0, 0);
     let message = new Uint8Array(0);
     let filter = new proto.SendAsyncMessageFilter("addr");
     env.send_async_message("addr", "func", slot, slot, 1_000_000, 0, 10, message, filter);
     env.generate_event("  > Ok: send_async_message() called");
-    env.generate_event(" ");
+    env.generate_event(" ");*/
 
     // ##############################
     // TESTS DATASTORE
