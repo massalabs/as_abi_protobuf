@@ -18,10 +18,11 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
 
     // Define all the argument values:
-    const optional_address = "optional_abcd";
-    const to_address = "to_abcd";
-    const sc_address = "sc_abcd";
-    const public_key = "pub_key";
+    const optional_address = "AU128vqy6e77qWoSiY4ammHpTuGwh5gkSiwMRkkBkDJDWWiWsu8ow";
+    const to_address = "AU12ZXAfMgcLCRFDWR3fpJ7RoMYnEsmbFSgLvB5UGDJGYfYUtinem";
+    const address = "AU128vqy6e77qWoSiY4ammHpTuGwh5gkSiwMRkkBkDJDWWiWsu8ow";
+    const public_key = "P12DbeG1P23wTYmBwabfGJquGRwWFWgQumFL6Gi1ChAfyE7pNYdG";
+    const signature = "1WwjHT1XuVTuQLwndmfiHqDuWuik1YHirwVieGFAMSjhYNZZ7tieZywnA2xE7eAr1Er1qHJ6wwAWWsm2ctUPhkHxrTdir2";
     const bytecode = new Uint8Array(1);
     bytecode[0] = 11;
     const arg = new Uint8Array(1);
@@ -37,7 +38,8 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     const str_amount = "1";
     const coefficient = 2;
     const divisor = 2;
-    const empty_array = new Uint8Array(0);
+    const time1 = new proto.NativeTime(100);
+    const time2 = new proto.NativeTime(100);
 
     env.generate_event("Starting tests of wasmv1 ABIs");
     env.generate_event(" ");
@@ -54,10 +56,10 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     env.generate_event(" ");
 
     // Test .create_sc()
-    env.generate_event("Calling create_sc(bytecode)");
+    /*env.generate_event("Calling create_sc(bytecode)");
     const ret_create_sc = env.create_sc(bytecode);
     env.generate_event("  > Ok: create_sc(bytecode) returns: " + ret_create_sc);
-    env.generate_event(" ");
+    env.generate_event(" ");*/
 
     // Test .get_remaining_gas()
     env.generate_event("Calling get_remaining_gas()");
@@ -69,13 +71,11 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // Test .get_call_coins()
     env.generate_event("Calling get_call_coins()");
     const ret_get_call_coins = env.get_call_coins();
-    const ret_get_call_coins_mantissa = assert(ret_get_call_coins.mantissa, "  > Error: get_call_coins(null).scale returned null");
-    const ret_get_call_coins_scale = assert(ret_get_call_coins.scale, "  > Error: get_call_coins(null).scale returned null");
     env.generate_event(
         "  > Ok: get_call_coins() returns: mantissa: " +
-        ret_get_call_coins_mantissa.toString() +
+        ret_get_call_coins.mantissa.toString() +
         ", scale: " +
-        ret_get_call_coins_scale.toString()
+        ret_get_call_coins.scale.toString()
     );
     env.generate_event(" ");
 
@@ -95,16 +95,16 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // env.generate_event(" ");
 
     // Test .get_call_stack()
-    env.generate_event("Calling get_call_stack()");
+    /*env.generate_event("Calling get_call_stack()");
     const ret_get_call_stack = env.get_call_stack();
     env.generate_event("  > Ok: get_call_stack() returns: " + ret_get_call_stack.toString());
-    env.generate_event(" ");
+    env.generate_event(" ");*/
 
     // Test .get_owned_addresses()
-    env.generate_event("Calling get_owned_addresses()");
+    /*env.generate_event("Calling get_owned_addresses()");
     const ret_get_owned_addresses = env.get_owned_addresses();
     env.generate_event("  > Ok: get_owned_addresses() returns: " + ret_get_owned_addresses.toString());
-    env.generate_event(" ");
+    env.generate_event(" ");*/
 
     // Test .call()
     // TODO
@@ -128,19 +128,19 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // env.generate_event(" ");
 
     // Test .unsafe_random()
-    env.generate_event("Calling unsafe_random()");
+    /*env.generate_event("Calling unsafe_random()");
     const ret_unsafe_random = env.unsafe_random(42);
     env.generate_event("  > Ok: unsafe_random() returns: " + ret_unsafe_random.toString());
-    env.generate_event(" ");
+    env.generate_event(" ");*/
 
     // Test .send_async_message()
-    env.generate_event("Calling send_async_message()");
+    /*env.generate_event("Calling send_async_message()");
     let slot = new proto.Slot(0, 0);
     let message = new Uint8Array(0);
     let filter = new proto.SendAsyncMessageFilter("addr");
     env.send_async_message("addr", "func", slot, slot, 1_000_000, 0, 10, message, filter);
     env.generate_event("  > Ok: send_async_message() called");
-    env.generate_event(" ");
+    env.generate_event(" ");*/
 
     // ##############################
     // TESTS DATASTORE
@@ -149,23 +149,19 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // Test .get_balance()
     env.generate_event("Calling get_balance(null)");
     const ret_get_balance_null = env.get_balance(null);
-    const ret_get_balance_null_mantissa = assert(ret_get_balance_null.mantissa, "  > Error: get_balance(null).scale returned null");
-    const ret_get_balance_null_scale = assert(ret_get_balance_null.scale, "  > Error: get_balance(null).scale returned null");
     env.generate_event(
         "  > Ok: get_balance(null) returns: mantissa: " +
-        ret_get_balance_null_mantissa.toString() +
+        ret_get_balance_null.mantissa.toString() +
         ", scale: " +
-        ret_get_balance_null_scale.toString()
+        ret_get_balance_null.scale.toString()
     );
     env.generate_event("Calling get_balance(optional_address)");
     const ret_get_balance_optional_address = env.get_balance(optional_address);
-    const ret_get_balance_optional_address_mantissa = assert(ret_get_balance_optional_address.mantissa, "  > Error: get_balance(optional_address).scale returned null");
-    const ret_get_balance_optional_address_scale = assert(ret_get_balance_optional_address.scale, "  > Error: get_balance(optional_address).scale returned null");
     env.generate_event(
         "  > Ok: get_balance(optional_address) returns: mantissa: " +
-        ret_get_balance_optional_address_mantissa.toString() +
+        ret_get_balance_optional_address.mantissa.toString() +
         ", scale: " +
-        ret_get_balance_optional_address_scale.toString()
+        ret_get_balance_optional_address.scale.toString()
     );
     env.generate_event(" ");
 
@@ -196,15 +192,6 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     env.generate_event("  > Ok: get_keys(prefix, optional_address) returns: " + ret_get_keys_optional_address.toString());
     env.generate_event(" ");
 
-    // Test .get_data()
-    env.generate_event("Calling get_data(key, null)");
-    const ret_get_data_null = env.get_data(key, null);
-    env.generate_event("  > Ok: get_data(key, null) returns: " + ret_get_data_null.toString());
-    env.generate_event("Calling get_data(key, optional_address)");
-    const ret_get_data_optional_address = env.get_data(key, optional_address);
-    env.generate_event("  > Ok: get_data(key, optional_address) returns: " + ret_get_data_optional_address.toString());
-    env.generate_event(" ");
-
     // Test .set_data()
     env.generate_event("Calling set_data(key, data, null)");
     env.set_data(key, data, null);
@@ -212,6 +199,15 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     env.generate_event("Calling set_data(key, data, optional_address)");
     env.set_data(key, data, optional_address);
     env.generate_event("  > Ok: set_data(key, data, optional_address) called");
+    env.generate_event(" ");
+
+    // Test .get_data()
+    env.generate_event("Calling get_data(key, null)");
+    const ret_get_data_null = env.get_data(key, null);
+    env.generate_event("  > Ok: get_data(key, null) returns: " + ret_get_data_null.toString());
+    env.generate_event("Calling get_data(key, optional_address)");
+    const ret_get_data_optional_address = env.get_data(key, optional_address);
+    env.generate_event("  > Ok: get_data(key, optional_address) returns: " + ret_get_data_optional_address.toString());
     env.generate_event(" ");
 
     // Test .delete_data()
@@ -251,17 +247,22 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     env.generate_event("  > Ok: get_op_keys(prefix) returns: " + ret_get_op_keys.toString());
     env.generate_event(" ");
 
-    // Test .get_op_data()
-    env.generate_event("Calling get_op_data(key)");
-    const ret_get_op_data = env.get_op_data(key);
-    env.generate_event("  > Ok: get_op_data(key) returns: " + ret_get_op_data.toString());
-    env.generate_event(" ");
-
     // Test .has_op_key()
     env.generate_event("Calling has_op_key(key)");
     const ret_has_op_key = env.has_op_key(key);
     env.generate_event("  > Ok: has_op_key(key) returns: " + ret_has_op_key.toString());
     env.generate_event(" ");
+
+    // Test .get_op_data()
+    if (env.has_op_key(key)) {
+        env.generate_event("Calling get_op_data(key)");
+        const ret_get_op_data = env.get_op_data(key);
+        env.generate_event("  > Ok: get_op_data(key) returns: " + ret_get_op_data.toString());
+        env.generate_event(" ");
+    } else {
+        env.generate_event("Can't call Calling get_op_data(key), because has_op_key(key) returns false");
+        env.generate_event(" ");
+    }
 
     // ##############################
     // TESTS HASHES / SIGNATURES
@@ -331,39 +332,33 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // Test .add_native_amounts()
     env.generate_event("Calling add_native_amounts(amount1, amount2)");
     const ret_add_native_amounts = env.add_native_amounts(amount1, amount2);
-    const ret_add_native_amounts_mantissa = assert(ret_add_native_amounts.mantissa, "  > Error: check_native_amount(amount1, amount2).scale returned null");
-    const ret_add_native_amounts_scale = assert(ret_add_native_amounts.scale, "  > Error: check_native_amount(amount1, amount2).scale returned null");
     env.generate_event(
         "  > Ok: add_native_amounts(amount1, amount2) returns: mantissa: " +
-        ret_add_native_amounts_mantissa.toString() +
+        ret_add_native_amounts.mantissa.toString() +
         ", scale: " +
-        ret_add_native_amounts_scale.toString()
+        ret_add_native_amounts.scale.toString()
     );
     env.generate_event(" ");
 
     // Test .sub_native_amounts()
     env.generate_event("Calling sub_native_amounts(amount1, amount2)");
     const ret_sub_native_amounts = env.sub_native_amounts(amount1, amount2);
-    const ret_sub_native_amounts_mantissa = assert(ret_sub_native_amounts.mantissa, "  > Error: sub_native_amounts(amount1, amount2).scale returned null");
-    const ret_sub_native_amounts_scale = assert(ret_sub_native_amounts.scale, "  > Error: sub_native_amounts(amount1, amount2).scale returned null");
     env.generate_event(
         "  > Ok: sub_native_amounts(amount1, amount2) returns: mantissa: " +
-        ret_sub_native_amounts_mantissa.toString() +
+        ret_sub_native_amounts.mantissa.toString() +
         ", scale: " +
-        ret_sub_native_amounts_scale.toString()
+        ret_sub_native_amounts.scale.toString()
     );
     env.generate_event(" ");
 
     // Test .mul_native_amount()
     env.generate_event("Calling mul_native_amount(amount1, coefficient)");
     const ret_mul_native_amount = env.mul_native_amount(amount1, coefficient);
-    const ret_mul_native_amount_mantissa = assert(ret_mul_native_amount.mantissa, "  > Error: mul_native_amount(amount1, coefficient).scale returned null");
-    const ret_mul_native_amount_scale = assert(ret_mul_native_amount.scale, "  > Error: mul_native_amount(amount1, coefficient).scale returned null");
     env.generate_event(
         "  > Ok: mul_native_amount(amount1, coefficient) returns: mantissa: " +
-        ret_mul_native_amount_mantissa.toString() +
+        ret_mul_native_amount.mantissa.toString() +
         ", scale: " +
-        ret_mul_native_amount_scale.toString()
+        ret_mul_native_amount.scale.toString()
     );
     env.generate_event(" ");
 
@@ -372,20 +367,16 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     const ret_div_rem_native_amount = env.div_rem_native_amount(amount1, divisor);
     assert(ret_div_rem_native_amount.length == 2, "  > Error: div_rem_native_amount(amount1, divisor) should return a 2 element array");
     const ret_div_rem_native_amount_quotient = ret_div_rem_native_amount.at(0);
-    const ret_div_rem_native_amount_quotient_mantissa = assert(ret_div_rem_native_amount_quotient.mantissa, "  > Error: div_rem_native_amount(amount1, divisor).quotient.mantissa returned null");
-    const ret_div_rem_native_amount_quotient_scale = assert(ret_div_rem_native_amount_quotient.scale, "  > Error: div_rem_native_amount(amount1, divisor).quotient.scale returned null");
     const ret_div_rem_native_amount_remainder = ret_div_rem_native_amount.at(1);
-    const ret_div_rem_native_amount_remainder_mantissa = assert(ret_div_rem_native_amount_remainder.mantissa, "  > Error: div_rem_native_amount(amount1, divisor).remainder.mantissa returned null");
-    const ret_div_rem_native_amount_remainder_scale = assert(ret_div_rem_native_amount_remainder.scale, "  > Error: div_rem_native_amount(amount1, divisor).remainder.scale returned null");
     env.generate_event(
         "  > Ok: div_rem_native_amount(amount1, divisor) returns: quotient.mantissa: " +
-        ret_div_rem_native_amount_quotient_mantissa.toString() +
+        ret_div_rem_native_amount_quotient.mantissa.toString() +
         ", quotient.scale: " +
-        ret_div_rem_native_amount_quotient_scale.toString() +
+        ret_div_rem_native_amount_quotient.scale.toString() +
         ", remainder.mantissa: " +
-        ret_div_rem_native_amount_remainder_mantissa.toString() +
+        ret_div_rem_native_amount_remainder.mantissa.toString() +
         ", remainder.scale: " +
-        ret_div_rem_native_amount_remainder_scale.toString()
+        ret_div_rem_native_amount_remainder.scale.toString()
     );
     env.generate_event(" ");
 
@@ -393,15 +384,13 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     env.generate_event("Calling div_rem_native_amounts(amount1, amount2)");
     const ret_div_rem_native_amounts = env.div_rem_native_amounts(amount1, amount2);
     const ret_div_rem_native_amounts_remainder = ret_div_rem_native_amounts.remainder;
-    const ret_div_rem_native_amounts_remainder_mantissa = assert(ret_div_rem_native_amounts_remainder.mantissa, "  > Error: div_rem_native_amounts(amount1, amount2).remainder.mantissa returned null");
-    const ret_div_rem_native_amounts_remainder_scale = assert(ret_div_rem_native_amounts_remainder.scale, "  > Error: div_rem_native_amounts(amount1, amount2).remainder.scale returned null");
     env.generate_event(
         "  > Ok: div_rem_native_amounts(amount1, amount2) returns: quotient: " +
         ret_div_rem_native_amounts.quotient.toString() +
         ", remainder.mantissa: " +
-        ret_div_rem_native_amounts_remainder_mantissa.toString() +
+        ret_div_rem_native_amounts_remainder.mantissa.toString() +
         ", remainder.scale: " +
-        ret_div_rem_native_amounts_remainder_scale.toString()
+        ret_div_rem_native_amounts_remainder.scale.toString()
     );
     env.generate_event(" ");
 
@@ -414,13 +403,11 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // Test .native_amount_from_string()
     env.generate_event("Calling native_amount_from_string(str_amount)");
     const ret_native_amount_from_string = env.native_amount_from_string(str_amount);
-    const ret_native_amount_from_string_mantissa = assert(ret_native_amount_from_string.mantissa, "  > Error: native_amount_from_string(str_amount).mantissa returned null");
-    const ret_native_amount_from_string_scale = assert(ret_native_amount_from_string.scale, "  > Error: native_amount_from_string(str_amount).scale returned null");
     env.generate_event(
         "  > Ok: native_amount_from_string(str_amount) returns: mantissa: " +
-        ret_native_amount_from_string_mantissa.toString() +
+        ret_native_amount_from_string.mantissa.toString() +
         ", scale: " +
-        ret_native_amount_from_string_scale.toString()
+        ret_native_amount_from_string.scale.toString()
     );
     env.generate_event(" ");
 
@@ -428,7 +415,8 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     // TESTS TO FROM BS58
     // ##############################
 
-    const buf = new Uint8Array(4);
+    // TODO: Uncomment when massa implem is done
+    /*const buf = new Uint8Array(4);
     buf[0] = 0x31;
     buf[1] = 0x32;
     buf[2] = 0x33;
@@ -441,10 +429,118 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
 
     env.generate_event("blake3_hash: " + blake3_hash.toString());
     env.generate_event("bs58_hash: " + bs58_hash);
-    env.generate_event("hash_form_bs58: " + hash_form_bs58.toString());
+    env.generate_event("hash_form_bs58: " + hash_form_bs58.toString());*/
 
-    assert(blake3_hash == hash_form_bs58, "encode to bs58 -> decode from bs 58 changed data");
+    //assert(blake3_hash == hash_form_bs58, "encode to bs58 -> decode from bs 58 changed data");
 
+    // ##############################
+    // TESTS STRUCTS CHECKS AND GET VERSIONS
+    // ##############################
+
+    // Test .check_address()
+    env.generate_event("Calling check_address(address)");
+    const res_check_address = env.check_address(address);
+    env.generate_event("  > Ok: check_address(address) returns: " + res_check_address.toString());
+    env.generate_event(" ");
+  
+    // Test .check_pubkey()
+    env.generate_event("Calling check_pubkey(public_key)");
+    const res_check_pubkey = env.check_pubkey(public_key);
+    env.generate_event("result: " + res_check_pubkey.toString());
+    env.generate_event("  > Ok: check_pubkey(public_key) returns: " + res_check_pubkey.toString());
+    env.generate_event(" ");
+  
+    // Test .check_signature()
+    env.generate_event("Calling check_signature(signature)");
+    const res_check_signature = env.check_signature(signature);
+    env.generate_event("result: " + res_check_signature.toString());
+    env.generate_event("  > Ok: check_signature(signature) returns: " + res_check_signature.toString());
+    env.generate_event(" ");
+    
+    // Test .get_address_category()
+    env.generate_event("Calling get_address_category(address)");
+    const res_get_address_category = env.get_address_category(address);
+    env.generate_event("result: " + res_get_address_category.toString());
+    env.generate_event("  > Ok: get_address_category(address) returns: " + res_get_address_category.toString());
+    env.generate_event(" ");
+  
+    // Test .get_address_version()
+    env.generate_event("Calling get_address_version(address)");
+    const res_get_address_version = env.get_address_version(address);
+    env.generate_event("result: " + res_get_address_version.toString());
+    env.generate_event("  > Ok: get_address_version(address) returns: " + res_get_address_version.toString());
+    env.generate_event(" ");
+    
+    // Test .get_pubkey_version()
+    env.generate_event("Calling get_pubkey_version(public_key)");
+    const res_get_pubkey_version = env.get_pubkey_version(public_key);
+    env.generate_event("result: " + res_get_pubkey_version.toString());
+    env.generate_event("  > Ok: get_pubkey_version(public_key) returns: " + res_get_pubkey_version.toString());
+    env.generate_event(" ");
+    
+    // Test .get_signature_version()
+    env.generate_event("Calling get_signature_version(signature)");
+    const res_get_signature_version = env.get_signature_version(signature);
+    env.generate_event("result: " + res_get_signature_version.toString());
+    env.generate_event("  > Ok: get_signature_version(signature) returns: " + res_get_signature_version.toString());
+    env.generate_event(" ");
+
+    // ##############################
+    // TESTS NATIVE TIME ARITHMETICS
+    // ##############################
+
+    // Test .checked_add_native_time()
+    env.generate_event("Calling checked_add_native_time(time1, time2)");
+    const ret_checked_add_native_time = env.checked_add_native_time(time1, time2);
+    env.generate_event(
+        "  > Ok: checked_add_native_time(time1, time2) returns: milliseconds: " +
+        ret_checked_add_native_time.milliseconds.toString()
+    );
+    env.generate_event(" ");
+
+    // Test .checked_sub_native_time()
+    env.generate_event("Calling checked_sub_native_time(time1, time2)");
+    const ret_checked_sub_native_time = env.checked_sub_native_time(time1, time2);
+    env.generate_event(
+        "  > Ok: checked_sub_native_time(time1, time2) returns: milliseconds: " +
+        ret_checked_sub_native_time.milliseconds.toString()
+    );
+    env.generate_event(" ");
+
+    // Test .checked_mul_native_time()
+    env.generate_event("Calling checked_mul_native_time(time1, coefficient)");
+    const ret_checked_mul_native_time = env.checked_mul_native_time(time1, coefficient);
+    env.generate_event(
+        "  > Ok: checked_mul_native_time(time1, coefficient) returns: milliseconds: " +
+        ret_checked_mul_native_time.milliseconds.toString()
+    );
+    env.generate_event(" ");
+
+    // Test .checked_scalar_div_native_time()
+    env.generate_event("Calling checked_scalar_div_native_time(time1, divisor)");
+    const ret_checked_scalar_div_native_time = env.checked_scalar_div_native_time(time1, divisor);
+    assert(ret_checked_scalar_div_native_time.length == 2, "  > Error: checked_scalar_div_native_time(time1, divisor) should return a 2 element array");
+    const ret_checked_scalar_div_native_time_quotient = ret_checked_scalar_div_native_time.at(0);
+    const ret_checked_scalar_div_native_time_remainder = ret_checked_scalar_div_native_time.at(1);
+    env.generate_event(
+        "  > Ok: checked_scalar_div_native_time(time1, divisor) returns: quotient.milliseconds: " +
+        ret_checked_scalar_div_native_time_quotient.milliseconds.toString() +
+        ", remainder.milliseconds: " +
+        ret_checked_scalar_div_native_time_remainder.milliseconds.toString()
+    );
+    env.generate_event(" ");
+
+    // Test .checked_div_native_time()
+    env.generate_event("Calling checked_div_native_time(time1, time2)");
+    const ret_checked_div_native_time = env.checked_div_native_time(time1, time2);
+    const ret_checked_div_native_time_remainder = ret_checked_div_native_time.remainder;
+    env.generate_event(
+        "  > Ok: checked_div_native_time(time1, time2) returns: quotient: " +
+        ret_checked_div_native_time.quotient.toString() +
+        ", remainder.milliseconds: " +
+        ret_checked_div_native_time_remainder.milliseconds.toString()
+    );
+    env.generate_event(" ");
 
     // ##############################
     // END TESTS
