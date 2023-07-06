@@ -7,7 +7,7 @@
     "@types/node": "^20.3.2",
     "as-proto": "^1.3.0",
     "assemblyscript": "^0.27.5",
-    "massa-proto-as": "github:massalabs/massa-proto-as#feature/Improve_ABI_types_in_wasmv1",
+    "massa-proto-as": "file:../massa-proto-as",
     "prettier": "^2.8.8"
   },
   "scripts": {
@@ -17,7 +17,6 @@
     "inspect:test_bs58_to_from": "wasmer inspect ./build/test_bs58_to_from.wasm",
     "export:test_bs58_to_from": "wasmv1_transform ./build/test_bs58_to_from.wasm add",
     "all:test_bs58_to_from": "npm run build:test_bs58_to_from:debug && npm run inspect:test_bs58_to_from && npm run export:test_bs58_to_from",
-
     "build:test_native_amount_arithmetic:debug": "asc assembly/test_native_amount_arithmetic.ts --target debug -o ./build/test_native_amount_arithmetic.wasm --use abort=assembly/env/myabort",
     "inspect:test_native_amount_arithmetic": "wasmer inspect ./build/test_native_amount_arithmetic.wasm",
     "export:test_native_amount_arithmetic": "wasmv1_transform ./build/test_native_amount_arithmetic.wasm add",

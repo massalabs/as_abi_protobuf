@@ -127,6 +127,10 @@ declare function abi_get_native_time(arg: ArrayBuffer): ArrayBuffer;
 declare function abi_send_async_message(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
+@external("massa", "abi_get_origin_operation_id")
+declare function abi_get_origin_operation_id(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
 @external("massa", "abi_local_execution")
 declare function abi_local_execution(arg: ArrayBuffer): ArrayBuffer;
 
@@ -455,6 +459,22 @@ export function send_async_message(
   );
   const req_bytes = proto.encodeSendAsyncMessageRequest(req);
   abi_send_async_message(encode_length_prefixed(req_bytes).buffer);
+}
+
+export function get_origin_operation_id(): string | null {
+  const req = new proto.GetOriginOperationIdRequest();
+  const req_bytes = proto.encodeGetOriginOperationIdRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_origin_operation_id(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.getOriginOperationIdResult !== null);
+  if (resp.res!.getOriginOperationIdResult!.operationId === null) {
+    return null;
+  }
+  return resp.res!.getOriginOperationIdResult!.operationId!.value;
 }
 
 export function local_execution(
