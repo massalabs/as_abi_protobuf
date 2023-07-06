@@ -1448,17 +1448,14 @@ export function compare_pub_key(
 }
 
 // TODO: find a way to call this whenever Date.now() is called
-export function mydatenow(): f64 {
+export function mydatenow(): u64 {
   const req = new proto.DateNowRequest();
   const req_bytes = proto.encodeDateNowRequest(req);
   const resp_bytes = Uint8Array.wrap(
     abi_date_now(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
-  assert(
-    resp.error === null,
-    "abi_date_now error: " + resp.error!.message
-  );
+  assert(resp.error === null, "abi_date_now error: " + resp.error!.message);
   assert(resp.res !== null, "abi_date_now res null");
   assert(resp.res!.dateNowResult !== null, "dateNowResult null");
   return resp.res!.dateNowResult!.dateNow;
@@ -1481,16 +1478,17 @@ export function myseed(): f64 {
     abi_seed(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
-  assert(
-    resp.error === null,
-    "abi_seed error: " + resp.error!.message
-  );
+  assert(resp.error === null, "abi_seed error: " + resp.error!.message);
   assert(resp.res !== null, "abi_seed res null");
   assert(resp.res!.seedResult !== null, "seedResult null");
   return resp.res!.seedResult!.seed;
 }
 
-export function verify_signature(sig: string, message: Uint8Array, pubKey: string): bool {
+export function verify_signature(
+  sig: string,
+  message: Uint8Array,
+  pubKey: string
+): bool {
   const req = new proto.VerifySigRequest(sig, message, pubKey);
   const req_bytes = proto.encodeVerifySigRequest(req);
   const resp_bytes = Uint8Array.wrap(

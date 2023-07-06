@@ -67,16 +67,20 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   env.generate_event(" ");
 
   // Test .myseed()
-  env.generate_event("Calling myseed() through Math.random() calling env.seed()");
-  const ret_seed = Math.random();
   env.generate_event(
-    "  > Ok: myseed() returns: " + ret_seed.toString()
+    "Calling myseed() through Math.random() calling env.seed()"
   );
+  const ret_seed = Math.random();
+  env.generate_event("  > Ok: myseed() returns: " + ret_seed.toString());
   env.generate_event(" ");
 
   // Test .verify_signature()
   env.generate_event("Calling verify_signature()");
-  const ret_verify_signature = env.verify_signature(signature, message, public_key);
+  const ret_verify_signature = env.verify_signature(
+    signature,
+    message,
+    public_key
+  );
   env.generate_event(
     "  > Ok: verify_signature() returns: " + ret_verify_signature.toString()
   );
@@ -524,22 +528,25 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   // ##############################
 
   // TODO: Uncomment when massa implem is done
-  /*const buf = new Uint8Array(4);
-    buf[0] = 0x31;
-    buf[1] = 0x32;
-    buf[2] = 0x33;
-    buf[3] = 0x34;
+  const buf = new Uint8Array(4);
+  buf[0] = 0x31;
+  buf[1] = 0x32;
+  buf[2] = 0x33;
+  buf[3] = 0x34;
 
-    const blake3_hash = env.blake3_hash(buf);
+  const blake3_hash = env.blake3_hash(buf);
 
-    const bs58_hash = env.bytes_to_base58_check(blake3_hash);
-    const hash_form_bs58 = env.base58_check_to_bytes(bs58_hash);
+  const bs58_hash = env.bytes_to_base58_check(blake3_hash);
+  const hash_form_bs58 = env.base58_check_to_bytes(bs58_hash);
 
-    env.generate_event("blake3_hash: " + blake3_hash.toString());
-    env.generate_event("bs58_hash: " + bs58_hash);
-    env.generate_event("hash_form_bs58: " + hash_form_bs58.toString());*/
+  env.generate_event("blake3_hash: " + blake3_hash.toString());
+  env.generate_event("bs58_hash: " + bs58_hash);
+  env.generate_event("hash_form_bs58: " + hash_form_bs58.toString());
 
-  //assert(blake3_hash == hash_form_bs58, "encode to bs58 -> decode from bs 58 changed data");
+  // assert(
+  //   blake3_hash == hash_form_bs58,
+  //   "encode to base58 -> decode from base58 changed data"
+  // );
 
   // ##############################
   // TESTS STRUCTS CHECKS AND GET VERSIONS
@@ -847,9 +854,9 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   // Test .myprocessexit()
   env.generate_event("Calling myprocessexit(0)");
   env.myprocessexit(0);
-  
+
   return new ArrayBuffer(0); // fake return to pleas asc
-  
+
   // ##############################
   // END TESTS
   // ##############################
