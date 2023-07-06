@@ -82,12 +82,6 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   );
   env.generate_event(" ");
 
-  // Test .myprocessexit()
-  env.generate_event("Calling myprocessexit(0)");
-  env.myprocessexit(0);
-  env.generate_event("  > Ok: myprocessexit(0) called");
-  env.generate_event(" ");
-
   // ##############################
   // TESTS SMART CONTRACT
   // EXECUTION HELPERS
@@ -850,10 +844,14 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     }
   }
 
+  // Test .myprocessexit()
+  env.generate_event("Calling myprocessexit(0)");
+  env.myprocessexit(0);
+
   // ##############################
   // END TESTS
   // ##############################
 
-  shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
-  return shared_mem;
+  //shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
+  //return shared_mem;
 }

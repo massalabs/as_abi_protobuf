@@ -1471,8 +1471,7 @@ export function myprocessexit(code: i32): void {
   const resp_bytes = Uint8Array.wrap(
     abi_process_exit(encode_length_prefixed(req_bytes).buffer)
   );
-  const resp = proto.decodeAbiResponse(resp_bytes);
-  assert(resp.error === null);
+  unreachable();
 }
 
 export function myseed(): f64 {
