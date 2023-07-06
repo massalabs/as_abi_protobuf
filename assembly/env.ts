@@ -177,6 +177,71 @@ declare function abi_base58_check_to_bytes(arg: ArrayBuffer): ArrayBuffer;
 // @ts-ignore: decorator
 @external("massa", "abi_bytes_to_base58_check")
 declare function abi_bytes_to_base58_check(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_check_address")
+declare function abi_check_address(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_check_pubkey")
+declare function abi_check_pubkey(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_check_signature")
+declare function abi_check_signature(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_address_category")
+declare function abi_get_address_category(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_address_version")
+declare function abi_get_address_version(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_pubkey_version")
+declare function abi_get_pubkey_version(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_get_signature_version")
+declare function abi_get_signature_version(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_checked_add_native_time")
+declare function abi_checked_add_native_time(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_checked_sub_native_time")
+declare function abi_checked_sub_native_time(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_checked_mul_native_time")
+declare function abi_checked_mul_native_time(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_checked_scalar_div_native_time")
+declare function abi_checked_scalar_div_native_time(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_checked_div_native_time")
+declare function abi_checked_div_native_time(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_compare_address")
+declare function abi_compare_address(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_compare_native_amount")
+declare function abi_compare_native_amount(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_compare_native_time")
+declare function abi_compare_native_time(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_compare_pub_key")
+declare function abi_compare_pub_key(arg: ArrayBuffer): ArrayBuffer;
+
 // */
 
 // ***************************************************************************
@@ -1010,6 +1075,8 @@ export function base58_check_to_bytes(to_decode: string): Uint8Array {
     resp.error === null,
     "base58_check_to_bytes error: " + resp.error!.message
   );
+  assert(resp.res !== null, "base58_check_to_bytes res null");
+
   assert(
     resp.res!.base58CheckToBytesResult !== null,
     "base58CheckToBytesResult null"
@@ -1028,9 +1095,338 @@ export function bytes_to_base58_check(to_encode: Uint8Array): string {
     resp.error === null,
     "bytes_to_base58_check error: " + resp.error!.message
   );
+  assert(resp.res !== null, "bytes_to_base58_check res null");
+
   assert(
     resp.res!.bytesToBase58CheckResult !== null,
     "bytesToBase58CheckResult null"
   );
   return resp.res!.bytesToBase58CheckResult!.base58Check;
+}
+
+export function check_address(to_check: string): bool {
+  const req = new proto.CheckAddressRequest(to_check);
+  const req_bytes = proto.encodeCheckAddressRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_check_address(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "check_address" + resp.error!.message);
+  assert(resp.res !== null, "check_address res null");
+  assert(resp.res!.checkAddressResult !== null, "checkAddressResult null");
+  return resp.res!.checkAddressResult!.isValid;
+}
+
+export function check_pubkey(to_check: string): bool {
+  const req = new proto.CheckPubKeyRequest(to_check);
+  const req_bytes = proto.encodeCheckPubKeyRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_check_pubkey(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "check_pubkey" + resp.error!.message);
+  assert(resp.res !== null, "check_pubkey res null");
+  assert(resp.res!.checkPubKeyResult !== null, "checkPubKeyResult null");
+  return resp.res!.checkPubKeyResult!.isValid;
+}
+
+export function check_signature(to_check: string): bool {
+  const req = new proto.CheckSigRequest(to_check);
+  const req_bytes = proto.encodeCheckSigRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_check_signature(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "check_signature" + resp.error!.message);
+  assert(resp.res !== null, "check_signature res null");
+  assert(resp.res!.checkSigResult !== null, "checkSigResult null");
+  return resp.res!.checkSigResult!.isValid;
+}
+
+export function get_address_category(address: string): proto.AddressCategory {
+  const req = new proto.GetAddressCategoryRequest(address);
+  const req_bytes = proto.encodeGetAddressCategoryRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_address_category(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "get_address_category" + resp.error!.message);
+  assert(resp.res !== null, "get_address_category res null");
+  assert(
+    resp.res!.getAddressCategoryResult !== null,
+    "getAddressCategoryResult null"
+  );
+  return resp.res!.getAddressCategoryResult!.category;
+}
+
+export function get_address_version(address: string): u64 {
+  const req = new proto.GetAddressVersionRequest(address);
+  const req_bytes = proto.encodeGetAddressVersionRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_address_version(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "get_address_version" + resp.error!.message);
+  assert(resp.res !== null, "get_address_version res null");
+  assert(
+    resp.res!.getAddressVersionResult !== null,
+    "getAddressVersionResult null"
+  );
+  return resp.res!.getAddressVersionResult!.version;
+}
+
+export function get_pubkey_version(address: string): u64 {
+  const req = new proto.GetPubKeyVersionRequest(address);
+  const req_bytes = proto.encodeGetPubKeyVersionRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_pubkey_version(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "get_pubkey_version" + resp.error!.message);
+  assert(resp.res !== null, "get_pubkey_version res null");
+  assert(
+    resp.res!.getPubKeyVersionResult !== null,
+    "getPubKeyVersionResult null"
+  );
+  return resp.res!.getPubKeyVersionResult!.version;
+}
+
+export function get_signature_version(address: string): u64 {
+  const req = new proto.GetSignatureVersionRequest(address);
+  const req_bytes = proto.encodeGetSignatureVersionRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_get_signature_version(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "get_signature_version" + resp.error!.message);
+  assert(resp.res !== null, "get_signature_version res null");
+  assert(
+    resp.res!.getSignatureVersionResult !== null,
+    "getSignatureVersionResult null"
+  );
+  return resp.res!.getSignatureVersionResult!.version;
+}
+
+export function checked_add_native_time(
+  time1: proto.NativeTime,
+  time2: proto.NativeTime
+): proto.NativeTime {
+  const req = new proto.CheckedAddNativeTimeRequest(time1, time2);
+  const req_bytes = proto.encodeCheckedAddNativeTimeRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_checked_add_native_time(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "checked_add_native_time" + resp.error!.message);
+  assert(resp.res !== null, "checked_add_native_time res null");
+  assert(
+    resp.res!.checkedAddNativeTimeResult !== null,
+    "checkedAddNativeTimeResult null"
+  );
+  return assert(
+    resp.res!.checkedAddNativeTimeResult!.sum,
+    "checkedAddNativeTimeResult.sum null"
+  );
+}
+
+export function checked_sub_native_time(
+  left: proto.NativeTime,
+  right: proto.NativeTime
+): proto.NativeTime {
+  const req = new proto.CheckedSubNativeTimeRequest(left, right);
+  const req_bytes = proto.encodeCheckedSubNativeTimeRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_checked_sub_native_time(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "checked_sub_native_time" + resp.error!.message);
+  assert(resp.res !== null, "checked_sub_native_time res null");
+  assert(
+    resp.res!.checkedSubNativeTimeResult !== null,
+    "checkedSubNativeTimeResult null"
+  );
+  return assert(
+    resp.res!.checkedSubNativeTimeResult!.difference,
+    "checkedSubNativeTimeResult.difference null"
+  );
+}
+
+export function checked_mul_native_time(
+  time: proto.NativeTime,
+  coefficient: u64
+): proto.NativeTime {
+  const req = new proto.CheckedMulNativeTimeRequest(time, coefficient);
+  const req_bytes = proto.encodeCheckedMulNativeTimeRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_checked_mul_native_time(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "checked_mul_native_time" + resp.error!.message);
+  assert(resp.res !== null, "checked_mul_native_time res null");
+  assert(
+    resp.res!.checkedMulNativeTimeResult !== null,
+    "checkedMulNativeTimeResult null"
+  );
+  return assert(
+    resp.res!.checkedMulNativeTimeResult!.product,
+    "checkedMulNativeTimeResult.product null"
+  );
+}
+
+// return quotient and remainder
+// NativeTime quotient;
+// NativeTime remainder;
+// as an Array of NativeTime
+export function checked_scalar_div_native_time(
+  dividend: proto.NativeTime,
+  divisor: u64
+): proto.NativeTime[] {
+  const req = new proto.CheckedScalarDivRemNativeTimeRequest(dividend, divisor);
+  const req_bytes = proto.encodeCheckedScalarDivRemNativeTimeRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_checked_scalar_div_native_time(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(
+    resp.error === null,
+    "checked_scalar_div_native_time" + resp.error!.message
+  );
+  assert(resp.res !== null, "checked_scalar_div_native_time res null");
+  assert(
+    resp.res!.checkedScalarDivRemNativeTimeResult !== null,
+    "checkedScalarDivRemNativeTimeResult null"
+  );
+  assert(
+    resp.res!.checkedScalarDivRemNativeTimeResult!.quotient !== null,
+    "checkedScalarDivRemNativeTimeResult.quotient null"
+  );
+  assert(
+    resp.res!.checkedScalarDivRemNativeTimeResult!.remainder !== null,
+    "checkedScalarDivRemNativeTimeResult.remainder null"
+  );
+  return [
+    resp.res!.checkedScalarDivRemNativeTimeResult!.quotient!,
+    resp.res!.checkedScalarDivRemNativeTimeResult!.remainder!,
+  ];
+}
+
+// return quotient and remainder
+// int64 quotient;
+// NativeTime remainder;
+export class DivRemNativeTime {
+  public quotient: i64;
+  public remainder: proto.NativeTime;
+
+  constructor(quotient: i64, remainder: proto.NativeTime) {
+    this.quotient = quotient;
+    this.remainder = remainder;
+  }
+}
+
+export function checked_div_native_time(
+  dividend: proto.NativeTime,
+  divisor: proto.NativeTime
+): DivRemNativeTime {
+  const req = new proto.CheckedDivRemNativeTimeRequest(dividend, divisor);
+  const req_bytes = proto.encodeCheckedDivRemNativeTimeRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_checked_div_native_time(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, "checked_div_native_time" + resp.error!.message);
+  assert(resp.res !== null, "checked_div_native_time res null");
+  assert(
+    resp.res!.checkedDivRemNativeTimeResult !== null,
+    "checkedDivRemNativeTimeResult null"
+  );
+  assert(
+    resp.res!.checkedDivRemNativeTimeResult!.remainder !== null,
+    "checkedDivRemNativeTimeResult.remainder null"
+  );
+  return new DivRemNativeTime(
+    resp.res!.checkedDivRemNativeTimeResult!.quotient,
+    resp.res!.checkedDivRemNativeTimeResult!.remainder!
+  );
+}
+
+export function compare_address(
+  left: string,
+  right: string
+): proto.ComparisonResult {
+  const req = new proto.CompareAddressRequest(left, right);
+  const req_bytes = proto.encodeCompareAddressRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_compare_address(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(
+    resp.error === null,
+    "abi_compare_address error: " + resp.error!.message
+  );
+  assert(resp.res !== null, "abi_compare_address res null");
+  assert(resp.res!.compareAddressResult !== null, "compareAddressResult null");
+  return resp.res!.compareAddressResult!.result;
+}
+
+export function compare_native_amount(
+  left: proto.NativeAmount,
+  right: proto.NativeAmount
+): proto.ComparisonResult {
+  const req = new proto.CompareNativeAmountRequest(left, right);
+  const req_bytes = proto.encodeCompareNativeAmountRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_compare_native_amount(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(
+    resp.error === null,
+    "abi_compare_native_amount error: " + resp.error!.message
+  );
+  assert(resp.res !== null, "abi_compare_native_amount res null");
+  assert(
+    resp.res!.compareNativeAmountResult !== null,
+    "compareNativeAmountResult null"
+  );
+  return resp.res!.compareNativeAmountResult!.result;
+}
+
+export function compare_native_time(
+  left: proto.NativeTime,
+  right: proto.NativeTime
+): proto.ComparisonResult {
+  const req = new proto.CompareNativeTimeRequest(left, right);
+  const req_bytes = proto.encodeCompareNativeTimeRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_compare_native_time(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(
+    resp.error === null,
+    "abi_compare_native_time error: " + resp.error!.message
+  );
+  assert(resp.res !== null, "abi_compare_native_time res null");
+  assert(
+    resp.res!.compareNativeTimeResult !== null,
+    "compareNativeTimeResult null"
+  );
+  return resp.res!.compareNativeTimeResult!.result;
+}
+
+export function compare_pub_key(
+  left: string,
+  right: string
+): proto.ComparisonResult {
+  const req = new proto.ComparePubKeyRequest(left, right);
+  const req_bytes = proto.encodeComparePubKeyRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_compare_pub_key(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(
+    resp.error === null,
+    "abi_compare_pub_key error: " + resp.error!.message
+  );
+  assert(resp.res !== null, "abi_compare_pub_key res null");
+  assert(resp.res!.comparePubKeyResult !== null, "comparePubKeyResult null");
+  return resp.res!.comparePubKeyResult!.result;
 }
