@@ -847,7 +847,9 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   // Test .myprocessexit()
   env.generate_event("Calling myprocessexit(0)");
   env.myprocessexit(0);
-
+  
+  return new ArrayBuffer(0); // fake return to pleas asc
+  
   // ##############################
   // END TESTS
   // ##############################
