@@ -814,43 +814,6 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     }
   }
 
-  // signature
-  {
-    const sig1 = signature;
-    const sig2 = changeLastCharacter(signature, "3");
-    env.generate_event(
-      "do some compare with sig1 = " +
-        sig1 +
-        ", sig2 = " +
-        sig2 +
-        " (**only last character is different**)"
-    );
-    {
-      const cmp_res = env.compare_sig(sig1, sig1);
-      env.generate_event("compare_sig(sig1, sig1): " + cmp_res.toString());
-      assert(
-        cmp_res == proto.ComparisonResult.COMPARISON_RESULT_EQUAL,
-        "  > Error: compare_sig(sig1, sig1) should return EQUAL"
-      );
-    }
-    {
-      const cmp_res = env.compare_sig(sig1, sig2);
-      env.generate_event("compare_sig(sig1, sig2): " + cmp_res.toString());
-      assert(
-        cmp_res == proto.ComparisonResult.COMPARISON_RESULT_LOWER,
-        "  > Error: compare_sig(sig1, sig2) should return LOWER"
-      );
-    }
-    {
-      const cmp_res = env.compare_sig(sig2, sig1);
-      env.generate_event("compare_sig(sig2, sig1): " + cmp_res.toString());
-      assert(
-        cmp_res == proto.ComparisonResult.COMPARISON_RESULT_GREATER,
-        "  > Error: compare_sig(sig2, sig1) should return GREATER"
-      );
-    }
-  }
-
   // ##############################
   // END TESTS
   // ##############################

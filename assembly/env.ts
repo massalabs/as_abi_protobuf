@@ -238,9 +238,6 @@ declare function abi_compare_native_time(arg: ArrayBuffer): ArrayBuffer;
 @external("massa", "abi_compare_pub_key")
 declare function abi_compare_pub_key(arg: ArrayBuffer): ArrayBuffer;
 
-// @ts-ignore: decorator
-@external("massa", "abi_compare_sig")
-declare function abi_compare_sig(arg: ArrayBuffer): ArrayBuffer;
 // */
 
 // ***************************************************************************
@@ -1412,20 +1409,4 @@ export function compare_pub_key(
   assert(resp.res !== null, "abi_compare_pub_key res null");
   assert(resp.res!.comparePubKeyResult !== null, "comparePubKeyResult null");
   return resp.res!.comparePubKeyResult!.result;
-}
-
-export function compare_sig(
-  left: string,
-  right: string
-): proto.ComparisonResult {
-  const req = new proto.CompareSigRequest(left, right);
-  const req_bytes = proto.encodeCompareSigRequest(req);
-  const resp_bytes = Uint8Array.wrap(
-    abi_compare_sig(encode_length_prefixed(req_bytes).buffer)
-  );
-  const resp = proto.decodeAbiResponse(resp_bytes);
-  assert(resp.error === null, "abi_compare_sig error: " + resp.error!.message);
-  assert(resp.res !== null, "abi_compare_sig res null");
-  assert(resp.res!.compareSigResult !== null, "compareSigResult null");
-  return resp.res!.compareSigResult!.result;
 }
