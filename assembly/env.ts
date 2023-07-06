@@ -1447,6 +1447,7 @@ export function compare_pub_key(
   return resp.res!.comparePubKeyResult!.result;
 }
 
+// TODO: find a way to call this whenever Date.now() is called
 export function mydatenow(): f64 {
   const req = new proto.DateNowRequest();
   const req_bytes = proto.encodeDateNowRequest(req);
@@ -1463,6 +1464,7 @@ export function mydatenow(): f64 {
   return resp.res!.dateNowResult!.dateNow;
 }
 
+// TODO: find a way to call this whenever process.exit() is called
 export function myprocessexit(code: i32): void {
   const req = new proto.ProcessExitRequest(code);
   const req_bytes = proto.encodeProcessExitRequest(req);
