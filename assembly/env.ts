@@ -242,6 +242,22 @@ declare function abi_compare_native_time(arg: ArrayBuffer): ArrayBuffer;
 @external("massa", "abi_compare_pub_key")
 declare function abi_compare_pub_key(arg: ArrayBuffer): ArrayBuffer;
 
+
+// @ts-ignore: decorator
+@external("massa", "abi_date_now")
+declare function abi_date_now(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_process_exit")
+declare function abi_process_exit(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_seed")
+declare function abi_seed(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_verify_signature")
+declare function abi_verify_signature(arg: ArrayBuffer): ArrayBuffer;
 // */
 
 // ***************************************************************************
@@ -1429,4 +1445,63 @@ export function compare_pub_key(
   assert(resp.res !== null, "abi_compare_pub_key res null");
   assert(resp.res!.comparePubKeyResult !== null, "comparePubKeyResult null");
   return resp.res!.comparePubKeyResult!.result;
+}
+
+// TODO: find a way to call this whenever Date.now() is called
+export function mydatenow(): f64 {
+  const req = new proto.DateNowRequest();
+  const req_bytes = proto.encodeDateNowRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_date_now(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(
+    resp.error === null,
+    "abi_date_now error: " + resp.error!.message
+  );
+  assert(resp.res !== null, "abi_date_now res null");
+  assert(resp.res!.dateNowResult !== null, "dateNowResult null");
+  return resp.res!.dateNowResult!.dateNow;
+}
+
+// TODO: find a way to call this whenever process.exit() is called
+export function myprocessexit(code: i32): void {
+  const req = new proto.ProcessExitRequest(code);
+  const req_bytes = proto.encodeProcessExitRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_process_exit(encode_length_prefixed(req_bytes).buffer)
+  );
+  unreachable();
+}
+
+export function myseed(): f64 {
+  const req = new proto.SeedRequest();
+  const req_bytes = proto.encodeSeedRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_seed(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(
+    resp.error === null,
+    "abi_seed error: " + resp.error!.message
+  );
+  assert(resp.res !== null, "abi_seed res null");
+  assert(resp.res!.seedResult !== null, "seedResult null");
+  return resp.res!.seedResult!.seed;
+}
+
+export function verify_signature(sig: string, message: Uint8Array, pubKey: string): bool {
+  const req = new proto.VerifySigRequest(sig, message, pubKey);
+  const req_bytes = proto.encodeVerifySigRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_verify_signature(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(
+    resp.error === null,
+    "abi_verify_signature error: " + resp.error!.message
+  );
+  assert(resp.res !== null, "abi_verify_signature res null");
+  assert(resp.res!.verifySigResult !== null, "verifySigResult null");
+  return resp.res!.verifySigResult!.isVerified;
 }

@@ -30,7 +30,9 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   const address = "AU128vqy6e77qWoSiY4ammHpTuGwh5gkSiwMRkkBkDJDWWiWsu8ow";
   const public_key = "P12DbeG1P23wTYmBwabfGJquGRwWFWgQumFL6Gi1ChAfyE7pNYdG";
   const signature =
-    "1WwjHT1XuVTuQLwndmfiHqDuWuik1YHirwVieGFAMSjhYNZZ7tieZywnA2xE7eAr1Er1qHJ6wwAWWsm2ctUPhkHxrTdir2";
+    "1SYkkid5YKuziu1kCMRoAPYeakZHDevAw2jzLqDypBRwpyeEvSo3F5VGwJXP3gjjhzjuqohxetvd4siv8PfjyzTziiMrVH";
+  const message = new Uint8Array(1);
+  message[0] = 1;
   const bytecode = new Uint8Array(1);
   bytecode[0] = 11;
   const arg = new Uint8Array(1);
@@ -50,6 +52,34 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   const time2 = new proto.NativeTime(100);
 
   env.generate_event("Starting tests of wasmv1 ABIs");
+  env.generate_event(" ");
+
+  // ##############################
+  // TESTS LAST REMAINING ABIS
+  // ##############################
+
+  // Test .mydatenow()
+  env.generate_event("Calling mydatenow()");
+  const ret_mydatenow = env.mydatenow();
+  env.generate_event(
+    "  > Ok: mydatenow() returns: " + ret_mydatenow.toString()
+  );
+  env.generate_event(" ");
+
+  // Test .myseed()
+  env.generate_event("Calling myseed() through Math.random() calling env.seed()");
+  const ret_seed = Math.random();
+  env.generate_event(
+    "  > Ok: myseed() returns: " + ret_seed.toString()
+  );
+  env.generate_event(" ");
+
+  // Test .verify_signature()
+  env.generate_event("Calling verify_signature()");
+  const ret_verify_signature = env.verify_signature(signature, message, public_key);
+  env.generate_event(
+    "  > Ok: verify_signature() returns: " + ret_verify_signature.toString()
+  );
   env.generate_event(" ");
 
   // ##############################
@@ -814,10 +844,16 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     }
   }
 
+  // Test .myprocessexit()
+  env.generate_event("Calling myprocessexit(0)");
+  env.myprocessexit(0);
+  
+  return new ArrayBuffer(0); // fake return to pleas asc
+  
   // ##############################
   // END TESTS
   // ##############################
 
-  shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
-  return shared_mem;
+  //shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
+  //return shared_mem;
 }
