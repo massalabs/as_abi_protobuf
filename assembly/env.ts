@@ -242,19 +242,6 @@ declare function abi_compare_native_time(arg: ArrayBuffer): ArrayBuffer;
 @external("massa", "abi_compare_pub_key")
 declare function abi_compare_pub_key(arg: ArrayBuffer): ArrayBuffer;
 
-
-// @ts-ignore: decorator
-@external("massa", "abi_date_now")
-declare function abi_date_now(arg: ArrayBuffer): ArrayBuffer;
-
-// @ts-ignore: decorator
-@external("massa", "abi_process_exit")
-declare function abi_process_exit(arg: ArrayBuffer): ArrayBuffer;
-
-// @ts-ignore: decorator
-@external("massa", "abi_seed")
-declare function abi_seed(arg: ArrayBuffer): ArrayBuffer;
-
 // @ts-ignore: decorator
 @external("massa", "abi_verify_signature")
 declare function abi_verify_signature(arg: ArrayBuffer): ArrayBuffer;
@@ -842,18 +829,18 @@ export function hash_sha256(data: Uint8Array): Uint8Array {
 
 /// performs a hash on byte array and returns the NativeHash
 export function blake3_hash(data: Uint8Array): Uint8Array {
-  const req = new proto.Blake3HashRequest(data);
-  const req_bytes = proto.encodeBlake3HashRequest(req);
+  const req = new proto.HashBlake3Request(data);
+  const req_bytes = proto.encodeHashBlake3Request(req);
   const resp_bytes = Uint8Array.wrap(
     abi_blake3_hash(encode_length_prefixed(req_bytes).buffer)
   );
   const abi_resp = proto.decodeAbiResponse(resp_bytes);
   assert(abi_resp.error === null);
   assert(abi_resp.res !== null);
-  assert(abi_resp.res!.blake3HashResult !== null);
-  assert(abi_resp.res!.blake3HashResult!.hash !== null);
+  assert(abi_resp.res!.hashBlake3Result !== null);
+  assert(abi_resp.res!.hashBlake3Result!.hash !== null);
   return assert(
-    abi_resp.res!.blake3HashResult!.hash,
+    abi_resp.res!.hashBlake3Result!.hash,
     "NativeHash computation failed"
   );
 }
@@ -1445,30 +1432,6 @@ export function compare_pub_key(
   assert(resp.res !== null, "abi_compare_pub_key res null");
   assert(resp.res!.comparePubKeyResult !== null, "comparePubKeyResult null");
   return resp.res!.comparePubKeyResult!.result;
-}
-
-// TODO: find a way to call this whenever Date.now() is called
-export function mydatenow(): u64 {
-  const req = new proto.DateNowRequest();
-  const req_bytes = proto.encodeDateNowRequest(req);
-  const resp_bytes = Uint8Array.wrap(
-    abi_date_now(encode_length_prefixed(req_bytes).buffer)
-  );
-  const resp = proto.decodeAbiResponse(resp_bytes);
-  assert(resp.error === null, "abi_date_now error: " + resp.error!.message);
-  assert(resp.res !== null, "abi_date_now res null");
-  assert(resp.res!.dateNowResult !== null, "dateNowResult null");
-  return resp.res!.dateNowResult!.dateNow;
-}
-
-// TODO: find a way to call this whenever process.exit() is called
-export function myprocessexit(code: i32): void {
-  const req = new proto.ProcessExitRequest(code);
-  const req_bytes = proto.encodeProcessExitRequest(req);
-  const resp_bytes = Uint8Array.wrap(
-    abi_process_exit(encode_length_prefixed(req_bytes).buffer)
-  );
-  unreachable();
 }
 
 export function myseed(): f64 {

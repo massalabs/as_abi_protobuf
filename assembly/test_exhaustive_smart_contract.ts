@@ -58,14 +58,6 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   // TESTS LAST REMAINING ABIS
   // ##############################
 
-  // Test .mydatenow()
-  env.generate_event("Calling mydatenow()");
-  const ret_mydatenow = env.mydatenow();
-  env.generate_event(
-    "  > Ok: mydatenow() returns: " + ret_mydatenow.toString()
-  );
-  env.generate_event(" ");
-
   // Test .myseed()
   env.generate_event(
     "Calling myseed() through Math.random() calling env.seed()"
@@ -851,16 +843,10 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
     }
   }
 
-  // Test .myprocessexit()
-  env.generate_event("Calling myprocessexit(0)");
-  env.myprocessexit(0);
-
-  return new ArrayBuffer(0); // fake return to pleas asc
-
   // ##############################
   // END TESTS
   // ##############################
 
-  //shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
-  //return shared_mem;
+  shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
+  return shared_mem;
 }
