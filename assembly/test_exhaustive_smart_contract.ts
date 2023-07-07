@@ -70,8 +70,8 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   env.generate_event(
     "Calling myseed() through Math.random() calling env.seed()"
   );
-  const ret_seed = Math.random();
-  env.generate_event("  > Ok: myseed() returns: " + ret_seed.toString());
+  const ret_random = Math.random();
+  env.generate_event("  > Ok: Math.random() returns: " + ret_random.toString());
   env.generate_event(" ");
 
   // Test .verify_signature()
