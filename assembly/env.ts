@@ -1472,7 +1472,7 @@ export function myprocessexit(code: i32): void {
 }
 
 export function myseed(): f64 {
-  const random_bytes = unsafe_random(64);
+  const random_bytes = unsafe_random(8);
   const seed_f64 = new DataView(random_bytes.buffer).getFloat64(0);
   return seed_f64;
 }
