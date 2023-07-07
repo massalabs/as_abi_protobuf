@@ -1472,16 +1472,9 @@ export function myprocessexit(code: i32): void {
 }
 
 export function myseed(): f64 {
-  const req = new proto.SeedRequest();
-  const req_bytes = proto.encodeSeedRequest(req);
-  const resp_bytes = Uint8Array.wrap(
-    abi_seed(encode_length_prefixed(req_bytes).buffer)
-  );
-  const resp = proto.decodeAbiResponse(resp_bytes);
-  assert(resp.error === null, "abi_seed error: " + resp.error!.message);
-  assert(resp.res !== null, "abi_seed res null");
-  assert(resp.res!.seedResult !== null, "seedResult null");
-  return resp.res!.seedResult!.seed;
+  const random_bytes = unsafe_random(8);
+  const seed_f64 = new DataView(random_bytes.buffer).getFloat64(0);
+  return seed_f64;
 }
 
 export function verify_signature(
