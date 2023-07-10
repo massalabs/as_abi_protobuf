@@ -14,6 +14,11 @@
   "scripts": {
     "build": "asc assembly/env.ts",
     "test": "node tests",
+    "build:test_assert_in_release:release": "asc assembly/test_assert_in_release.ts --target release -o ./build/test_assert_in_release.wasm --use abort=assembly/env/myabort --use seed=assembly/env/myseed",
+    "inspect:test_assert_in_release": "wasmer inspect ./build/test_assert_in_release.wasm",
+    "export:test_assert_in_release": "wasmv1_transform ./build/test_assert_in_release.wasm add",
+    "all:test_assert_in_release": "npm run build:test_assert_in_release:release && npm run inspect:test_assert_in_release && npm run export:test_assert_in_release",
+
     "build:test_compare:debug": "asc assembly/test_compare.ts --target debug -o ./build/test_compare.wasm --use abort=assembly/env/myabort --use seed=assembly/env/myseed",
     "inspect:test_compare": "wasmer inspect ./build/test_compare.wasm",
     "export:test_compare": "wasmv1_transform ./build/test_compare.wasm add",
