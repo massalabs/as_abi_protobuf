@@ -20,8 +20,8 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   let a = 1;
   let b = 2;
   let c = a + b;
+  // debug only
   // env.generate_event(`${a} + ${b} == ${c}`);
-  // return c;
 
   shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
   return shared_mem;
