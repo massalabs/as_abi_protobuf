@@ -20,8 +20,8 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   buf[2] = 0x33;
   buf[3] = 0x34;
 
-  const blake3_hash = env.blake3_hash(buf);
-  env.generate_event("blake3Hash: " + blake3_hash.toString());
+  const hash_blake3 = env.hash_blake3(buf);
+  env.generate_event("blake3Hash: " + hash_blake3.toString());
 
   const sha256_hash = env.hash_sha256(buf);
   env.generate_event("Hash Sha256: " + sha256_hash.toString());

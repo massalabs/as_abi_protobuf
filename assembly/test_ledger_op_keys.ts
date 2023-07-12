@@ -34,15 +34,15 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   env.get_balance(optional_address);
   env.get_bytecode(optional_address);
   env.set_bytecode(bytecode, optional_address);
-  env.get_keys(prefix, optional_address);
+  env.get_ds_keys(prefix, optional_address);
 
   env.get_balance(null);
   env.get_bytecode(null);
   env.set_bytecode(bytecode, null);
-  env.get_keys(prefix, null);
+  env.get_ds_keys(prefix, null);
 
   env.get_op_keys(prefix);
-  env.has_op_key(key);
+  env.op_entry_exists(key);
   env.get_op_data(key);
 
   shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;

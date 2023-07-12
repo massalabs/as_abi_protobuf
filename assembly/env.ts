@@ -7,24 +7,24 @@ import { decimalCount32 } from "util/number";
 // ***************************************************************************
 // /*
 // @ts-ignore: decorator
-@external("massa", "abi_set_data")
-declare function abi_set_data(arg: ArrayBuffer): ArrayBuffer;
+@external("massa", "abi_set_ds_value")
+declare function abi_set_ds_value(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
-@external("massa", "abi_get_data")
-declare function abi_get_data(arg: ArrayBuffer): ArrayBuffer;
+@external("massa", "abi_get_ds_value")
+declare function abi_get_ds_value(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
-@external("massa", "abi_delete_data")
-declare function abi_delete_data(arg: ArrayBuffer): ArrayBuffer;
+@external("massa", "abi_delete_ds_entry")
+declare function abi_delete_ds_entry(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
-@external("massa", "abi_append_data")
-declare function abi_append_data(arg: ArrayBuffer): ArrayBuffer;
+@external("massa", "abi_append_ds_value")
+declare function abi_append_ds_value(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
-@external("massa", "abi_has_data")
-declare function abi_has_data(arg: ArrayBuffer): ArrayBuffer;
+@external("massa", "abi_ds_entry_exists")
+declare function abi_ds_entry_exists(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
 @external("massa", "abi_get_balance")
@@ -39,16 +39,16 @@ declare function abi_get_bytecode(arg: ArrayBuffer): ArrayBuffer;
 declare function abi_set_bytecode(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
-@external("massa", "abi_get_keys")
-declare function abi_get_keys(arg: ArrayBuffer): ArrayBuffer;
+@external("massa", "abi_get_ds_keys")
+declare function abi_get_ds_keys(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
 @external("massa", "abi_get_op_keys")
 declare function abi_get_op_keys(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
-@external("massa", "abi_has_op_key")
-declare function abi_has_op_key(arg: ArrayBuffer): ArrayBuffer;
+@external("massa", "abi_op_entry_exists")
+declare function abi_op_entry_exists(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
 @external("massa", "abi_get_op_data")
@@ -87,8 +87,8 @@ declare function abi_hash_sha256(arg: ArrayBuffer): ArrayBuffer;
 declare function abi_hash_keccak256(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
-@external("massa", "abi_blake3_hash")
-declare function abi_blake3_hash(arg: ArrayBuffer): ArrayBuffer;
+@external("massa", "abi_hash_blake3")
+declare function abi_hash_blake3(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
 @external("massa", "abi_verify_evm_signature")
@@ -143,24 +143,24 @@ declare function abi_caller_has_write_access(arg: ArrayBuffer): ArrayBuffer;
 declare function abi_check_native_amount(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
-@external("massa", "abi_add_native_amounts")
-declare function abi_add_native_amounts(arg: ArrayBuffer): ArrayBuffer;
+@external("massa", "abi_add_native_amount")
+declare function abi_add_native_amount(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
-@external("massa", "abi_sub_native_amounts")
-declare function abi_sub_native_amounts(arg: ArrayBuffer): ArrayBuffer;
+@external("massa", "abi_sub_native_amount")
+declare function abi_sub_native_amount(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
-@external("massa", "abi_mul_native_amount")
-declare function abi_mul_native_amount(arg: ArrayBuffer): ArrayBuffer;
+@external("massa", "abi_scalar_mul_native_amount")
+declare function abi_scalar_mul_native_amount(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_scalar_div_rem_native_amount")
+declare function abi_scalar_div_rem_native_amount(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
 @external("massa", "abi_div_rem_native_amount")
 declare function abi_div_rem_native_amount(arg: ArrayBuffer): ArrayBuffer;
-
-// @ts-ignore: decorator
-@external("massa", "abi_div_rem_native_amounts")
-declare function abi_div_rem_native_amounts(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
 @external("massa", "abi_native_amount_to_string")
@@ -609,82 +609,82 @@ export function generate_event(event: string): void {
   assert(resp.error === null, "Error generating event" + resp.error!.message);
 }
 
-export function set_data(
+export function set_ds_value(
   key: Uint8Array,
   data: Uint8Array,
   optional_address: string | null
 ): void {
-  const req = new proto.SetDataRequest(
+  const req = new proto.SetDsValueRequest(
     key,
     data,
     makeStringValue(optional_address)
   );
-  const req_bytes = proto.encodeSetDataRequest(req);
-  abi_set_data(encode_length_prefixed(req_bytes).buffer);
+  const req_bytes = proto.encodeSetDsValueRequest(req);
+  abi_set_ds_value(encode_length_prefixed(req_bytes).buffer);
 }
 
-export function get_data(
+export function get_ds_value(
   key: Uint8Array,
   optional_address: string | null
 ): Uint8Array {
-  const req = new proto.GetDataRequest(key, makeStringValue(optional_address));
-  const req_bytes = proto.encodeGetDataRequest(req);
+  const req = new proto.GetDsValueRequest(key, makeStringValue(optional_address));
+  const req_bytes = proto.encodeGetDsValueRequest(req);
   const resp_bytes = Uint8Array.wrap(
-    abi_get_data(encode_length_prefixed(req_bytes).buffer)
+    abi_get_ds_value(encode_length_prefixed(req_bytes).buffer)
   );
 
   const resp = proto.decodeAbiResponse(resp_bytes);
 
   assert(resp.error === null);
   assert(resp.res !== null);
-  assert(resp.res!.getDataResult !== null);
+  assert(resp.res!.getDsValueResult !== null);
 
-  return resp.res!.getDataResult!.value;
+  return resp.res!.getDsValueResult!.value;
 }
 
-export function delete_data(
+export function delete_ds_entry(
   key: Uint8Array,
   optional_address: string | null
 ): void {
-  const req = new proto.DeleteDataRequest(
+  const req = new proto.DeleteDsEntryRequest(
     key,
     makeStringValue(optional_address)
   );
-  const req_bytes = proto.encodeDeleteDataRequest(req);
-  abi_delete_data(encode_length_prefixed(req_bytes).buffer);
+  const req_bytes = proto.encodeDeleteDsEntryRequest(req);
+  abi_delete_ds_entry(encode_length_prefixed(req_bytes).buffer);
 }
 
-export function append_data(
+export function append_ds_value(
   key: Uint8Array,
   data: Uint8Array,
   optional_address: string | null
 ): void {
-  const req = new proto.AppendDataRequest(
+  const req = new proto.AppendDsValueRequest(
     key,
     data,
     makeStringValue(optional_address)
   );
-  const req_bytes = proto.encodeAppendDataRequest(req);
-  abi_append_data(encode_length_prefixed(req_bytes).buffer);
+  const req_bytes = proto.encodeAppendDsValueRequest(req);
+  abi_append_ds_value(encode_length_prefixed(req_bytes).buffer);
 }
 
-export function has_data(
+export function ds_entry_exists(
   key: Uint8Array,
   optional_address: string | null
 ): bool {
-  const req = new proto.HasDataRequest(key, makeStringValue(optional_address));
-  const req_bytes = proto.encodeHasDataRequest(req);
+  const req = new proto.DsEntryExistsRequest(key, makeStringValue(optional_address));
+  const req_bytes = proto.encodeDsEntryExistsRequest(req);
   const resp_bytes = Uint8Array.wrap(
-    abi_has_data(encode_length_prefixed(req_bytes).buffer)
+    abi_ds_entry_exists(encode_length_prefixed(req_bytes).buffer)
   );
 
   const resp = proto.decodeAbiResponse(resp_bytes);
 
   assert(resp.error === null);
   assert(resp.res !== null);
-  assert(resp.res!.hasDataResult !== null);
+  assert(resp.res!.dsEntryExistsResult !== null);
 
-  return resp.res!.hasDataResult!.hasData;
+  return resp.res!.dsEntryExistsResult!.hasData;
 }
 
 export function get_balance(
@@ -731,25 +731,25 @@ export function set_bytecode(
   abi_set_bytecode(encode_length_prefixed(req_bytes).buffer);
 }
 
-export function get_keys(
+export function get_ds_keys(
   prefix: Uint8Array,
   optional_address: string | null
 ): Uint8Array[] {
-  const req = new proto.GetKeysRequest(
+  const req = new proto.GetDsKeysRequest(
     prefix,
     makeStringValue(optional_address)
   );
-  const req_bytes = proto.encodeGetKeysRequest(req);
+  const req_bytes = proto.encodeGetDsKeysRequest(req);
   const resp_bytes = Uint8Array.wrap(
-    abi_get_keys(encode_length_prefixed(req_bytes).buffer)
+    abi_get_ds_keys(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
 
   assert(resp.error === null);
   assert(resp.res !== null);
-  assert(resp.res!.getKeysResult !== null);
+  assert(resp.res!.getDsKeysResult !== null);
 
-  return resp.res!.getKeysResult!.keys;
+  return resp.res!.getDsKeysResult!.keys;
 }
 
 export function get_op_keys(prefix: Uint8Array): Uint8Array[] {
@@ -767,19 +767,19 @@ export function get_op_keys(prefix: Uint8Array): Uint8Array[] {
   return resp.res!.getOpKeysResult!.keys;
 }
 
-export function has_op_key(key: Uint8Array): bool {
-  const req = new proto.HasOpKeyRequest(key);
-  const req_bytes = proto.encodeHasOpKeyRequest(req);
+export function op_entry_exists(key: Uint8Array): bool {
+  const req = new proto.OpEntryExistsRequest(key);
+  const req_bytes = proto.encodeOpEntryExistsRequest(req);
   const resp_bytes = Uint8Array.wrap(
-    abi_has_op_key(encode_length_prefixed(req_bytes).buffer)
+    abi_op_entry_exists(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
 
   assert(resp.error === null);
   assert(resp.res !== null);
-  assert(resp.res!.hasOpKeyResult !== null);
+  assert(resp.res!.opEntryExistsResult !== null);
 
-  return resp.res!.hasOpKeyResult!.hasKey;
+  return resp.res!.opEntryExistsResult!.hasKey;
 }
 
 export function get_op_data(key: Uint8Array): Uint8Array {
@@ -828,11 +828,11 @@ export function hash_sha256(data: Uint8Array): Uint8Array {
 }
 
 /// performs a hash on byte array and returns the NativeHash
-export function blake3_hash(data: Uint8Array): Uint8Array {
+export function hash_blake3(data: Uint8Array): Uint8Array {
   const req = new proto.HashBlake3Request(data);
   const req_bytes = proto.encodeHashBlake3Request(req);
   const resp_bytes = Uint8Array.wrap(
-    abi_blake3_hash(encode_length_prefixed(req_bytes).buffer)
+    abi_hash_blake3(encode_length_prefixed(req_bytes).buffer)
   );
   const abi_resp = proto.decodeAbiResponse(resp_bytes);
   assert(abi_resp.error === null);
@@ -885,67 +885,66 @@ export function check_native_amount(to_check: proto.NativeAmount): bool {
   return resp.res!.checkNativeAmountResult!.isValid;
 }
 
-export function add_native_amounts(
+export function add_native_amount(
   amount1: proto.NativeAmount,
   amount2: proto.NativeAmount
 ): proto.NativeAmount {
-  const req = new proto.AddNativeAmountsRequest(amount1, amount2);
-  const req_bytes = proto.encodeAddNativeAmountsRequest(req);
+  const req = new proto.AddNativeAmountRequest(amount1, amount2);
+  const req_bytes = proto.encodeAddNativeAmountRequest(req);
   const resp_bytes = Uint8Array.wrap(
-    abi_add_native_amounts(encode_length_prefixed(req_bytes).buffer)
+    abi_add_native_amount(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
-  assert(resp.error === null, "add_native_amounts" + resp.error!.message);
-  assert(resp.res !== null, "add_native_amounts res null");
+  assert(resp.error === null, resp.error!.message);
+  assert(resp.res !== null, "add_native_amount res null");
   assert(
-    resp.res!.addNativeAmountsResult !== null,
-    "addNativeAmountsResult null"
+    resp.res!.addNativeAmountResult !== null,
+    "addNativeAmountResult null"
   );
-  assert(resp.res!.addNativeAmountsResult!.sum !== null, "sum null");
-  return resp.res!.addNativeAmountsResult!.sum!;
+  assert(resp.res!.addNativeAmountResult!.sum !== null, "sum null");
+  return resp.res!.addNativeAmountResult!.sum!;
 }
 
-export function sub_native_amounts(
+export function sub_native_amount(
   left: proto.NativeAmount,
   right: proto.NativeAmount
 ): proto.NativeAmount {
-  const req = new proto.SubNativeAmountsRequest(left, right);
-  const req_bytes = proto.encodeSubNativeAmountsRequest(req);
+  const req = new proto.SubNativeAmountRequest(left, right);
+  const req_bytes = proto.encodeSubNativeAmountRequest(req);
   const resp_bytes = Uint8Array.wrap(
-    abi_sub_native_amounts(encode_length_prefixed(req_bytes).buffer)
+    abi_sub_native_amount(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
-  assert(resp.error === null, "sub_native_amounts" + resp.error!.message);
-  assert(resp.res !== null, "sub_native_amounts res null");
+  assert(resp.error === null, resp.error!.message);
+  assert(resp.res !== null, "sub_native_amount res null");
   assert(
-    resp.res!.subNativeAmountsResult !== null,
-    "subNativeAmountsResult null"
+    resp.res!.subNativeAmountResult !== null,
+    "subNativeAmountResult null"
   );
   assert(
-    resp.res!.subNativeAmountsResult!.difference !== null,
+    resp.res!.subNativeAmountResult!.difference !== null,
     "difference null"
   );
-  return resp.res!.subNativeAmountsResult!.difference!;
+  return resp.res!.subNativeAmountResult!.difference!;
 }
 
-export function mul_native_amount(
+export function scalar_mul_native_amount(
   amount: proto.NativeAmount,
   coefficient: i64 = 0
 ): proto.NativeAmount {
-  const req = new proto.MulNativeAmountRequest(amount, coefficient);
-  const req_bytes = proto.encodeMulNativeAmountRequest(req);
+  const req = new proto.ScalarMulNativeAmountRequest(amount, coefficient);
+  const req_bytes = proto.encodeScalarMulNativeAmountRequest(req);
   const resp_bytes = Uint8Array.wrap(
-    abi_mul_native_amount(encode_length_prefixed(req_bytes).buffer)
+    abi_scalar_mul_native_amount(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
-  assert(resp.error === null, "mul_native_amount" + resp.error!.message);
-  assert(resp.res !== null, "mul_native_amount res null");
+  assert(resp.error === null, resp.error!.message);
+  assert(resp.res !== null);
   assert(
-    resp.res!.mulNativeAmountResult !== null,
-    "mulNativeAmountResult null"
+    resp.res!.scalarMulNativeAmountResult !== null
   );
-  assert(resp.res!.mulNativeAmountResult!.product !== null, "product null");
-  return resp.res!.mulNativeAmountResult!.product!;
+  assert(resp.res!.scalarMulNativeAmountResult!.product !== null, "product null");
+  return resp.res!.scalarMulNativeAmountResult!.product!;
 }
 
 // return quotient and remainder
@@ -961,29 +960,29 @@ export class DivRemNativeAmount {
   }
 }
 
-export function div_rem_native_amounts(
+export function div_rem_native_amount(
   dividend: proto.NativeAmount,
   divisor: proto.NativeAmount
 ): DivRemNativeAmount {
-  const req = new proto.DivRemNativeAmountsRequest(dividend, divisor);
-  const req_bytes = proto.encodeDivRemNativeAmountsRequest(req);
+  const req = new proto.DivRemNativeAmountRequest(dividend, divisor);
+  const req_bytes = proto.encodeDivRemNativeAmountRequest(req);
   const resp_bytes = Uint8Array.wrap(
-    abi_div_rem_native_amounts(encode_length_prefixed(req_bytes).buffer)
+    abi_div_rem_native_amount(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
-  assert(resp.error === null, "div_rem_native_amounts" + resp.error!.message);
-  assert(resp.res !== null, "div_rem_native_amounts res null");
+  assert(resp.error === null, resp.error!.message);
+  assert(resp.res !== null);
   assert(
-    resp.res!.divRemNativeAmountsResult !== null,
-    "divRemNativeAmountsResult null"
+    resp.res!.divRemNativeAmountResult !== null,
+    "divRemNativeAmountResult null"
   );
   assert(
-    resp.res!.divRemNativeAmountsResult!.remainder !== null,
+    resp.res!.divRemNativeAmountResult!.remainder !== null,
     "remainder null"
   );
   return new DivRemNativeAmount(
-    resp.res!.divRemNativeAmountsResult!.quotient,
-    resp.res!.divRemNativeAmountsResult!.remainder!
+    resp.res!.divRemNativeAmountResult!.quotient,
+    resp.res!.divRemNativeAmountResult!.remainder!
   );
 }
 
@@ -991,18 +990,18 @@ export function div_rem_native_amounts(
 // NativeAmount quotient;
 // NativeAmount remainder;
 // as an Array of NativeAmount
-export function div_rem_native_amount(
+export function scalar_div_rem_native_amount(
   dividend: proto.NativeAmount,
   divisor: i64
 ): Array<proto.NativeAmount> {
   const req = new proto.ScalarDivRemNativeAmountRequest(dividend, divisor);
   const req_bytes = proto.encodeScalarDivRemNativeAmountRequest(req);
   const resp_bytes = Uint8Array.wrap(
-    abi_div_rem_native_amount(encode_length_prefixed(req_bytes).buffer)
+    abi_scalar_div_rem_native_amount(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
-  assert(resp.error === null, "div_rem_native_amount" + resp.error!.message);
-  assert(resp.res !== null, "div_rem_native_amount res null");
+  assert(resp.error === null, resp.error!.message);
+  assert(resp.res !== null, "scalar_div_rem_native_amount res null");
   assert(
     resp.res!.scalarDivRemNativeAmountResult !== null,
     "scalarDivRemNativeAmountResult null"
@@ -1258,8 +1257,8 @@ export function checked_mul_native_time(
   time: proto.NativeTime,
   coefficient: u64
 ): proto.NativeTime {
-  const req = new proto.CheckedMulNativeTimeRequest(time, coefficient);
-  const req_bytes = proto.encodeCheckedMulNativeTimeRequest(req);
+  const req = new proto.CheckedScalarMulNativeTimeRequest(time, coefficient);
+  const req_bytes = proto.encodeCheckedScalarMulNativeTimeRequest(req);
   const resp_bytes = Uint8Array.wrap(
     abi_checked_mul_native_time(encode_length_prefixed(req_bytes).buffer)
   );
@@ -1267,11 +1266,11 @@ export function checked_mul_native_time(
   assert(resp.error === null, "checked_mul_native_time" + resp.error!.message);
   assert(resp.res !== null, "checked_mul_native_time res null");
   assert(
-    resp.res!.checkedMulNativeTimeResult !== null,
+    resp.res!.checkedScalarMulNativeTimeResult !== null,
     "checkedMulNativeTimeResult null"
   );
   return assert(
-    resp.res!.checkedMulNativeTimeResult!.product,
+    resp.res!.checkedScalarMulNativeTimeResult!.product,
     "checkedMulNativeTimeResult.product null"
   );
 }

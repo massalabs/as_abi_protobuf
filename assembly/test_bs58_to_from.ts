@@ -20,12 +20,12 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   buf[2] = 0x33;
   buf[3] = 0x34;
 
-  const blake3_hash = env.blake3_hash(buf);
+  const hash_blake3 = env.hash_blake3(buf);
 
-  const bs58_hash = env.bytes_to_base58_check(blake3_hash);
+  const bs58_hash = env.bytes_to_base58_check(hash_blake3);
   const hash_form_bs58 = env.base58_check_to_bytes(bs58_hash);
 
-  env.generate_event("blake3_hash: " + blake3_hash.toString());
+  env.generate_event("hash_blake3: " + hash_blake3.toString());
   env.generate_event("bs58_hash: " + bs58_hash);
   env.generate_event("hash_form_bs58: " + hash_form_bs58.toString());
 
