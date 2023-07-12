@@ -36,26 +36,26 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
 
   // 200
   env.generate_event("test add_native_amounts");
-  const amount4 = env.add_native_amounts(amount1, amount2);
+  const amount4 = env.add_native_amount(amount1, amount2);
   const amount4_str = env.native_amount_to_string(amount4);
   env.generate_event("amount4 (amount1 + amount2) as string: " + amount4_str);
 
   // 50
   env.generate_event("test sub_native_amounts");
-  const amount5 = env.sub_native_amounts(amount1, amount3);
+  const amount5 = env.sub_native_amount(amount1, amount3);
   const amount5_str = env.native_amount_to_string(amount5);
   env.generate_event("amount5 (amount1 - amount3) as string: " + amount5_str);
 
   // 200
   env.generate_event("test mul_native_amount");
-  const amount6 = env.mul_native_amount(amount1, 2);
+  const amount6 = env.scalar_mul_native_amount(amount1, 2);
   const amount6_str = env.native_amount_to_string(amount6);
   env.generate_event("amount6 (amount1 * 2) as string: " + amount6_str);
 
   const amount7 = env.make_native_amount(152, 0);
   // [3, 2]
   env.generate_event("test div_rem_native_amount");
-  const amount8 = env.div_rem_native_amount(amount7, 50);
+  const amount8 = env.scalar_div_rem_native_amount(amount7, 50);
   const amount8_quotient_str = env.native_amount_to_string(amount8[0]);
   const amount8_remainder_str = env.native_amount_to_string(amount8[1]);
   env.generate_event(
@@ -67,8 +67,8 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   );
 
   // [3, 2]
-  env.generate_event("test div_rem_native_amounts");
-  const amount9 = env.div_rem_native_amounts(amount7, amount3);
+  env.generate_event("test div_rem_native_amount");
+  const amount9 = env.div_rem_native_amount(amount7, amount3);
   const amount9_quotient_str = amount9.quotient.toString();
   const amount9_remainder_str = env.native_amount_to_string(amount9.remainder);
   env.generate_event(

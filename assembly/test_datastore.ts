@@ -23,21 +23,21 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
 
   const optional_address = "abcd";
 
-  env.set_data(key, data, optional_address);
-  env.get_data(key, optional_address);
-  env.append_data(key, data, optional_address);
-  env.delete_data(key, optional_address);
-  const has_data = env.has_data(key, optional_address);
+  env.set_ds_value(key, data, optional_address);
+  env.get_ds_value(key, optional_address);
+  env.append_ds_value(key, data, optional_address);
+  env.delete_ds_entry(key, optional_address);
+  const ds_entry_exists = env.ds_entry_exists(key, optional_address);
 
-  env.generate_event("has_data = " + has_data.toString());
+  env.generate_event("ds_entry_exists = " + ds_entry_exists.toString());
 
-  env.set_data(key, data, null);
-  env.get_data(key, null);
-  env.append_data(key, data, null);
-  env.delete_data(key, null);
-  const has_data_null = env.has_data(key, null);
+  env.set_ds_value(key, data, null);
+  env.get_ds_value(key, null);
+  env.append_ds_value(key, data, null);
+  env.delete_ds_entry(key, null);
+  const ds_entry_exists_null = env.ds_entry_exists(key, null);
 
-  env.generate_event("has_data = " + has_data_null.toString());
+  env.generate_event("ds_entry_exists = " + ds_entry_exists_null.toString());
 
   shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
   return shared_mem;

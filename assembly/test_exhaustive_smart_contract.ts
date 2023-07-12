@@ -236,72 +236,72 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   env.generate_event("  > Ok: set_bytecode(bytecode, optional_address) called");
   env.generate_event(" ");
 
-  // Test .get_keys()
-  env.generate_event("Calling get_keys(prefix, null)");
-  const ret_get_keys_null = env.get_keys(prefix, null);
+  // Test .get_ds_keys()
+  env.generate_event("Calling get_ds_keys(prefix, null)");
+  const ret_get_ds_keys_null = env.get_ds_keys(prefix, null);
   env.generate_event(
-    "  > Ok: get_keys(prefix, null) returns: " + ret_get_keys_null.toString()
+    "  > Ok: get_ds_keys(prefix, null) returns: " + ret_get_ds_keys_null.toString()
   );
-  env.generate_event("Calling get_keys(prefix, optional_address)");
-  const ret_get_keys_optional_address = env.get_keys(prefix, optional_address);
+  env.generate_event("Calling get_ds_keys(prefix, optional_address)");
+  const ret_get_ds_keys_optional_address = env.get_ds_keys(prefix, optional_address);
   env.generate_event(
-    "  > Ok: get_keys(prefix, optional_address) returns: " +
-      ret_get_keys_optional_address.toString()
-  );
-  env.generate_event(" ");
-
-  // Test .set_data()
-  env.generate_event("Calling set_data(key, data, null)");
-  env.set_data(key, data, null);
-  env.generate_event("  > Ok: set_data(key, data, null) called");
-  env.generate_event("Calling set_data(key, data, optional_address)");
-  env.set_data(key, data, optional_address);
-  env.generate_event("  > Ok: set_data(key, data, optional_address) called");
-  env.generate_event(" ");
-
-  // Test .get_data()
-  env.generate_event("Calling get_data(key, null)");
-  const ret_get_data_null = env.get_data(key, null);
-  env.generate_event(
-    "  > Ok: get_data(key, null) returns: " + ret_get_data_null.toString()
-  );
-  env.generate_event("Calling get_data(key, optional_address)");
-  const ret_get_data_optional_address = env.get_data(key, optional_address);
-  env.generate_event(
-    "  > Ok: get_data(key, optional_address) returns: " +
-      ret_get_data_optional_address.toString()
+    "  > Ok: get_ds_keys(prefix, optional_address) returns: " +
+      ret_get_ds_keys_optional_address.toString()
   );
   env.generate_event(" ");
 
-  // Test .delete_data()
-  env.generate_event("Calling delete_data(key, null)");
-  env.delete_data(key, null);
-  env.generate_event("  > Ok: delete_data(key, null) called");
-  env.generate_event("Calling delete_data(key, optional_address)");
-  env.delete_data(key, optional_address);
-  env.generate_event("  > Ok: delete_data(key, optional_address) called");
+  // Test .set_ds_value()
+  env.generate_event("Calling set_ds_value(key, data, null)");
+  env.set_ds_value(key, data, null);
+  env.generate_event("  > Ok: set_ds_value(key, data, null) called");
+  env.generate_event("Calling set_ds_value(key, data, optional_address)");
+  env.set_ds_value(key, data, optional_address);
+  env.generate_event("  > Ok: set_ds_value(key, data, optional_address) called");
   env.generate_event(" ");
 
-  // Test .append_data()
-  env.generate_event("Calling append_data(key, data, null)");
-  env.append_data(key, data, null);
-  env.generate_event("  > Ok: append_data(key, data, null) called");
-  env.generate_event("Calling append_data(key, data, optional_address)");
-  env.append_data(key, data, optional_address);
-  env.generate_event("  > Ok: append_data(key, data, optional_address) called");
-  env.generate_event(" ");
-
-  // Test .has_data()
-  env.generate_event("Calling has_data(key, null)");
-  const ret_has_data_null = env.has_data(key, null);
+  // Test .get_ds_value()
+  env.generate_event("Calling get_ds_value(key, null)");
+  const ret_get_ds_value_null = env.get_ds_value(key, null);
   env.generate_event(
-    "  > Ok: has_data(key, null) returns: " + ret_has_data_null.toString()
+    "  > Ok: get_ds_value(key, null) returns: " + ret_get_ds_value_null.toString()
   );
-  env.generate_event("Calling has_data(key, optional_address)");
-  const ret_has_data_optional_address = env.has_data(key, optional_address);
+  env.generate_event("Calling get_ds_value(key, optional_address)");
+  const ret_get_ds_value_optional_address = env.get_ds_value(key, optional_address);
   env.generate_event(
-    "  > Ok: has_data(key, optional_address) returns: " +
-      ret_has_data_optional_address.toString()
+    "  > Ok: get_ds_value(key, optional_address) returns: " +
+      ret_get_ds_value_optional_address.toString()
+  );
+  env.generate_event(" ");
+
+  // Test .delete_ds_entry()
+  env.generate_event("Calling delete_ds_entry(key, null)");
+  env.delete_ds_entry(key, null);
+  env.generate_event("  > Ok: delete_ds_entry(key, null) called");
+  env.generate_event("Calling delete_ds_entry(key, optional_address)");
+  env.delete_ds_entry(key, optional_address);
+  env.generate_event("  > Ok: delete_ds_entry(key, optional_address) called");
+  env.generate_event(" ");
+
+  // Test .append_ds_value()
+  env.generate_event("Calling append_ds_value(key, data, null)");
+  env.append_ds_value(key, data, null);
+  env.generate_event("  > Ok: append_ds_value(key, data, null) called");
+  env.generate_event("Calling append_ds_value(key, data, optional_address)");
+  env.append_ds_value(key, data, optional_address);
+  env.generate_event("  > Ok: append_ds_value(key, data, optional_address) called");
+  env.generate_event(" ");
+
+  // Test .ds_entry_exists()
+  env.generate_event("Calling ds_entry_exists(key, null)");
+  const ret_ds_entry_exists_null = env.ds_entry_exists(key, null);
+  env.generate_event(
+    "  > Ok: ds_entry_exists(key, null) returns: " + ret_ds_entry_exists_null.toString()
+  );
+  env.generate_event("Calling ds_entry_exists(key, optional_address)");
+  const ret_ds_entry_exists_optional_address = env.ds_entry_exists(key, optional_address);
+  env.generate_event(
+    "  > Ok: ds_entry_exists(key, optional_address) returns: " +
+      ret_ds_entry_exists_optional_address.toString()
   );
   env.generate_event(" ");
 
@@ -319,14 +319,14 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
 
   // Test .has_op_key()
   env.generate_event("Calling has_op_key(key)");
-  const ret_has_op_key = env.has_op_key(key);
+  const ret_has_op_key = env.op_entry_exists(key);
   env.generate_event(
     "  > Ok: has_op_key(key) returns: " + ret_has_op_key.toString()
   );
   env.generate_event(" ");
 
   // Test .get_op_data()
-  if (env.has_op_key(key)) {
+  if (env.op_entry_exists(key)) {
     env.generate_event("Calling get_op_data(key)");
     const ret_get_op_data = env.get_op_data(key);
     env.generate_event(
@@ -360,11 +360,11 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   );
   env.generate_event(" ");
 
-  // Test .blake3_hash()
-  env.generate_event("Calling blake3_hash(data)");
-  const ret_blake3_hash = env.blake3_hash(data);
+  // Test .hash_blake3()
+  env.generate_event("Calling hash_blake3(data)");
+  const ret_hash_blake3 = env.hash_blake3(data);
   env.generate_event(
-    "  > Ok: blake3_hash(data) returns: " + ret_blake3_hash.toString()
+    "  > Ok: hash_blake3(data) returns: " + ret_hash_blake3.toString()
   );
   env.generate_event(" ");
 
@@ -422,75 +422,79 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   );
   env.generate_event(" ");
 
-  // Test .add_native_amounts()
-  env.generate_event("Calling add_native_amounts(amount1, amount2)");
-  const ret_add_native_amounts = env.add_native_amounts(amount1, amount2);
+  // Test .add_native_amount()
+  env.generate_event("Calling add_native_amount(amount1, amount2)");
+  const ret_add_native_amount = env.add_native_amount(amount1, amount2);
   env.generate_event(
-    "  > Ok: add_native_amounts(amount1, amount2) returns: mantissa: " +
-      ret_add_native_amounts.mantissa.toString() +
+    "  > Ok: add_native_amount(amount1, amount2) returns: mantissa: " +
+      ret_add_native_amount.mantissa.toString() +
       ", scale: " +
-      ret_add_native_amounts.scale.toString()
+      ret_add_native_amount.scale.toString()
   );
   env.generate_event(" ");
 
-  // Test .sub_native_amounts()
-  env.generate_event("Calling sub_native_amounts(amount1, amount2)");
-  const ret_sub_native_amounts = env.sub_native_amounts(amount1, amount2);
+  // Test .sub_native_amount()
+  env.generate_event("Calling sub_native_amount(amount1, amount2)");
+  const ret_sub_native_amount = env.sub_native_amount(amount1, amount2);
   env.generate_event(
-    "  > Ok: sub_native_amounts(amount1, amount2) returns: mantissa: " +
-      ret_sub_native_amounts.mantissa.toString() +
+    "  > Ok: sub_native_amount(amount1, amount2) returns: mantissa: " +
+      ret_sub_native_amount.mantissa.toString() +
       ", scale: " +
-      ret_sub_native_amounts.scale.toString()
+      ret_sub_native_amount.scale.toString()
   );
   env.generate_event(" ");
 
-  // Test .mul_native_amount()
-  env.generate_event("Calling mul_native_amount(amount1, coefficient)");
-  const ret_mul_native_amount = env.mul_native_amount(amount1, coefficient);
+  // Test .scalar_mul_native_amount()
+  env.generate_event("Calling scalar_mul_native_amount(amount1, coefficient)");
+  const ret_scalar_mul_native_amount = env.scalar_mul_native_amount(amount1, coefficient);
   env.generate_event(
-    "  > Ok: mul_native_amount(amount1, coefficient) returns: mantissa: " +
-      ret_mul_native_amount.mantissa.toString() +
+    "  > Ok: scalar_mul_native_amount(amount1, coefficient) returns: mantissa: " +
+      ret_scalar_mul_native_amount.mantissa.toString() +
       ", scale: " +
-      ret_mul_native_amount.scale.toString()
+      ret_scalar_mul_native_amount.scale.toString()
   );
   env.generate_event(" ");
 
   // Test .div_rem_native_amount()
-  env.generate_event("Calling div_rem_native_amounts(amount1, divisor)");
-  const ret_div_rem_native_amount = env.div_rem_native_amount(amount1, divisor);
-  assert(
-    ret_div_rem_native_amount.length == 2,
-    "  > Error: div_rem_native_amount(amount1, divisor) should return a 2 element array"
-  );
-  const ret_div_rem_native_amount_quotient = ret_div_rem_native_amount.at(0);
-  const ret_div_rem_native_amount_remainder = ret_div_rem_native_amount.at(1);
+  {
+    env.generate_event("Calling div_rem_native_amount(amount1, divisor)");
+    const scalar_ret_div_rem_native_amount = env.scalar_div_rem_native_amount(
+      amount1,
+      divisor
+    );
+    assert(
+      scalar_ret_div_rem_native_amount.length == 2,
+      "  > Error: div_rem_native_amount(amount1, divisor) should return a 2 element array"
+    );
+    const ret_div_rem_native_amount_quotient =
+      scalar_ret_div_rem_native_amount.at(0);
+    const ret_div_rem_native_amount_remainder =
+      scalar_ret_div_rem_native_amount.at(1);
+    env.generate_event(
+      "  > Ok: div_rem_native_amount(amount1, divisor) returns: quotient.mantissa: " +
+        ret_div_rem_native_amount_quotient.mantissa.toString() +
+        ", quotient.scale: " +
+        ret_div_rem_native_amount_quotient.scale.toString() +
+        ", remainder.mantissa: " +
+        ret_div_rem_native_amount_remainder.mantissa.toString() +
+        ", remainder.scale: " +
+        ret_div_rem_native_amount_remainder.scale.toString()
+    );
+    env.generate_event(" ");
+  }
+
+  // Test .div_rem_native_amount()
+  env.generate_event("Calling div_rem_native_amount(amount1, amount2)");
+  const ret_div_rem_native_amount = env.div_rem_native_amount(amount1, amount2);
+  const ret_div_rem_native_amount_remainder =
+    ret_div_rem_native_amount.remainder;
   env.generate_event(
-    "  > Ok: div_rem_native_amount(amount1, divisor) returns: quotient.mantissa: " +
-      ret_div_rem_native_amount_quotient.mantissa.toString() +
-      ", quotient.scale: " +
-      ret_div_rem_native_amount_quotient.scale.toString() +
+    "  > Ok: div_rem_native_amount(amount1, amount2) returns: quotient: " +
+      ret_div_rem_native_amount.quotient.toString() +
       ", remainder.mantissa: " +
       ret_div_rem_native_amount_remainder.mantissa.toString() +
       ", remainder.scale: " +
       ret_div_rem_native_amount_remainder.scale.toString()
-  );
-  env.generate_event(" ");
-
-  // Test .div_rem_native_amounts()
-  env.generate_event("Calling div_rem_native_amounts(amount1, amount2)");
-  const ret_div_rem_native_amounts = env.div_rem_native_amounts(
-    amount1,
-    amount2
-  );
-  const ret_div_rem_native_amounts_remainder =
-    ret_div_rem_native_amounts.remainder;
-  env.generate_event(
-    "  > Ok: div_rem_native_amounts(amount1, amount2) returns: quotient: " +
-      ret_div_rem_native_amounts.quotient.toString() +
-      ", remainder.mantissa: " +
-      ret_div_rem_native_amounts_remainder.mantissa.toString() +
-      ", remainder.scale: " +
-      ret_div_rem_native_amounts_remainder.scale.toString()
   );
   env.generate_event(" ");
 
@@ -526,17 +530,17 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   buf[2] = 0x33;
   buf[3] = 0x34;
 
-  const blake3_hash = env.blake3_hash(buf);
+  const hash_blake3 = env.hash_blake3(buf);
 
-  const bs58_hash = env.bytes_to_base58_check(blake3_hash);
+  const bs58_hash = env.bytes_to_base58_check(hash_blake3);
   const hash_form_bs58 = env.base58_check_to_bytes(bs58_hash);
 
-  env.generate_event("blake3_hash: " + blake3_hash.toString());
+  env.generate_event("hash_blake3: " + hash_blake3.toString());
   env.generate_event("bs58_hash: " + bs58_hash);
   env.generate_event("hash_form_bs58: " + hash_form_bs58.toString());
 
   // assert(
-  //   blake3_hash == hash_form_bs58,
+  //   hash_blake3 == hash_form_bs58,
   //   "encode to base58 -> decode from base58 changed data"
   // );
 
