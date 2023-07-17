@@ -1,35 +1,23 @@
+import { assert_args_addr, encode_result } from "./sdk/shared_mem";
 import * as env from "./env";
 
 // FIXME use a transformer >>> beg
 
-// using a global to prevent problem with GC
-let shared_mem: ArrayBuffer = new ArrayBuffer(0);
-
-export function __alloc(size: i32): ArrayBuffer {
-  // /!\ Can't trace here
-  // // env.log("allocating " + size.toString() + "bytes");
-
-  shared_mem = new ArrayBuffer(size);
-  return shared_mem;
-}
-
 export function initialize(arg: ArrayBuffer): ArrayBuffer {
-  assert(changetype<usize>(shared_mem) == changetype<usize>(arg));
-  // env.log("initialize");
+  assert_args_addr(arg);
 
   let res = new Uint8Array(1);
   res[0] = 1;
-  shared_mem = env.encode_length_prefixed(res).buffer;
-  return shared_mem;
+
+  return encode_result(res);
 }
 
-export function main(_args: ArrayBuffer): ArrayBuffer {
-  assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
+export function main(args: ArrayBuffer): ArrayBuffer {
+  assert_args_addr(args);
 
   env.generate_event("hello world");
 
-  shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
-  return shared_mem;
+  return encode_result(new Uint8Array(0));
 }
 
 // Only one buffer for exchange between guest and host implies that

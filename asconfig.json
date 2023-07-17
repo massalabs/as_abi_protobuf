@@ -1,15 +1,15 @@
 {
+  "entries": ["./assembly/sdk/alloc.ts"],
+  "options": {
+    "use": ["abort=assembly/env/myabort", "seed=assembly/env/myseed"]
+  },
   "targets": {
     "debug": {
-      "outFile": "build/debug.wasm",
-      "textFile": "build/debug.wat",
       "sourceMap": true,
       "debug": true,
       "validate": true
     },
     "release": {
-      "outFile": "build/release.wasm",
-      "textFile": "build/release.wat",
       "sourceMap": true,
       "optimizeLevel": 3,
       "shrinkLevel": 0,

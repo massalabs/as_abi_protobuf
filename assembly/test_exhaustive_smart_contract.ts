@@ -1,13 +1,7 @@
+import { assert_args_addr, encode_result } from "./sdk/shared_mem";
 import * as env from "./env";
+
 import * as proto from "massa-proto-as/assembly";
-
-// using a global to prevent problem with GC
-let shared_mem: ArrayBuffer = new ArrayBuffer(0);
-
-export function __alloc(size: i32): ArrayBuffer {
-  shared_mem = new ArrayBuffer(size);
-  return shared_mem;
-}
 
 // utility function to change the last character of a string
 function changeLastCharacter(str: string, newChar: string): string {
@@ -20,8 +14,8 @@ function changeLastCharacter(str: string, newChar: string): string {
   return strArray.join("");
 }
 
-export function main(_args: ArrayBuffer): ArrayBuffer {
-  assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
+export function main(args: ArrayBuffer): ArrayBuffer {
+  assert_args_addr(args);
 
   // Define all the argument values:
   const optional_address =
@@ -240,10 +234,14 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   env.generate_event("Calling get_ds_keys(prefix, null)");
   const ret_get_ds_keys_null = env.get_ds_keys(prefix, null);
   env.generate_event(
-    "  > Ok: get_ds_keys(prefix, null) returns: " + ret_get_ds_keys_null.toString()
+    "  > Ok: get_ds_keys(prefix, null) returns: " +
+      ret_get_ds_keys_null.toString()
   );
   env.generate_event("Calling get_ds_keys(prefix, optional_address)");
-  const ret_get_ds_keys_optional_address = env.get_ds_keys(prefix, optional_address);
+  const ret_get_ds_keys_optional_address = env.get_ds_keys(
+    prefix,
+    optional_address
+  );
   env.generate_event(
     "  > Ok: get_ds_keys(prefix, optional_address) returns: " +
       ret_get_ds_keys_optional_address.toString()
@@ -256,17 +254,23 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   env.generate_event("  > Ok: set_ds_value(key, data, null) called");
   env.generate_event("Calling set_ds_value(key, data, optional_address)");
   env.set_ds_value(key, data, optional_address);
-  env.generate_event("  > Ok: set_ds_value(key, data, optional_address) called");
+  env.generate_event(
+    "  > Ok: set_ds_value(key, data, optional_address) called"
+  );
   env.generate_event(" ");
 
   // Test .get_ds_value()
   env.generate_event("Calling get_ds_value(key, null)");
   const ret_get_ds_value_null = env.get_ds_value(key, null);
   env.generate_event(
-    "  > Ok: get_ds_value(key, null) returns: " + ret_get_ds_value_null.toString()
+    "  > Ok: get_ds_value(key, null) returns: " +
+      ret_get_ds_value_null.toString()
   );
   env.generate_event("Calling get_ds_value(key, optional_address)");
-  const ret_get_ds_value_optional_address = env.get_ds_value(key, optional_address);
+  const ret_get_ds_value_optional_address = env.get_ds_value(
+    key,
+    optional_address
+  );
   env.generate_event(
     "  > Ok: get_ds_value(key, optional_address) returns: " +
       ret_get_ds_value_optional_address.toString()
@@ -288,17 +292,23 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   env.generate_event("  > Ok: append_ds_value(key, data, null) called");
   env.generate_event("Calling append_ds_value(key, data, optional_address)");
   env.append_ds_value(key, data, optional_address);
-  env.generate_event("  > Ok: append_ds_value(key, data, optional_address) called");
+  env.generate_event(
+    "  > Ok: append_ds_value(key, data, optional_address) called"
+  );
   env.generate_event(" ");
 
   // Test .ds_entry_exists()
   env.generate_event("Calling ds_entry_exists(key, null)");
   const ret_ds_entry_exists_null = env.ds_entry_exists(key, null);
   env.generate_event(
-    "  > Ok: ds_entry_exists(key, null) returns: " + ret_ds_entry_exists_null.toString()
+    "  > Ok: ds_entry_exists(key, null) returns: " +
+      ret_ds_entry_exists_null.toString()
   );
   env.generate_event("Calling ds_entry_exists(key, optional_address)");
-  const ret_ds_entry_exists_optional_address = env.ds_entry_exists(key, optional_address);
+  const ret_ds_entry_exists_optional_address = env.ds_entry_exists(
+    key,
+    optional_address
+  );
   env.generate_event(
     "  > Ok: ds_entry_exists(key, optional_address) returns: " +
       ret_ds_entry_exists_optional_address.toString()
@@ -446,7 +456,10 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
 
   // Test .scalar_mul_native_amount()
   env.generate_event("Calling scalar_mul_native_amount(amount1, coefficient)");
-  const ret_scalar_mul_native_amount = env.scalar_mul_native_amount(amount1, coefficient);
+  const ret_scalar_mul_native_amount = env.scalar_mul_native_amount(
+    amount1,
+    coefficient
+  );
   env.generate_event(
     "  > Ok: scalar_mul_native_amount(amount1, coefficient) returns: mantissa: " +
       ret_scalar_mul_native_amount.mantissa.toString() +
@@ -851,6 +864,5 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
   // END TESTS
   // ##############################
 
-  shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
-  return shared_mem;
+  return encode_result(new Uint8Array(0));
 }

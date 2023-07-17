@@ -1,20 +1,10 @@
-//import { NativeTime } from "massa-proto-as/assembly";
-import { NativeTime } from "massa-proto-as/assembly/massa/model/v1/NativeTime";
+import { assert_args_addr, encode_result } from "./sdk/shared_mem";
 import * as env from "./env";
 
-// using a global to prevent problem with GC
-let shared_mem: ArrayBuffer = new ArrayBuffer(0);
+import { NativeTime } from "massa-proto-as/assembly/massa/model/v1/NativeTime";
 
-export function __alloc(size: i32): ArrayBuffer {
-  // /!\ Can't trace here
-  // // env.log("allocating " + size.toString() + "bytes");
-
-  shared_mem = new ArrayBuffer(size);
-  return shared_mem;
-}
-
-export function main(_args: ArrayBuffer): ArrayBuffer {
-  assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
+export function main(args: ArrayBuffer): ArrayBuffer {
+  assert_args_addr(args);
 
   const time1 = new NativeTime(100);
   const time2 = new NativeTime(100);
@@ -66,6 +56,5 @@ export function main(_args: ArrayBuffer): ArrayBuffer {
       "]"
   );
 
-  shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
-  return shared_mem;
+  return encode_result(new Uint8Array(0));
 }
