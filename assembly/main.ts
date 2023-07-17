@@ -1,17 +1,7 @@
+import { assert_args_addr, encode_result } from "./sdk/shared_mem";
 import * as env from "./env";
 
 declare function fileToByteArray(filePath: string): StaticArray<u8>;
-
-// using a global to prevent problem with GC
-let shared_mem: ArrayBuffer = new ArrayBuffer(0);
-
-export function __alloc(size: i32): ArrayBuffer {
-  // /!\ Can't trace here
-  // // env.generate_event("allocating " + size.toString() + "bytes");
-
-  shared_mem = new ArrayBuffer(size);
-  return shared_mem;
-}
 
 function createContract(): string {
   env.generate_event("create contract");
@@ -43,17 +33,16 @@ function createContract(): string {
   return sc_address;
 }
 
-export function main(_args: ArrayBuffer): ArrayBuffer {
-  assert(changetype<usize>(shared_mem) == changetype<usize>(_args));
+export function main(args: ArrayBuffer): ArrayBuffer {
+  assert_args_addr(args);
   env.generate_event("main");
 
   const sc_address = createContract();
   env.generate_event("sc created @:" + sc_address);
 
-  const args = new Uint8Array(0);
-  env.call(sc_address, "initialize", args, env.make_native_amount(100, 0));
+  const sc_args = new Uint8Array(0);
+  env.call(sc_address, "initialize", sc_args, env.make_native_amount(100, 0));
   env.generate_event("method initialize called on sc @:" + sc_address);
 
-  shared_mem = env.encode_length_prefixed(new Uint8Array(0)).buffer;
-  return shared_mem;
+  return encode_result(new Uint8Array(0));
 }
