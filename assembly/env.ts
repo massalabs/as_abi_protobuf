@@ -245,6 +245,15 @@ declare function abi_compare_pub_key(arg: ArrayBuffer): ArrayBuffer;
 // @ts-ignore: decorator
 @external("massa", "abi_verify_signature")
 declare function abi_verify_signature(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_local_call")
+declare function abi_local_call(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_function_exists")
+declare function abi_function_exists(arg: ArrayBuffer): ArrayBuffer;
+
 // */
 
 // ***************************************************************************
@@ -369,6 +378,36 @@ export function call(
   return resp.data;
 }
 
+// ABI to local call another SC
+export function localCall(
+  address: string,
+  func_name: string,
+  arg: Uint8Array
+): Uint8Array {
+  // Reuse the protobuf CallRequest message with the coins field set to null
+  const req = new proto.CallRequest(address, func_name, arg, null);
+  const req_bytes = proto.encodeCallRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_local_call(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeCallResponse(resp_bytes);
+  return resp.data;
+}
+
+export function functionExists(address: string, func: string): bool {
+  const req = new proto.FunctionExistsRequest(address, func);
+  const req_bytes = proto.encodeFunctionExistsRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_function_exists(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null, resp.error!.message);
+  assert(resp.res !== null);
+  assert(resp.res!.functionExistsResult !== null);
+
+  return resp.res!.functionExistsResult!.exists;
+}
+
 // ABI to create a new SC
 export function create_sc(bytecode: Uint8Array): string {
   const req = new proto.CreateScRequest(bytecode);
@@ -378,13 +417,10 @@ export function create_sc(bytecode: Uint8Array): string {
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
 
-  assert(
-    resp.error === null,
-    "Failed to create smart contract: " + resp.error!.message
-  );
-  assert(resp.res !== null, "response is null");
-  assert(resp.res!.createScResult !== null, "createScResult is null");
-  assert(resp.res!.createScResult!.scAddress !== "", "scAddress is empty");
+  assert(resp.error === null, resp.error!.message);
+  assert(resp.res !== null);
+  assert(resp.res!.createScResult !== null);
+  assert(resp.res!.createScResult!.scAddress !== "");
 
   return resp.res!.createScResult!.scAddress;
 }
@@ -592,7 +628,7 @@ export function transfer_coins(
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
 
-  assert(resp.error === null);
+  assert(resp.error === null, resp.error!.message);
 }
 
 // ABI to generate an event
@@ -627,7 +663,10 @@ export function get_ds_value(
   key: Uint8Array,
   optional_address: string | null
 ): Uint8Array {
-  const req = new proto.GetDsValueRequest(key, makeStringValue(optional_address));
+  const req = new proto.GetDsValueRequest(
+    key,
+    makeStringValue(optional_address)
+  );
   const req_bytes = proto.encodeGetDsValueRequest(req);
   const resp_bytes = Uint8Array.wrap(
     abi_get_ds_value(encode_length_prefixed(req_bytes).buffer)
@@ -672,7 +711,10 @@ export function ds_entry_exists(
   key: Uint8Array,
   optional_address: string | null
 ): bool {
-  const req = new proto.DsEntryExistsRequest(key, makeStringValue(optional_address));
+  const req = new proto.DsEntryExistsRequest(
+    key,
+    makeStringValue(optional_address)
+  );
   const req_bytes = proto.encodeDsEntryExistsRequest(req);
   const resp_bytes = Uint8Array.wrap(
     abi_ds_entry_exists(encode_length_prefixed(req_bytes).buffer)
@@ -940,10 +982,11 @@ export function scalar_mul_native_amount(
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null, resp.error!.message);
   assert(resp.res !== null);
+  assert(resp.res!.scalarMulNativeAmountResult !== null);
   assert(
-    resp.res!.scalarMulNativeAmountResult !== null
+    resp.res!.scalarMulNativeAmountResult!.product !== null,
+    "product null"
   );
-  assert(resp.res!.scalarMulNativeAmountResult!.product !== null, "product null");
   return resp.res!.scalarMulNativeAmountResult!.product!;
 }
 

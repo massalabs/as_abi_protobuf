@@ -26,8 +26,8 @@ function createContract(): string {
   const sc_address = env.create_sc(wrapped_bytes);
   env.generate_event("SC created @:" + sc_address);
 
-  env.generate_event("Will transfer coins: 100_000_000_000");
-  env.transfer_coins(sc_address, env.make_native_amount(100, 0), null);
+  env.generate_event("Will transfer coins: 10");
+  env.transfer_coins(sc_address, env.make_native_amount(10, 0), null);
   env.generate_event("Coins transfered");
 
   return sc_address;
@@ -40,9 +40,35 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   const sc_address = createContract();
   env.generate_event("sc created @:" + sc_address);
 
-  const sc_args = new Uint8Array(0);
-  env.call(sc_address, "initialize", sc_args, env.make_native_amount(100, 0));
-  env.generate_event("method initialize called on sc @:" + sc_address);
+  const f_exists = env.functionExists(sc_address, "initialize");
+  env.generate_event("function initialize exists: " + f_exists.toString());
+
+  const ret_call = env.call(
+    sc_address,
+    "initialize",
+    new Uint8Array(0),
+    env.make_native_amount(10, 0)
+  );
+
+  env.generate_event(
+    "method initialize called on sc @:" +
+      sc_address +
+      " with result: " +
+      ret_call[0].toString()
+  );
+
+  const ret_local_call = env.localCall(
+    sc_address,
+    "initialize",
+    new Uint8Array(10)
+  );
+
+  env.generate_event(
+    "method initialize called locally on sc @:" +
+      sc_address +
+      " with result: " +
+      ret_local_call[0].toString()
+  );
 
   return encode_result(new Uint8Array(0));
 }

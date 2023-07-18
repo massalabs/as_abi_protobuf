@@ -7,7 +7,8 @@ export function initialize(arg: ArrayBuffer): ArrayBuffer {
   assert_args_addr(arg);
 
   let res = new Uint8Array(1);
-  res[0] = 1;
+  res[0] = Uint8Array.wrap(arg).length;
+  env.generate_event("initialize will return: " + res[0].toString());
 
   return encode_result(res);
 }
