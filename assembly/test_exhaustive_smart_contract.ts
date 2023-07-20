@@ -11,7 +11,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   // The following bool should be set to:
   // - true when running the tests in a sandbox node
   // - false when running the tests in the runtime test interface
-  const sandbox = true;
+  const sandbox = false;
 
   // Define all the argument values:
   const optional_address =
