@@ -12,7 +12,7 @@
     "prettier": "^2.8.8"
   },
   "scripts": {
-    "build:empty_main_sc:debug": "asc assembly/empty_main_sc.ts --target debug -o ./build/empty_main_sc.wasm --use abort=assembly/env/myabort --use seed=assembly/env/myseed",
+    "build:empty_main_sc:debug": "asc assembly/empty_main_sc.ts --target debug -o ./build/empty_main_sc.wasm",
     "inspect:empty_main_sc": "wasmer inspect ./build/empty_main_sc.wasm",
     "export:empty_main_sc": "wasmv1_transform ./build/empty_main_sc.wasm add",
     "all:empty_main_sc": "npm run build:empty_main_sc:debug && npm run inspect:empty_main_sc && npm run export:empty_main_sc",
