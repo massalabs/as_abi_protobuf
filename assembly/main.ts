@@ -70,5 +70,12 @@ export function main(args: ArrayBuffer): ArrayBuffer {
       ret_local_call[0].toString()
   );
 
+  const bytes: StaticArray<u8> = fileToByteArray("./build/release.wasm_add");
+  const casted_bytes = changetype<ArrayBuffer>(bytes);
+  const wrapped_bytes = Uint8Array.wrap(casted_bytes);
+  env.local_execution(wrapped_bytes, "initialize", sc_args)
+  
+  env.generate_event("method initialize called on localExecution");
+
   return encode_result(new Uint8Array(0));
 }

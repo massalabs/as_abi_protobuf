@@ -1,28 +1,27 @@
 import { assert_args_addr, encode_result } from "./sdk/shared_mem";
 import * as env from "./env";
-
 import * as proto from "massa-proto-as/assembly";
 
-// utility function to change the last character of a string
-function changeLastCharacter(str: string, newChar: string): string {
-  if (str.length === 0) {
-    return str;
-  }
-  const strArray = str.split("");
-  const lastIndex = strArray.length - 1;
-  strArray[lastIndex] = newChar;
-  return strArray.join("");
-}
+// Exhaustive test of all the ABIs exposed
+// Note: createSC, call, localCall and localExecution are tested in the index / main workflow, not here.
 
 export function main(args: ArrayBuffer): ArrayBuffer {
   assert_args_addr(args);
 
+  // The following bool should be set to:
+  // - true when running the tests in a sandbox node
+  // - false when running the tests in the runtime test interface
+  const sandbox = false;
+
   // Define all the argument values:
   const optional_address =
-    "AU128vqy6e77qWoSiY4ammHpTuGwh5gkSiwMRkkBkDJDWWiWsu8ow";
+    "AU1HcvsjYY8CWwbPacRSCqrTyp9np4TcDECQYHvdH3s9WDZuDYo9";
   const to_address = "AU12ZXAfMgcLCRFDWR3fpJ7RoMYnEsmbFSgLvB5UGDJGYfYUtinem";
-  const address = "AU128vqy6e77qWoSiY4ammHpTuGwh5gkSiwMRkkBkDJDWWiWsu8ow";
+  const address = "AU1HcvsjYY8CWwbPacRSCqrTyp9np4TcDECQYHvdH3s9WDZuDYo9";
+
+  // When decoding the following public keys to bytes, public_key should be greater than public_key2
   const public_key = "P12DbeG1P23wTYmBwabfGJquGRwWFWgQumFL6Gi1ChAfyE7pNYdG";
+  const public_key2 = "P1axamMNLNFXyfxdWNyFUEVJr6JoMbtfcSgRK1LZR6eurA6nyBQ";
   const signature =
     "1SYkkid5YKuziu1kCMRoAPYeakZHDevAw2jzLqDypBRwpyeEvSo3F5VGwJXP3gjjhzjuqohxetvd4siv8PfjyzTziiMrVH";
   const message = new Uint8Array(1);
@@ -37,13 +36,25 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   key[0] = 44;
   const data = new Uint8Array(1);
   data[0] = 55;
-  const amount1 = env.make_native_amount(100, 0);
+  const amount1 = env.make_native_amount(1, 0);
   const amount2 = env.make_native_amount(100, 0);
   const str_amount = "1";
   const coefficient = 2;
   const divisor = 2;
   const time1 = new proto.NativeTime(100);
   const time2 = new proto.NativeTime(100);
+  let evm_message = new Uint8Array(4);
+  evm_message.set([116, 101, 115, 116]);
+  let evm_signature = new Uint8Array(65);
+  evm_signature.set([208, 208, 92, 53, 8, 6, 53, 181, 232, 101, 0, 108, 108, 79, 91, 93, 69, 126, 195, 66, 86,
+    77, 143, 198, 124, 228, 14, 220, 38, 76, 205, 171, 63, 47, 54, 107, 91, 209, 227, 133, 130,
+    83, 143, 237, 127, 166, 40, 33, 72, 232, 106, 249, 121, 112, 161, 12, 179, 48, 40, 150,
+    245, 214, 142, 245, 27]);
+  let evm_public_key = new Uint8Array(65);
+  evm_public_key.set([4, 242, 192, 4, 239, 171, 3, 90, 235, 89, 176, 251, 75, 242, 14, 65, 253, 71, 177, 105, 0,
+    111, 117, 57, 248, 100, 223, 210, 100, 6, 122, 58, 123, 252, 232, 199, 170, 56, 251, 37,
+    74, 97, 93, 193, 95, 18, 147, 233, 195, 248, 196, 141, 114, 17, 114, 13, 138, 233, 242,
+    105, 9, 142, 173, 144, 14]);
 
   env.generate_event("Starting tests of wasmv1 ABIs");
   env.generate_event(" ");
@@ -82,12 +93,6 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   env.generate_event("message");
   env.generate_event('  > Ok: generate_event("message") called');
   env.generate_event(" ");
-
-  // Test .create_sc()
-  /*env.generate_event("Calling create_sc(bytecode)");
-    const ret_create_sc = env.create_sc(bytecode);
-    env.generate_event("  > Ok: create_sc(bytecode) returns: " + ret_create_sc);
-    env.generate_event(" ");*/
 
   // Test .get_remaining_gas()
   env.generate_event("Calling get_remaining_gas()");
@@ -131,58 +136,37 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   env.generate_event(" ");
 
   // Test .caller_has_write_access()
-  // env.generate_event("Calling caller_has_write_access()");
-  // const ret_caller_has_write_access = env.caller_has_write_access();
-  // env.generate_event("  > Ok: caller_has_write_access() returns: " + ret_caller_has_write_access.toString());
-  // env.generate_event(" ");
+  env.generate_event("Calling caller_has_write_access()");
+  const ret_caller_has_write_access = env.caller_has_write_access();
+  env.generate_event("  > Ok: caller_has_write_access() returns: " + ret_caller_has_write_access.toString());
+  env.generate_event(" ");
 
   // Test .get_call_stack()
-  /*env.generate_event("Calling get_call_stack()");
+  env.generate_event("Calling get_call_stack()");
     const ret_get_call_stack = env.get_call_stack();
     env.generate_event("  > Ok: get_call_stack() returns: " + ret_get_call_stack.toString());
-    env.generate_event(" ");*/
+    env.generate_event(" ");
 
   // Test .get_owned_addresses()
-  /*env.generate_event("Calling get_owned_addresses()");
+  env.generate_event("Calling get_owned_addresses()");
     const ret_get_owned_addresses = env.get_owned_addresses();
     env.generate_event("  > Ok: get_owned_addresses() returns: " + ret_get_owned_addresses.toString());
-    env.generate_event(" ");*/
-
-  // Test .call()
-  // TODO
-  /*env.generate_event("Calling call(sc_address, \"func\", arg, amount1)");
-    const ret_call = env.call(sc_address, "func", arg, amount1);
-    env.generate_event("  > Ok: call(sc_address, \"func\", arg, amount1) returns: " + ret_call.toString());
-    env.generate_event(" ");*/
-
-  // Test .local_call()
-  // TODO
-  /*env.generate_event("Calling local_call(sc_address, \"func\", arg, amount1)");
-    const ret_local_call = env.local_call(sc_address, "func", arg, amount1);
-    env.generate_event("  > Ok: local_call(sc_address, \"func\", arg, amount1) returns: " + ret_local_call.toString());
-    env.generate_event(" ");*/
-
-  // Test .local_execution()
-  // THOMAS TODO
-  // env.generate_event("Calling local_execution()");
-  // env.local_execution(bytecode, "function_name", empty_array);
-  // env.generate_event("  > Ok: local_execution() called");
-  // env.generate_event(" ");
+    env.generate_event(" ");
 
   // Test .unsafe_random()
-  /*env.generate_event("Calling unsafe_random()");
-    const ret_unsafe_random = env.unsafe_random(42);
-    env.generate_event("  > Ok: unsafe_random() returns: " + ret_unsafe_random.toString());
-    env.generate_event(" ");*/
+  env.generate_event("Calling unsafe_random()");
+  const ret_unsafe_random = env.unsafe_random(42);
+  env.generate_event("  > Ok: unsafe_random() returns: " + ret_unsafe_random.toString());
+  env.generate_event(" ");
 
   // Test .send_async_message()
-  /*env.generate_event("Calling send_async_message()");
-    let slot = new proto.Slot(0, 0);
-    let message = new Uint8Array(0);
-    let filter = new proto.SendAsyncMessageFilter("addr");
-    env.send_async_message("addr", "func", slot, slot, 1_000_000, 0, 10, message, filter);
-    env.generate_event("  > Ok: send_async_message() called");
-    env.generate_event(" ");*/
+  env.generate_event("Calling send_async_message()");
+  let slot = new proto.Slot(0, 0);
+  let async_message = new Uint8Array(0);
+  let filter = new proto.SendAsyncMessageFilter("addr");
+  env.send_async_message("addr", "func", slot, slot, 1_000_000, 0, 10, async_message, filter);
+  env.generate_event("  > Ok: send_async_message() called");
+  env.generate_event(" ");
 
   // ##############################
   // TESTS DATASTORE
@@ -379,14 +363,12 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   env.generate_event(" ");
 
   // Test .verify_evm_signature()
-  // THOMAS TODO
-  // env.generate_event("Calling verify_evm_signature()");
-  // const ret_verify_evm_signature = env.verify_evm_signature(empty_array, empty_array, empty_array);
-  // env.generate_event("  > Ok: verify_evm_signaturereturns: " + ret_verify_evm_signature.toString());
-  // env.generate_event(" ");
+  env.generate_event("Calling verify_evm_signature()");
+  const ret_verify_evm_signature = env.verify_evm_signature(evm_message, evm_signature, evm_public_key);
+  env.generate_event("  > Ok: verify_evm_signaturereturns: " + ret_verify_evm_signature.toString());
+  env.generate_event(" ");
 
   // Test .address_from_public_key()
-  // TODO
   env.generate_event("Calling address_from_public_key(public_key)");
   const ret_address_from_public_key = env.address_from_public_key(public_key);
   env.generate_event(
@@ -552,10 +534,12 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   env.generate_event("bs58_hash: " + bs58_hash);
   env.generate_event("hash_form_bs58: " + hash_form_bs58.toString());
 
-  // assert(
-  //   hash_blake3 == hash_form_bs58,
-  //   "encode to base58 -> decode from base58 changed data"
-  // );
+  if (sandbox) {
+    assert(
+      hash_blake3.toString() === hash_form_bs58.toString(),
+      "encode to base58 -> decode from base58 changed data"
+    );
+  }
 
   // ##############################
   // TESTS STRUCTS CHECKS AND GET VERSIONS
@@ -820,13 +804,12 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   //pub_key
   {
     const pub_key1 = public_key;
-    const pub_key2 = changeLastCharacter(public_key, "H");
+    const pub_key2 = public_key2;
     env.generate_event(
       "do some compare with pub_key1 = " +
         pub_key1 +
         ", pub_key2 = " +
-        pub_key2 +
-        " (**only last character is different**)"
+        pub_key2
     );
     {
       const cmp_res = env.compare_pub_key(pub_key1, pub_key1);
@@ -844,8 +827,8 @@ export function main(args: ArrayBuffer): ArrayBuffer {
         "compare_pub_key(pub_key1, pub_key2): " + cmp_res.toString()
       );
       assert(
-        cmp_res == proto.ComparisonResult.COMPARISON_RESULT_LOWER,
-        "  > Error: compare_pub_key(pub_key1, pub_key2) should return LOWER"
+        cmp_res == proto.ComparisonResult.COMPARISON_RESULT_GREATER,
+        "  > Error: compare_pub_key(pub_key1, pub_key2) should return GREATER"
       );
     }
     {
@@ -854,8 +837,8 @@ export function main(args: ArrayBuffer): ArrayBuffer {
         "compare_pub_key(pub_key2, pub_key1): " + cmp_res.toString()
       );
       assert(
-        cmp_res == proto.ComparisonResult.COMPARISON_RESULT_GREATER,
-        "  > Error: compare_pub_key(pub_key2, pub_key1) should return GREATER"
+        cmp_res == proto.ComparisonResult.COMPARISON_RESULT_LOWER,
+        "  > Error: compare_pub_key(pub_key2, pub_key1) should return LOWER"
       );
     }
   }
