@@ -11,7 +11,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   // The following bool should be set to:
   // - true when running the tests in a sandbox node
   // - false when running the tests in the runtime test interface
-  const sandbox = false;
+  const sandbox = true;
 
   // Define all the argument values:
   const optional_address =
@@ -23,9 +23,9 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   const public_key = "P12DbeG1P23wTYmBwabfGJquGRwWFWgQumFL6Gi1ChAfyE7pNYdG";
   const public_key2 = "P1axamMNLNFXyfxdWNyFUEVJr6JoMbtfcSgRK1LZR6eurA6nyBQ";
   const signature =
-    "1SYkkid5YKuziu1kCMRoAPYeakZHDevAw2jzLqDypBRwpyeEvSo3F5VGwJXP3gjjhzjuqohxetvd4siv8PfjyzTziiMrVH";
-  const message = new Uint8Array(1);
-  message[0] = 1;
+    "1PnULu1Lrnk1AVHBLusghJ79wxV8VRyFua5p97SLi6zES5FmbMd7u6hEehveUCwYiJiHXP3kxPHQgyUr7a4zwtbEvaZLmT";
+  let message = new Uint8Array(4);
+  message.set([116, 101, 115, 116]);
   const bytecode = new Uint8Array(1);
   bytecode[0] = 11;
   const arg = new Uint8Array(1);
@@ -33,9 +33,9 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   const prefix = new Uint8Array(1);
   prefix[0] = 33;
   const key = new Uint8Array(1);
-  key[0] = 44;
+  key[0] = 33;
   const data = new Uint8Array(1);
-  data[0] = 55;
+  data[0] = 44;
   const amount1 = env.make_native_amount(1, 0);
   const amount2 = env.make_native_amount(100, 0);
   const str_amount = "1";
@@ -57,7 +57,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     105, 9, 142, 173, 144, 14]);
 
   env.generate_event("Starting tests of wasmv1 ABIs");
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // ##############################
   // TESTS LAST REMAINING ABIS
@@ -69,19 +69,25 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   );
   const ret_random = Math.random();
   env.generate_event("  > Ok: Math.random() returns: " + ret_random.toString());
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .verify_signature()
   env.generate_event("Calling verify_signature()");
   const ret_verify_signature = env.verify_signature(
     signature,
     message,
-    public_key
+    public_key2
   );
   env.generate_event(
     "  > Ok: verify_signature() returns: " + ret_verify_signature.toString()
   );
-  env.generate_event(" ");
+  if (sandbox) {
+    assert(
+      ret_verify_signature === true,
+      "verify signature returned false on a valid signature"
+    );
+  }
+  if (!sandbox) { env.generate_event(" "); }
 
   // ##############################
   // TESTS SMART CONTRACT
@@ -92,7 +98,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   env.generate_event('Calling generate_event("message")');
   env.generate_event("message");
   env.generate_event('  > Ok: generate_event("message") called');
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .get_remaining_gas()
   env.generate_event("Calling get_remaining_gas()");
@@ -107,7 +113,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   env.generate_event(
     "  > Ok: get_remaining_gas() returns: " + ret_remaining_gas_value.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .get_call_coins()
   env.generate_event("Calling get_call_coins()");
@@ -118,7 +124,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
       ", scale: " +
       ret_get_call_coins.scale.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .transfer_coins()
   env.generate_event("Calling transfer_coins(to_address, amount1, null)");
@@ -133,31 +139,38 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   env.generate_event(
     "  > Ok: transfer_coins(to_address, amount1, optional_address) called"
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .caller_has_write_access()
   env.generate_event("Calling caller_has_write_access()");
   const ret_caller_has_write_access = env.caller_has_write_access();
   env.generate_event("  > Ok: caller_has_write_access() returns: " + ret_caller_has_write_access.toString());
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .get_call_stack()
   env.generate_event("Calling get_call_stack()");
     const ret_get_call_stack = env.get_call_stack();
     env.generate_event("  > Ok: get_call_stack() returns: " + ret_get_call_stack.toString());
-    env.generate_event(" ");
+    if (!sandbox) { env.generate_event(" "); }
 
   // Test .get_owned_addresses()
   env.generate_event("Calling get_owned_addresses()");
     const ret_get_owned_addresses = env.get_owned_addresses();
     env.generate_event("  > Ok: get_owned_addresses() returns: " + ret_get_owned_addresses.toString());
-    env.generate_event(" ");
+    if (!sandbox) { env.generate_event(" "); }
 
   // Test .unsafe_random()
   env.generate_event("Calling unsafe_random()");
-  const ret_unsafe_random = env.unsafe_random(42);
+  const byteLength = 42;
+  const ret_unsafe_random = env.unsafe_random(byteLength);
   env.generate_event("  > Ok: unsafe_random() returns: " + ret_unsafe_random.toString());
-  env.generate_event(" ");
+  if (sandbox) {
+    assert(
+      ret_unsafe_random.byteLength === byteLength,
+      "unsafe_random() returned a buffer of the wrong size"
+    );
+  }
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .send_async_message()
   env.generate_event("Calling send_async_message()");
@@ -166,7 +179,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   let filter = new proto.SendAsyncMessageFilter("addr");
   env.send_async_message("addr", "func", slot, slot, 1_000_000, 0, 10, async_message, filter);
   env.generate_event("  > Ok: send_async_message() called");
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // ##############################
   // TESTS DATASTORE
@@ -189,7 +202,16 @@ export function main(args: ArrayBuffer): ArrayBuffer {
       ", scale: " +
       ret_get_balance_optional_address.scale.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
+
+  // Test .set_bytecode()
+  env.generate_event("Calling set_bytecode(bytecode, null)");
+  env.set_bytecode(bytecode, null);
+  env.generate_event("  > Ok: set_bytecode(bytecode, null) called");
+  env.generate_event("Calling set_bytecode(bytecode, optional_address)");
+  env.set_bytecode(bytecode, optional_address);
+  env.generate_event("  > Ok: set_bytecode(bytecode, optional_address) called");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .get_bytecode()
   env.generate_event("Calling get_bytecode(null)");
@@ -203,16 +225,26 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: get_bytecode(optional_address) returns: " +
       ret_get_bytecode_optional_address.toString()
   );
-  env.generate_event(" ");
+  // TODO: try to fix this test
+  // We need for set_bytecode to succeed (not an UserAddress, but an address that has write access)
+  /*if (sandbox) { 
+    assert(
+      ret_get_bytecode_optional_address.toString() === bytecode.toString(),
+      "get_bytecode() did not returned the bytecode set with set_bytecode"
+    );
+  }*/
+  if (!sandbox) { env.generate_event(" "); }
 
-  // Test .set_bytecode()
-  env.generate_event("Calling set_bytecode(bytecode, null)");
-  env.set_bytecode(bytecode, null);
-  env.generate_event("  > Ok: set_bytecode(bytecode, null) called");
-  env.generate_event("Calling set_bytecode(bytecode, optional_address)");
-  env.set_bytecode(bytecode, optional_address);
-  env.generate_event("  > Ok: set_bytecode(bytecode, optional_address) called");
-  env.generate_event(" ");
+  // Test .set_ds_value()
+  env.generate_event("Calling set_ds_value(key, data, null)");
+  env.set_ds_value(key, data, null);
+  env.generate_event("  > Ok: set_ds_value(key, data, null) called");
+  env.generate_event("Calling set_ds_value(key, data, optional_address)");
+  env.set_ds_value(key, data, optional_address);
+  env.generate_event(
+    "  > Ok: set_ds_value(key, data, optional_address) called"
+  );
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .get_ds_keys()
   env.generate_event("Calling get_ds_keys(prefix, null)");
@@ -230,18 +262,17 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: get_ds_keys(prefix, optional_address) returns: " +
       ret_get_ds_keys_optional_address.toString()
   );
-  env.generate_event(" ");
-
-  // Test .set_ds_value()
-  env.generate_event("Calling set_ds_value(key, data, null)");
-  env.set_ds_value(key, data, null);
-  env.generate_event("  > Ok: set_ds_value(key, data, null) called");
-  env.generate_event("Calling set_ds_value(key, data, optional_address)");
-  env.set_ds_value(key, data, optional_address);
-  env.generate_event(
-    "  > Ok: set_ds_value(key, data, optional_address) called"
-  );
-  env.generate_event(" ");
+  if (sandbox) {
+    let in_array = false;
+    for (let i = 0; i < ret_get_ds_keys_optional_address.length; i++) {
+      in_array = in_array || (ret_get_ds_keys_optional_address[i].toString() === key.toString());
+    }
+    assert(
+      in_array,
+      "get_ds_keys() did not include the key set with set_ds_value"
+    );
+  }
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .get_ds_value()
   env.generate_event("Calling get_ds_value(key, null)");
@@ -259,27 +290,13 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: get_ds_value(key, optional_address) returns: " +
       ret_get_ds_value_optional_address.toString()
   );
-  env.generate_event(" ");
-
-  // Test .delete_ds_entry()
-  env.generate_event("Calling delete_ds_entry(key, null)");
-  env.delete_ds_entry(key, null);
-  env.generate_event("  > Ok: delete_ds_entry(key, null) called");
-  env.generate_event("Calling delete_ds_entry(key, optional_address)");
-  env.delete_ds_entry(key, optional_address);
-  env.generate_event("  > Ok: delete_ds_entry(key, optional_address) called");
-  env.generate_event(" ");
-
-  // Test .append_ds_value()
-  env.generate_event("Calling append_ds_value(key, data, null)");
-  env.append_ds_value(key, data, null);
-  env.generate_event("  > Ok: append_ds_value(key, data, null) called");
-  env.generate_event("Calling append_ds_value(key, data, optional_address)");
-  env.append_ds_value(key, data, optional_address);
-  env.generate_event(
-    "  > Ok: append_ds_value(key, data, optional_address) called"
-  );
-  env.generate_event(" ");
+  if (sandbox) { 
+    assert(
+      ret_get_ds_value_optional_address.toString() === data.toString(),
+      "get_ds_value() did not return the value set with set_ds_value"
+    );
+  }
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .ds_entry_exists()
   env.generate_event("Calling ds_entry_exists(key, null)");
@@ -297,7 +314,33 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: ds_entry_exists(key, optional_address) returns: " +
       ret_ds_entry_exists_optional_address.toString()
   );
-  env.generate_event(" ");
+  if (sandbox) { 
+    assert(
+      ret_ds_entry_exists_optional_address === true,
+      "ds_entry_exists() did not return true with the key set with set_ds_value()"
+    );
+  }
+  if (!sandbox) { env.generate_event(" "); }
+
+  // Test .delete_ds_entry()
+  env.generate_event("Calling delete_ds_entry(key, null)");
+  env.delete_ds_entry(key, null);
+  env.generate_event("  > Ok: delete_ds_entry(key, null) called");
+  env.generate_event("Calling delete_ds_entry(key, optional_address)");
+  env.delete_ds_entry(key, optional_address);
+  env.generate_event("  > Ok: delete_ds_entry(key, optional_address) called");
+  if (!sandbox) { env.generate_event(" "); }
+
+  // Test .append_ds_value()
+  env.generate_event("Calling append_ds_value(key, data, null)");
+  env.append_ds_value(key, data, null);
+  env.generate_event("  > Ok: append_ds_value(key, data, null) called");
+  env.generate_event("Calling append_ds_value(key, data, optional_address)");
+  env.append_ds_value(key, data, optional_address);
+  env.generate_event(
+    "  > Ok: append_ds_value(key, data, optional_address) called"
+  );
+  if (!sandbox) { env.generate_event(" "); }
 
   // ##############################
   // TEST OP DATASTORE
@@ -309,7 +352,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   env.generate_event(
     "  > Ok: get_op_keys(prefix) returns: " + ret_get_op_keys.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .has_op_key()
   env.generate_event("Calling has_op_key(key)");
@@ -317,7 +360,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   env.generate_event(
     "  > Ok: has_op_key(key) returns: " + ret_has_op_key.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .get_op_data()
   if (env.op_entry_exists(key)) {
@@ -326,12 +369,12 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     env.generate_event(
       "  > Ok: get_op_data(key) returns: " + ret_get_op_data.toString()
     );
-    env.generate_event(" ");
+    if (!sandbox) { env.generate_event(" "); }
   } else {
     env.generate_event(
       "Can't call Calling get_op_data(key), because has_op_key(key) returns false"
     );
-    env.generate_event(" ");
+    if (!sandbox) { env.generate_event(" "); }
   }
 
   // ##############################
@@ -344,7 +387,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   env.generate_event(
     "  > Ok: hash_keccak256(data) returns: " + ret_hash_keccak256.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .hash_sha256()
   env.generate_event("Calling hash_sha256(data)");
@@ -352,7 +395,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   env.generate_event(
     "  > Ok: hash_sha256(data) returns: " + ret_hash_sha256.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .hash_blake3()
   env.generate_event("Calling hash_blake3(data)");
@@ -360,13 +403,19 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   env.generate_event(
     "  > Ok: hash_blake3(data) returns: " + ret_hash_blake3.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .verify_evm_signature()
   env.generate_event("Calling verify_evm_signature()");
   const ret_verify_evm_signature = env.verify_evm_signature(evm_message, evm_signature, evm_public_key);
-  env.generate_event("  > Ok: verify_evm_signaturereturns: " + ret_verify_evm_signature.toString());
-  env.generate_event(" ");
+  env.generate_event("  > Ok: verify_evm_signature returns: " + ret_verify_evm_signature.toString());
+  if (sandbox) { 
+    assert(
+      ret_verify_evm_signature === true,
+      "verify_evm_signature() did not return true with a valid evm signature"
+    );
+  }
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .address_from_public_key()
   env.generate_event("Calling address_from_public_key(public_key)");
@@ -375,7 +424,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: address_from_public_key(public_key) returns: " +
       ret_address_from_public_key.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // ##############################
   // TESTS SLOT / TIME GETTERS
@@ -390,7 +439,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
       ", thread: " +
       ret_get_current_slot.thread.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .get_native_time()
   env.generate_event("Calling get_native_time()");
@@ -399,7 +448,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: get_native_time() returns: milliseconds: " +
       ret_get_native_time.milliseconds.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // ##############################
   // TESTS NATIVE_AMOUNT_ARITHMETIC
@@ -412,7 +461,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: check_native_amount(amount1) returns: " +
       ret_check_native_amount.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .add_native_amount()
   env.generate_event("Calling add_native_amount(amount1, amount2)");
@@ -423,7 +472,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
       ", scale: " +
       ret_add_native_amount.scale.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .sub_native_amount()
   env.generate_event("Calling sub_native_amount(amount1, amount2)");
@@ -434,7 +483,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
       ", scale: " +
       ret_sub_native_amount.scale.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .scalar_mul_native_amount()
   env.generate_event("Calling scalar_mul_native_amount(amount1, coefficient)");
@@ -448,7 +497,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
       ", scale: " +
       ret_scalar_mul_native_amount.scale.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .div_rem_native_amount()
   {
@@ -475,7 +524,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
         ", remainder.scale: " +
         ret_div_rem_native_amount_remainder.scale.toString()
     );
-    env.generate_event(" ");
+    if (!sandbox) { env.generate_event(" "); }
   }
 
   // Test .div_rem_native_amount()
@@ -491,7 +540,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
       ", remainder.scale: " +
       ret_div_rem_native_amount_remainder.scale.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .native_amount_to_string()
   env.generate_event("Calling native_amount_to_string(amount1)");
@@ -500,7 +549,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: native_amount_to_string(amount1) returns: " +
       ret_native_amount_to_string.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .native_amount_from_string()
   env.generate_event("Calling native_amount_from_string(str_amount)");
@@ -512,13 +561,12 @@ export function main(args: ArrayBuffer): ArrayBuffer {
       ", scale: " +
       ret_native_amount_from_string.scale.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // ##############################
   // TESTS TO FROM BS58
   // ##############################
 
-  // TODO: Uncomment when massa implem is done
   const buf = new Uint8Array(4);
   buf[0] = 0x31;
   buf[1] = 0x32;
@@ -526,7 +574,6 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   buf[3] = 0x34;
 
   const hash_blake3 = env.hash_blake3(buf);
-
   const bs58_hash = env.bytes_to_base58_check(hash_blake3);
   const hash_form_bs58 = env.base58_check_to_bytes(bs58_hash);
 
@@ -551,7 +598,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   env.generate_event(
     "  > Ok: check_address(address) returns: " + res_check_address.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .check_pubkey()
   env.generate_event("Calling check_pubkey(public_key)");
@@ -560,7 +607,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   env.generate_event(
     "  > Ok: check_pubkey(public_key) returns: " + res_check_pubkey.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .check_signature()
   env.generate_event("Calling check_signature(signature)");
@@ -570,7 +617,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: check_signature(signature) returns: " +
       res_check_signature.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .get_address_category()
   env.generate_event("Calling get_address_category(address)");
@@ -580,7 +627,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: get_address_category(address) returns: " +
       res_get_address_category.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .get_address_version()
   env.generate_event("Calling get_address_version(address)");
@@ -590,7 +637,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: get_address_version(address) returns: " +
       res_get_address_version.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .get_pubkey_version()
   env.generate_event("Calling get_pubkey_version(public_key)");
@@ -600,7 +647,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: get_pubkey_version(public_key) returns: " +
       res_get_pubkey_version.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .get_signature_version()
   env.generate_event("Calling get_signature_version(signature)");
@@ -610,7 +657,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: get_signature_version(signature) returns: " +
       res_get_signature_version.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // ##############################
   // TESTS NATIVE TIME ARITHMETICS
@@ -623,7 +670,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: checked_add_native_time(time1, time2) returns: milliseconds: " +
       ret_checked_add_native_time.milliseconds.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .checked_sub_native_time()
   env.generate_event("Calling checked_sub_native_time(time1, time2)");
@@ -632,7 +679,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: checked_sub_native_time(time1, time2) returns: milliseconds: " +
       ret_checked_sub_native_time.milliseconds.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .checked_mul_native_time()
   env.generate_event("Calling checked_mul_native_time(time1, coefficient)");
@@ -644,7 +691,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
     "  > Ok: checked_mul_native_time(time1, coefficient) returns: milliseconds: " +
       ret_checked_mul_native_time.milliseconds.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .checked_scalar_div_native_time()
   env.generate_event("Calling checked_scalar_div_native_time(time1, divisor)");
@@ -666,7 +713,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
       ", remainder.milliseconds: " +
       ret_checked_scalar_div_native_time_remainder.milliseconds.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // Test .checked_div_native_time()
   env.generate_event("Calling checked_div_native_time(time1, time2)");
@@ -679,7 +726,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
       ", remainder.milliseconds: " +
       ret_checked_div_native_time_remainder.milliseconds.toString()
   );
-  env.generate_event(" ");
+  if (!sandbox) { env.generate_event(" "); }
 
   // ##############################
   // TESTS COMPARISONS ABIS
