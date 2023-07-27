@@ -430,16 +430,16 @@ export function verify_evm_signature(
   message: Uint8Array,
   pub_key: Uint8Array
 ): bool {
-  const req = new proto.VerifyEvmSigRequest(sig, message, pub_key);
-  const req_bytes = proto.encodeVerifyEvmSigRequest(req);
+  const req = new proto.EvmVerifySigRequest(sig, message, pub_key);
+  const req_bytes = proto.encodeEvmVerifySigRequest(req);
   const resp_bytes = Uint8Array.wrap(
     abi_verify_evm_signature(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null);
   assert(resp.res !== null);
-  assert(resp.res!.verifyEvmSigResult !== null);
-  return resp.res!.verifyEvmSigResult!.isVerified;
+  assert(resp.res!.evmVerifySigResult !== null);
+  return resp.res!.evmVerifySigResult!.isVerified;
 }
 
 export function get_remaining_gas(): u64 {
