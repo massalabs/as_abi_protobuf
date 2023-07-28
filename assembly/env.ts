@@ -91,8 +91,20 @@ declare function abi_hash_keccak256(arg: ArrayBuffer): ArrayBuffer;
 declare function abi_hash_blake3(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
-@external("massa", "abi_verify_evm_signature")
-declare function abi_verify_evm_signature(arg: ArrayBuffer): ArrayBuffer;
+@external("massa", "abi_evm_verify_signature")
+declare function abi_evm_verify_signature(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_evm_get_address_from_pubkey")
+declare function abi_evm_get_address_from_pubkey(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_evm_get_pubkey_from_signature")
+declare function abi_evm_get_pubkey_from_signature(arg: ArrayBuffer): ArrayBuffer;
+
+// @ts-ignore: decorator
+@external("massa", "abi_is_address_eoa")
+declare function abi_is_address_eoa(arg: ArrayBuffer): ArrayBuffer;
 
 // @ts-ignore: decorator
 @external("massa", "abi_get_remaining_gas")
@@ -425,7 +437,7 @@ export function create_sc(bytecode: Uint8Array): string {
   return resp.res!.createScResult!.scAddress;
 }
 
-export function verify_evm_signature(
+export function evm_verify_signature(
   sig: Uint8Array,
   message: Uint8Array,
   pub_key: Uint8Array
@@ -433,13 +445,62 @@ export function verify_evm_signature(
   const req = new proto.EvmVerifySigRequest(sig, message, pub_key);
   const req_bytes = proto.encodeEvmVerifySigRequest(req);
   const resp_bytes = Uint8Array.wrap(
-    abi_verify_evm_signature(encode_length_prefixed(req_bytes).buffer)
+    abi_evm_verify_signature(encode_length_prefixed(req_bytes).buffer)
   );
   const resp = proto.decodeAbiResponse(resp_bytes);
   assert(resp.error === null);
   assert(resp.res !== null);
   assert(resp.res!.evmVerifySigResult !== null);
   return resp.res!.evmVerifySigResult!.isVerified;
+}
+
+
+
+export function evm_get_address_from_pubkey(
+  pub_key: Uint8Array
+): Uint8Array {
+  const req = new proto.EvmGetAddressFromPubkeyRequest(pub_key);
+  const req_bytes = proto.encodeEvmGetAddressFromPubkeyRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_evm_get_address_from_pubkey(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.evmGetAddressFromPubkeyResult !== null);
+  return resp.res!.evmGetAddressFromPubkeyResult!.address;
+}
+
+export function evm_get_pubkey_from_signature(
+  hash: Uint8Array,
+  sig: Uint8Array
+): Uint8Array {
+  const req = new proto.EvmGetPubkeyFromSignatureRequest(hash, sig);
+  const req_bytes = proto.encodeEvmGetPubkeyFromSignatureRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_evm_get_pubkey_from_signature(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.evmGetPubkeyFromSignatureResult !== null);
+  return resp.res!.evmGetPubkeyFromSignatureResult!.pubKey;
+}
+
+
+export function is_address_eoa(
+  address: string,
+): bool {
+  const req = new proto.IsAddressEoaRequest(address);
+  const req_bytes = proto.encodeIsAddressEoaRequest(req);
+  const resp_bytes = Uint8Array.wrap(
+    abi_is_address_eoa(encode_length_prefixed(req_bytes).buffer)
+  );
+  const resp = proto.decodeAbiResponse(resp_bytes);
+  assert(resp.error === null);
+  assert(resp.res !== null);
+  assert(resp.res!.isAddressEoaResult !== null);
+  return resp.res!.isAddressEoaResult!.isEoa;
 }
 
 export function get_remaining_gas(): u64 {
