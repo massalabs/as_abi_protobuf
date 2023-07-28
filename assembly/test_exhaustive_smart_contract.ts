@@ -45,6 +45,7 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   const time2 = new proto.NativeTime(100);
   let evm_message = new Uint8Array(4);
   evm_message.set([116, 101, 115, 116]);
+  let evm_hash = env.hash_keccak256(evm_message);
   let evm_signature = new Uint8Array(65);
   evm_signature.set([208, 208, 92, 53, 8, 6, 53, 181, 232, 101, 0, 108, 108, 79, 91, 93, 69, 126, 195, 66, 86,
     77, 143, 198, 124, 228, 14, 220, 38, 76, 205, 171, 63, 47, 54, 107, 91, 209, 227, 133, 130,
@@ -405,16 +406,34 @@ export function main(args: ArrayBuffer): ArrayBuffer {
   );
   if (!sandbox) { env.generate_event(" "); }
 
-  // Test .verify_evm_signature()
-  env.generate_event("Calling verify_evm_signature()");
-  const ret_verify_evm_signature = env.verify_evm_signature(evm_message, evm_signature, evm_public_key);
-  env.generate_event("  > Ok: verify_evm_signature returns: " + ret_verify_evm_signature.toString());
+  // Test .evm_verify_signature()
+  env.generate_event("Calling evm_verify_signature()");
+  const ret_evm_verify_signature = env.evm_verify_signature(evm_message, evm_signature, evm_public_key);
+  env.generate_event("  > Ok: evm_verify_signature returns: " + ret_evm_verify_signature.toString());
   if (sandbox) { 
     assert(
-      ret_verify_evm_signature === true,
-      "verify_evm_signature() did not return true with a valid evm signature"
+      ret_evm_verify_signature === true,
+      "evm_verify_signature() did not return true with a valid evm signature"
     );
   }
+  if (!sandbox) { env.generate_event(" "); }
+
+  // Test .evm_get_pubkey_from_signature()
+  env.generate_event("Calling evm_get_pubkey_from_signature(evm_hash, evm_signature)");
+  const ret_evm_get_pubkey_from_signature = env.evm_get_pubkey_from_signature(evm_hash, evm_signature);
+  env.generate_event("  > Ok: evm_get_pubkey_from_signature returns: " + ret_evm_get_pubkey_from_signature.toString());
+  if (!sandbox) { env.generate_event(" "); }
+  
+  // Test .evm_get_address_from_pubkey()
+  env.generate_event("Calling evm_get_address_from_pubkey(evm_public_key)");
+  const ret_evm_get_address_from_pubkey = env.evm_get_address_from_pubkey(evm_public_key);
+  env.generate_event("  > Ok: evm_evm_get_address_from_pubkey returns: " + ret_evm_get_address_from_pubkey.toString());
+  if (!sandbox) { env.generate_event(" "); }
+
+  // Test .is_address_eoa()
+  env.generate_event("Calling is_address_eoa()");
+  const ret_is_address_eoa = env.is_address_eoa(address);
+  env.generate_event("  > Ok: is_address_eoa returns: " + ret_is_address_eoa.toString());
   if (!sandbox) { env.generate_event(" "); }
 
   // Test .address_from_public_key()
